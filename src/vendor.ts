@@ -1,2 +1,0 @@
-import 'handjs';
-import 'babylonjs';
