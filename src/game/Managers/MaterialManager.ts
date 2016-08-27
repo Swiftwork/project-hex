@@ -11,7 +11,7 @@ export default class MaterialManager {
 		//this.addSky('tropicalSky', 'TropicalSunnyDay');
 
 		/* GROUND */
-		this.add('paper', 'paper');
+		let paper = this.add('paper', 'paper', [30, 30]);
 
 		/* TERRAIN TYPES */
 		this.add('barren', 'dirt');
@@ -21,13 +21,24 @@ export default class MaterialManager {
 		this.add('ocean', 'water');
 	}
 
-	public add(id: string, filename: string): StandardMaterial {
+	public add(id: string, filename: string, uv?: number[]): StandardMaterial {
 		const material = new StandardMaterial(id, this.scene);
-		material.diffuseTexture = new Texture(require(`../Assets/${filename}.jpg`), this.scene);
+
 		try {
+			material.diffuseTexture = new Texture(require(`../Assets/${filename}.jpg`), this.scene);
+			if (typeof uv !== 'undefined') {
+				(<Texture> material.diffuseTexture).uScale = uv[0];
+				(<Texture> material.diffuseTexture).vScale = uv[1];
+			}
+
 			material.bumpTexture = new Texture(require(`../Assets/${filename}-bump.jpg`), this.scene);
+			if (typeof uv !== 'undefined') {
+				(<Texture> material.bumpTexture).uScale = uv[0];
+				(<Texture> material.bumpTexture).vScale = uv[1];
+			}
 		} catch(e) {}
 		material.specularTexture = material.diffuseTexture;
+
 		material.specularPower = 100;
 		this.materials.set(id, material);
 		return material;

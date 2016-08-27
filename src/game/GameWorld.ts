@@ -11,7 +11,7 @@ export default class GameWorld {
 	) {
 		this.tiles = new Map<string, Tile>();
 		//const mapRadius = 64;
-		const mapRadius = 1;
+		const mapRadius = 2;
 
 		for (let q = -mapRadius; q <= mapRadius; q++) {
 	    const r1 = Math.max(-mapRadius, -q - mapRadius);

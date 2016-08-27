@@ -6,7 +6,9 @@
   "scripts": {
     "postinstall": "typings install",
     "start": "webpack-dev-server --content-base build --inline --progress --port 8080",
-    "build": "rimraf build && webpack --progress --profile"
+    "build:dev": "rimraf build && webpack --progress --profile --development",
+    "build:prod": "rimraf build && webpack --progress --profile --bail --production",
+    "deploy": "npm run build:prod && ./deploy.sh"
   },
   "keywords": [
     "isomorphic",

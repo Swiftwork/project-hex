@@ -1,4 +1,11 @@
-import { Vector2, Vector3, Vector4, Color3, Color4, Mesh, MeshBuilder, StandardMaterial, ShadowGenerator, ActionManager, InterpolateValueAction, SwitchBooleanAction, Texture, DirectionalLight, HemisphericLight, Scene, ArcRotateCamera, Camera } from 'babylonjs';
+import {
+	Vector2, Vector3, Vector4,
+	Color3, Color4,
+	Mesh, MeshBuilder,
+	Scene, ArcRotateCamera, Camera,
+	DirectionalLight, HemisphericLight, ShadowGenerator,
+	ActionManager, InterpolateValueAction, SwitchBooleanAction,
+} from 'babylonjs';
 import Game from './Game';
 import GameWorld from './GameWorld';
 import CameraManager from './Managers/CameraManager';
@@ -26,6 +33,7 @@ export default class GameRenderer {
 		private world: GameWorld
 	) {
     this.scene = new Scene(this.game.engine);
+    this.scene.clearColor = new Color3(0.9, 0.87, 0.85);
 
     this.cameraManager = new CameraManager(this.scene);
     this.materialManager = new MaterialManager(this.scene);
@@ -58,9 +66,6 @@ export default class GameRenderer {
 
 		let ground = Mesh.CreateGround("ground", 100, 100, 2, this.scene);
 		ground.material = this.materialManager.get('paper');
-		ground.material.diffuseTexture.uScale = 30;
-		ground.material.diffuseTexture.vScale = 30;
-		ground.material.specularColor = new Color3(0, 0, 0);
 		ground.receiveShadows = true;
 
     this.layout = new HexagonLayout(HexagonLayout.LAYOUT_HORIZONTAL, new Vector2(0.5, 0.5), new Vector3(0, 0, 0));
