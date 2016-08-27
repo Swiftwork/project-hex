@@ -70,7 +70,7 @@ if (PROD) {
   config = extend(true, config, {
 
     output: {
-      publicPath: '/assets/',
+      publicPath: 'assets/',
     },
 
     plugins: [
