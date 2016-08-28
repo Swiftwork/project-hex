@@ -69,6 +69,10 @@ if (PROD) {
 
   config = extend(true, config, {
 
+    output: {
+      publicPath: '',
+    },
+
     plugins: [
       new webpack.NoErrorsPlugin(),
       new webpack.optimize.DedupePlugin(),
