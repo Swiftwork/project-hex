@@ -2,7 +2,6 @@ var path = require('path');
 var extend = require('webpack-merge');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
-//var LiveReloadPlugin = require('webpack-livereload-plugin');
 
 var PROD = process.argv.indexOf('--production') != -1 || process.env.NODE_ENV == 'production';
 
@@ -107,11 +106,6 @@ if (PROD) {
           'ENV': '"development"',
         },
       }),
-      /*
-      new LiveReloadPlugin({
-        appendScriptTag: true,
-      }),
-      */
     ],
 
     devtool: 'source-map',
