@@ -4,7 +4,7 @@ import {
 	Mesh, MeshBuilder,
 	Scene, ArcRotateCamera, Camera,
 	DirectionalLight, HemisphericLight, ShadowGenerator,
-	ActionManager, InterpolateValueAction, SwitchBooleanAction,
+	ActionManager, InterpolateValueAction, ExecuteCodeAction, SwitchBooleanAction,
 } from 'babylonjs';
 import Game from './Game';
 import GameWorld from './GameWorld';
@@ -34,7 +34,14 @@ export default class GameRenderer {
 	) {
     this.scene = new Scene(this.game.engine);
     this.scene.clearColor = new Color3(0.9, 0.87, 0.85);
+    this.scene.fogColor = new Color3(0.9, 0.87, 0.85);
+		this.scene.fogMode = Scene.FOGMODE_LINEAR;
+		this.scene.fogStart = 10;
+		this.scene.fogEnd = 15;
 
+
+
+		/* Managers */
     this.cameraManager = new CameraManager(this.scene);
     this.materialManager = new MaterialManager(this.scene);
 
@@ -43,11 +50,11 @@ export default class GameRenderer {
 		this.mainCamera.attachControl(this.game.canvas, false, false);
 
     //let sunLight = new DirectionalLight("sunLight", new Vector3(-3, -3, -1), this.scene);
-		let sunLight = new DirectionalLight("dir01", new Vector3(-1, -2, -1), this.scene);
-		sunLight.position = new Vector3(20, 40, 20);
-		sunLight.intensity = 0.7;
+		let sunLight = new DirectionalLight('sunLight', new Vector3(2, -4, 2), this.scene);
+		sunLight.position = new Vector3(-20, 40, -20);
+		sunLight.intensity = 1;
 
-    let ambientLight = new HemisphericLight("ambientLight", new Vector3(0, 1, 0), this.scene);
+    let ambientLight = new HemisphericLight('ambientLight', new Vector3(0, 1, 0), this.scene);
 		ambientLight.diffuse = new Color3(1, 1, 1);
 		ambientLight.specular = new Color3(1, 1, 1);
 		ambientLight.groundColor = new Color3(0, 0, 0);
@@ -58,11 +65,6 @@ export default class GameRenderer {
 		skybox.material = this.materialManager.get('tropicalSky');
 		skybox.infiniteDistance = true;
 		*/
-
-		this.scene.fogMode = Scene.FOGMODE_LINEAR;
-    this.scene.fogColor = new Color3(0.9, 0.87, 0.85);
-		this.scene.fogStart = 10;
-		this.scene.fogEnd = 15;
 
 		let ground = Mesh.CreateGround("ground", 100, 100, 2, this.scene);
 		ground.material = this.materialManager.get('paper');
@@ -97,18 +99,36 @@ export default class GameRenderer {
 		  	mesh,
 		  	"position.y",
 		  	mesh.elevated ? 0.025 : 0.125, 250)
-		  ).then(new SwitchBooleanAction(
+		  ).then(new ExecuteCodeAction(
 		  	ActionManager.NothingTrigger,
-		  	mesh,
-		  	"elevated"
+		  	() => {
+		  		mesh.elevated = !mesh.elevated;
+		  	}
 		  ));
 			this.meshes.push(mesh);
 		}, this);
 
+		/* Shadows */
     let shadowGenerator = new ShadowGenerator(1024, sunLight);
 		shadowGenerator.useBlurVarianceShadowMap = true;
 		shadowGenerator.getShadowMap().renderList = 
 			shadowGenerator.getShadowMap().renderList.concat(this.meshes);
+
+		/* Scene Actions */
+		this.scene.actionManager = new ActionManager(this.scene);
+		this.scene.actionManager.registerAction(new ExecuteCodeAction(
+			ActionManager.OnKeyDownTrigger,
+			(event) => {
+
+				/* Debug */
+				if (event.sourceEvent.keyCode === 192) {
+					if (!this.scene.debugLayer.isVisible())
+						this.scene.debugLayer.show();
+					else
+						this.scene.debugLayer.hide();
+   			}
+			}
+		));
 	}
 
 	onLoaded () {

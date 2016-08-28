@@ -16,10 +16,10 @@ export class settings {
 
 export default class Game {
 
-	settings: settings;
-	engine: Engine;
-	world: world;
-	renderer: renderer;
+	public settings: settings;
+	public engine: Engine;
+	public world: world;
+	public renderer: renderer;
 	
 	constructor(public canvas: HTMLCanvasElement) {
 		this.settings = {

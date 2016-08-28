@@ -1,4 +1,5 @@
 *.log
+*.sublime-workspace
 node_modules
 typings
 build
