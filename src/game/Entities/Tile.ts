@@ -10,6 +10,8 @@ export default class Tile {
 		MOUNTAIN: 'mountain'
 	};
 
+	public explored = false;
+
 	constructor(
 		public hexagon: Hexagon,
 		public type?: string

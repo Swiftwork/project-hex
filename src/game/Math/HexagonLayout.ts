@@ -31,8 +31,8 @@ export class HexagonLayout {
 
   constructor(
   	private orientation: HexagonOrientation,
-  	private size: Vector2,
-  	private origin: Vector3
+  	public size: Vector2,
+  	public origin: Vector3
   ) {
 
   }

@@ -7,11 +7,8 @@ export default class MaterialManager {
 	constructor(private scene: Scene) {
 		this.materials = new Map<string, StandardMaterial>();
 
-		/* SKY */
-		//this.addSky('tropicalSky', 'TropicalSunnyDay');
-
 		/* GROUND */
-		let paper = this.add('paper', 'paper', [30, 30]);
+		this.add('paper', 'paper', [30, 30]);
 
 		/* TERRAIN TYPES */
 		this.add('barren', 'dirt');

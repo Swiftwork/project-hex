@@ -17,43 +17,39 @@ export default class Hexagon {
 	}
 
 	/* EQUALS */
-	equal(a: Hexagon, b: Hexagon): boolean {
-    return a.q == b.q && a.r == b.r && a.s == b.s;
+	equal(hex: Hexagon): boolean {
+    return this.q == hex.q && this.r == hex.r && this.s == hex.s;
 	}
 
 	/* ADD */
-	add(a: Hexagon, b: Hexagon): Hexagon {
-    return new Hexagon(a.q + b.q, a.r + b.r, a.s + b.s);
+	add(hex: Hexagon): Hexagon {
+    return new Hexagon(this.q + hex.q, this.r + hex.r, this.s + hex.s);
 	}
 
 	/* SUBTRACT */
-	subtract(a: Hexagon, b: Hexagon): Hexagon {
-	    return new Hexagon(a.q - b.q, a.r - b.r, a.s - b.s);
+	subtract(hex: Hexagon): Hexagon {
+	    return new Hexagon(this.q - hex.q, this.r - hex.r, this.s - hex.s);
 	}
 
 	/* MULTIPLY */
-	multiply(a: Hexagon, k: number): Hexagon {
-	    return new Hexagon(a.q * k, a.r * k, a.s * k);
+	multiply(hex: Hexagon): Hexagon {
+	    return new Hexagon(this.q * hex.q, this.r * hex.r, this.s * hex.s);
 	}
 
-	/* LENGTH */
-	length(hex: Hexagon): number {
-    return (Math.abs(hex.q) + Math.abs(hex.r) + Math.abs(hex.s)) / 2;
+	/* SCALE */
+	scale(k: number): Hexagon {
+	    return new Hexagon(this.q * k, this.r * k, this.s * k);
 	}
 
 	/* DISTANCE */
-	distance(a: Hexagon, b: Hexagon): number {
-    return this.length(this.subtract(a, b));
-	}
-
-	/* DIRECTION */
-	direction(direction: number): Hexagon {
-	  return hexagonDirections[(6 + (direction % 6)) % 6];
+	distance(hex: Hexagon): number {
+		let distance = this.subtract(hex);
+    return (Math.abs(distance.q) + Math.abs(distance.r) + Math.abs(distance.s)) / 2;
 	}
 
 	/* NEIGHBOR */
-	neighbor(hex: Hexagon, direction: number): Hexagon {
-	  return this.add(hex, this.direction(direction));
+	neighbor(direction: number): Hexagon {
+	  return hexagonDirections[(6 + (direction % 6)) % 6];
 	}
 }
 
