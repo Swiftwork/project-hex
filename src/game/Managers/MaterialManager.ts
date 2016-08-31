@@ -16,6 +16,7 @@ export default class MaterialManager {
 		this.add('desert', 'sand');
 		this.add('mountain', 'stone');
 		this.add('ocean', 'water');
+		this.add('forest', 'grass');
 	}
 
 	public add(id: string, filename: string, uv?: number[]): StandardMaterial {

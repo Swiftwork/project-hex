@@ -23,7 +23,7 @@ export default class Game {
 	
 	constructor(public canvas: HTMLCanvasElement) {
 		this.settings = {
-			seed: new Seed(Math.random()),
+			seed: new Seed(1337),
 			difficulty: 1,
 			paused: false,
 			graphics: {

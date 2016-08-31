@@ -31,10 +31,11 @@ export default class GameRenderer {
 		private game: Game,
 		private world: GameWorld
 	) {
-		/* Scene & Effects */
+		/* Scene Defaults */
     this.scene = new Scene(this.game.engine);
+    this.scene.collisionsEnabled = false;
     this.scene.clearColor = new Color3(0.9, 0.87, 0.85);
-    this.scene.fogColor = new Color3(0.9, 0.87, 0.85);
+    this.scene.fogColor = this.scene.clearColor;
 		this.scene.fogMode = Scene.FOGMODE_LINEAR;
 		this.scene.fogStart = 10;
 		this.scene.fogEnd = 15;

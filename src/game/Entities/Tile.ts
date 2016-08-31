@@ -1,4 +1,7 @@
 import Hexagon from '../Math/Hexagon';
+import Entity from './Entity';
+import Structure from './Structure';
+import Unit from './Unit';
 
 export default class Tile {
 
@@ -7,10 +10,15 @@ export default class Tile {
 		PLAIN: 'plain',
 		DESERT: 'desert',
 		OCEAN: 'ocean',
-		MOUNTAIN: 'mountain'
+		MOUNTAIN: 'mountain',
+		FOREST: 'forest',
 	};
 
 	public explored = false;
+
+	private environment: Entity[];
+	private structure: Structure;
+	private unit: Unit;
 
 	constructor(
 		public hexagon: Hexagon,
@@ -20,5 +28,18 @@ export default class Tile {
 			const types = Object.keys(Tile.TYPES);
 			this.type = Tile.TYPES[types[types.length * Math.random() << 0]];
 		}
+	}
+
+	/* Add entity belonging to this tile */
+	public addEntity(...entity: Entity[]): Entity {
+		return new Entity();
+	}
+
+	/* Get all entities belonging to this tile */
+	public getEntities(...entity: Entity[]) {
+	}
+
+	public clearEntities(): boolean {
+		return true;
 	}
 }
