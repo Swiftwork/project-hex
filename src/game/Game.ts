@@ -1,6 +1,10 @@
-import { Engine } from 'babylonjs';
-import world from './GameWorld';
-import renderer from './GameRenderer';
+import {
+	Engine, Scene,
+	AssetsManager as AssetsLoader,
+} from 'babylonjs';
+import AssetsManager from './Managers/AssetsManager';
+import GameWorld from './GameWorld';
+import GameRenderer from './GameRenderer';
 
 /* Utils */
 import Seed from './Utils/Seed';
@@ -18,12 +22,16 @@ export default class Game {
 
 	public settings: settings;
 	public engine: Engine;
-	public world: world;
-	public renderer: renderer;
+	public scene: Scene;
+	public world: GameWorld;
+	public renderer: GameRenderer;
+
+	/* MANAGERS */
+	public assetsManager: AssetsManager;
 	
 	constructor(public canvas: HTMLCanvasElement) {
 		this.settings = {
-			seed: new Seed(1337),
+			seed: new Seed(2),
 			difficulty: 1,
 			paused: false,
 			graphics: {
@@ -32,8 +40,15 @@ export default class Game {
 		}
 
 		this.engine = new Engine(this.canvas, true);
-		this.world = new world(this);
-		this.renderer = new renderer(this, this.world);
+		this.engine.displayLoadingUI();
+
+    this.scene = new Scene(this.engine);
+    this.assetsManager = new AssetsManager();
+    this.assetsManager.loadAllAssets(new AssetsLoader(this.scene), (tasks) => {
+			this.world = new GameWorld(this, this.scene);
+			this.renderer = new GameRenderer(this, this.world, this.scene);
+    	this.onStart();
+    });
 	}
 
 	onStart() {

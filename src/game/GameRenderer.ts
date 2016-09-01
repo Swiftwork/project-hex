@@ -5,6 +5,7 @@ import {
 	Scene, ArcRotateCamera,
 	ShadowGenerator,
 	ActionManager, InterpolateValueAction, ExecuteCodeAction, SwitchBooleanAction,
+	SceneLoader,
 } from 'babylonjs';
 import Game from './Game';
 import GameWorld from './GameWorld';
@@ -15,8 +16,6 @@ import Hexagon from './Math/Hexagon';
 import Tile from './Entities/Tile';
 
 export default class GameRenderer {
-
-	private scene: Scene;
 
 	/* MANAGERS */
 	private cameraManager: CameraManager;
@@ -29,11 +28,10 @@ export default class GameRenderer {
 
 	constructor(
 		private game: Game,
-		private world: GameWorld
+		private world: GameWorld,
+		private scene: Scene
 	) {
 		/* Scene Defaults */
-    this.scene = new Scene(this.game.engine);
-    this.scene.collisionsEnabled = false;
     this.scene.clearColor = new Color3(0.9, 0.87, 0.85);
     this.scene.fogColor = this.scene.clearColor;
 		this.scene.fogMode = Scene.FOGMODE_LINEAR;
@@ -43,7 +41,7 @@ export default class GameRenderer {
 		/* Managers */
     this.cameraManager = new CameraManager(this.scene);
     this.lightManager = new LightManager(this.scene);
-    this.materialManager = new MaterialManager(this.scene);
+    this.materialManager = new MaterialManager(this.scene, this.game.assetsManager);
 
     /* Cameras */
 		this.mainCamera = this.cameraManager.get('main');
@@ -109,7 +107,6 @@ export default class GameRenderer {
 	}
 
 	createTiles() {
-
 		/* Unexplored Tiles */
 		const unexploredMesh = MeshBuilder.CreateCylinder(`tile-unexplored`, {
 			height: 0.05,
@@ -119,11 +116,11 @@ export default class GameRenderer {
 		unexploredMesh.visibility = 0.4;
 
 		/* Explored Tiles */
-		this.world.tiles.forEach( (tile: Tile, coords: string) => {
+		this.world.tiles.forEach( (tile: Tile) => {
 			let mesh;
 
 			if (tile.explored) {
-				mesh = MeshBuilder.CreateCylinder(`tile-${coords}`, {
+				mesh = MeshBuilder.CreateCylinder(`tile-${tile.hexagon.toString()}`, {
 					height: 0.05,
 					diameter: this.world.layout.size.x * 2 - 0.05,
 					tessellation: 6,
@@ -132,6 +129,9 @@ export default class GameRenderer {
 		    mesh.material = this.materialManager.get(tile.type);
 				mesh.edgesWidth = 2;
 				mesh.edgesColor = new Color4(0.5, 0, 0.5, 1);
+
+				/* Entities on tile */
+				this.createEntities(tile, mesh);
 
 				/* Tile Actions */
 				mesh.actionManager = new ActionManager(this.scene);
@@ -143,10 +143,24 @@ export default class GameRenderer {
 			  );
 				this.meshes.push(mesh);
 			} else {
-				mesh = unexploredMesh.createInstance(`tile-${coords}`);
+				mesh = unexploredMesh.createInstance(`tile-${tile.hexagon.toString()}`);
 			}
 			mesh.position = this.world.layout.hexagonToPixel(tile.hexagon, 0.025);
 		  mesh.rotation = new Vector3(0, Math.PI / 3, 0);
+
 		}, this);
+	}
+
+	createEntities(tile: Tile, parent: Mesh ) {
+		for (var i = 0; i < tile.environment.length; ++i) {
+			let entity = tile.environment[i];
+			let mesh = this.game.assetsManager.get(`mesh-${entity.type}`).createInstance(
+				`tile-${tile.hexagon.toString()}-${entity.type}-${i}`
+			);
+			mesh.position = this.world.layout.hexagonToPixel(tile.hexagon, 0.2);
+			mesh.position.x = mesh.position.x - 0.3 + Math.random() * 0.6;
+			mesh.position.z = mesh.position.z - 0.3 + Math.random() * 0.6;
+			mesh.position.y = 0.2;
+		}
 	}
 }

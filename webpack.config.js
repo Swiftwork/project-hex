@@ -40,7 +40,7 @@ var config = {
         loader: 'pug',
       },
       {
-        test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico|mp4)$/,
+        test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico|mp4|babylon|manifest)$/,
         loader: 'file',
         query: {
           name: PROD ? 'assets/[hash].[ext]' : 'assets/[name].[ext]',

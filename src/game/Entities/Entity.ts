@@ -1,6 +1,5 @@
 export default class Entity {
 	
-	constructor() {
-		// code...
+	constructor(public id: string, public type: string) {
 	}
 }

@@ -1,12 +1,16 @@
-import { Scene, Color3, StandardMaterial, Texture, VideoTexture, CubeTexture } from 'babylonjs';
+import {
+	Scene,
+	Color3,
+	StandardMaterial, Texture,
+} from 'babylonjs';
+import AssetsManager from './AssetsManager';
 
 export default class MaterialManager {
 
 	private materials: Map<string, StandardMaterial>;
 
-	constructor(private scene: Scene) {
+	constructor(private scene: Scene, private assetsManager: AssetsManager) {
 		this.materials = new Map<string, StandardMaterial>();
-
 		/* GROUND */
 		this.add('paper', 'paper', [30, 30]);
 
@@ -19,22 +23,21 @@ export default class MaterialManager {
 		this.add('forest', 'grass');
 	}
 
-	public add(id: string, filename: string, uv?: number[]): StandardMaterial {
+	public add(id: string, texture: string, uv?: number[]): StandardMaterial {
 		const material = new StandardMaterial(id, this.scene);
 
-		try {
-			material.diffuseTexture = new Texture(require(`../Assets/${filename}.jpg`), this.scene);
-			if (typeof uv !== 'undefined') {
-				(<Texture> material.diffuseTexture).uScale = uv[0];
-				(<Texture> material.diffuseTexture).vScale = uv[1];
-			}
+		material.diffuseTexture = this.assetsManager.get(`texture-${texture}-diffuse`);
+		if (material.diffuseTexture && typeof uv !== 'undefined') {
+			(<Texture> material.diffuseTexture).uScale = uv[0];
+			(<Texture> material.diffuseTexture).vScale = uv[1];
+		}
 
-			material.bumpTexture = new Texture(require(`../Assets/${filename}-bump.jpg`), this.scene);
-			if (typeof uv !== 'undefined') {
-				(<Texture> material.bumpTexture).uScale = uv[0];
-				(<Texture> material.bumpTexture).vScale = uv[1];
-			}
-		} catch(e) {}
+		material.bumpTexture = this.assetsManager.get(`texture-${texture}-bump`);
+		if (material.bumpTexture && typeof uv !== 'undefined') {
+			(<Texture> material.bumpTexture).uScale = uv[0];
+			(<Texture> material.bumpTexture).vScale = uv[1];
+		}
+
 		material.specularTexture = material.diffuseTexture;
 
 		material.specularPower = 100;

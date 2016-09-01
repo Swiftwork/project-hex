@@ -1,5 +1,3 @@
-import Hash from '../Utils/Hash';
-
 export default class Hexagon {
 
 	constructor(
@@ -12,12 +10,12 @@ export default class Hexagon {
 		console.assert(q + r + s == 0, 'Coordinates (Q, R, S) must amount to 0');
 	}
 
-	/* Return a string ID for this Hexagon */
+	/* A string ID for this Hexagon */
 	toString(): string {
-		return `${this.q}|${this.r}|${this.s}`;
+		return `(${this.q}, ${this.r}, ${this.s})`;
 	}
 
-	/* Convert string ID to a hash value */
+	/* Unique hash value based on Q and R coordinates */
 	hash(): number {
 		const h1 = this.q >= 0 ? 2 * this.q : -2 * this.q - 1;
     const h2 = this.r >= 0 ? 2 * this.r : -2 * this.r - 1;

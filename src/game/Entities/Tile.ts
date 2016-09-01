@@ -16,9 +16,9 @@ export default class Tile {
 
 	public explored = false;
 
-	private environment: Entity[];
-	private structure: Structure;
-	private unit: Unit;
+	public environment: Entity[] = [];
+	public structure: Structure;
+	public unit: Unit;
 
 	constructor(
 		public hexagon: Hexagon,
@@ -31,8 +31,9 @@ export default class Tile {
 	}
 
 	/* Add entity belonging to this tile */
-	public addEntity(...entity: Entity[]): Entity {
-		return new Entity();
+	public addEnvironment(entities: Entity[]): Entity[] {
+		this.environment = this.environment.concat(entities);
+		return entities;
 	}
 
 	/* Get all entities belonging to this tile */

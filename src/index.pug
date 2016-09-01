@@ -8,11 +8,21 @@ html
 
 		style.
 			html, body {
-				overflow: hidden;
-				width: 100%;
-				height: 100%;
 				margin: 0;
 				padding: 0;
+				width: 100%;
+				height: 100%;
+				overflow: hidden;
+				background: black;
+			}
+
+			h1#support {
+				display: none;
+				margin-top: 10%;
+				padding: 10%;
+				font-family: Consolas, monaco, monospace;
+				color: white;
+				text-align: center;
 			}
 
 			canvas#game {
@@ -23,6 +33,7 @@ html
 
 	body
 
+		h1#support Your browser does not support BabylonJS or WebGL is not enabled! <br /><br /> :(
 		canvas#game
 
 		script(src="vendor.js")
