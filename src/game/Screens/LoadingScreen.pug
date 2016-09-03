@@ -1,0 +1,48 @@
+style.
+	#loading-screen {
+		position: absolute;
+		color: #{textColor};
+		background-color: #{backgroundColor};
+		text-align: center;
+		opacity: 0;
+		transition: opacity 1.5s ease;
+	}
+	svg polygon, svg path {
+		fill: #{textColor};
+	}
+	.loading {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		margin: 0;
+		transform: translate(-50%, -50%);
+	}
+	.loading svg {
+		width: 96px;
+	}
+	.loading figcaption {
+		margin-top: 2em;
+	}
+	.copy {
+		position: absolute;
+		bottom: 0;
+		padding: 10%;
+		width: 100%;
+		box-sizing: border-box;
+	}
+	.copy svg {
+		height: 1em;
+	}
+	.copy i {
+		font-style: normal;
+		font-size: 1.5em;
+	}
+
+figure.loading
+	div!=require('../Assets/interface/loading.svg')
+	figcaption=text
+
+footer.copy Project-Hex is powered by BabylonJS 
+	span!=require('../Assets/interface/babylonjs-logo.svg')
+	|  and built with 
+	i &hearts;

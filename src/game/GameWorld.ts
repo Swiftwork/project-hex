@@ -26,7 +26,7 @@ export default class GameWorld {
     	new Vector2(0.5, 0.5),
     	new Vector3(0, 0, 0)
     );
-		const mapRadius = 10;
+		const mapRadius = 2;
 		const visibility = 2;
 		const viewPoint = new Hexagon(0,0,0);
 

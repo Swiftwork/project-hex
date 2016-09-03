@@ -23,9 +23,9 @@ export default class LightManager {
 		this.add('sunLight',
 			LightManager.LIGHT.DIRECTIONAL,
 			new Vector3(2, -4, 2),
-			new Vector3(-20, 40, -20),
+			null,
 			{
-				intensity: 1,
+				intensity: 0.7,
 			}
 		);
 
@@ -33,9 +33,9 @@ export default class LightManager {
 		this.add('ambientLight',
 			LightManager.LIGHT.HEMISPHERIC,
 			new Vector3(0, 1, 0),
-			new Vector3(0, 0, 0),
+			null,
 			{
-				intensity: 0.5,
+				intensity: 0.3,
 				diffuse: new Color3(1, 1, 1),
 				specular: new Color3(1, 1, 1),
 				groundColor: new Color3(0, 0, 0),
@@ -57,7 +57,9 @@ export default class LightManager {
 			default:
 				break;
 		}
-		light.position = position;
+		
+		if (position)
+			light.position = position;
 
 		for (var option in options) {
 		  if (options.hasOwnProperty(option)) {

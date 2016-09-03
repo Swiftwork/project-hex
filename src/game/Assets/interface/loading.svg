@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg id="SVG-Circus-328e0535-70be-f58b-9817-148f0bd26ef0" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100" 
+preserveAspectRatio="xMidYMid meet">
+	<style>
+		@keyframes fade {
+		  10% { opacity: 1; }
+		  50% { opacity: 1; }
+		  80% { opacity: 0; }
+		}
+		polygon { opacity: 0; animation: fade 3000ms ease-in-out infinite }
+		#actor_1 { animation-delay: 100ms }
+		#actor_3 { animation-delay: 200ms }
+		#actor_2 { animation-delay: 300ms }
+		#actor_4 { animation-delay: 400ms }
+		#actor_6 { animation-delay: 500ms }
+		#actor_5 { animation-delay: 600ms }
+		#actor_7 { animation-delay: 700ms }
+	</style>
+	<polygon id="actor_1" points="35.00,8.00 21.14,16.00 21.14,32.00 35.00,40.00 48.86,32.00 48.86,16.00" fill="rgba(255,255,255,1)"></polygon>
+	<polygon id="actor_2" points="65.00,8.00 51.14,16.00 51.14,32.00 65.00,40.00 78.86,32.00 78.86,16.00" fill="rgba(255,255,255,1)"></polygon>
+	<polygon id="actor_3" points="20.00,34.00 6.14,42.00 6.14,58.00 20.00,66.00 33.86,58.00 33.86,42.00" fill="rgba(255,255,255,1)"></polygon>
+	<polygon id="actor_4" points="50.00,34.00 36.14,42.00 36.14,58.00 50.00,66.00 63.86,58.00 63.86,42.00" fill="rgba(255,255,255,1)"></polygon>
+	<polygon id="actor_5" points="80.00,34.00 66.14,42.00 66.14,58.00 80.00,66.00 93.86,58.00 93.86,42.00" fill="rgba(255,255,255,1)"></polygon>
+	<polygon id="actor_6" points="35.00,60.00 21.14,68.00 21.14,84.00 35.00,92.00 48.86,84.00 48.86,68.00" fill="rgba(255,255,255,1)"></polygon>
+	<polygon id="actor_7" points="65.00,60.00 51.14,68.00 51.14,84.00 65.00,92.00 78.86,84.00 78.86,68.00" fill="rgba(255,255,255,1)"></polygon>
+</svg>

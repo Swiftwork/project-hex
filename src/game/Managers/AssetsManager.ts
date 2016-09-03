@@ -63,6 +63,11 @@ const assetsManifest = {
 		/* GROUND */
 		paper: {
 			diffuse: require('../Assets/textures/paper.jpg'),
+			bump: require('../Assets/textures/paper-bump.jpg'),
+		},
+		wood: {
+			diffuse: require('../Assets/textures/wood.jpg'),
+			bump: require('../Assets/textures/wood-bump.jpg'),
 		},
 
 		/* TILES */

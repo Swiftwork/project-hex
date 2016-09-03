@@ -1,10 +1,12 @@
 import {
+	Color3,
 	Engine, Scene,
 	AssetsManager as AssetsLoader,
 } from 'babylonjs';
 import AssetsManager from './Managers/AssetsManager';
 import GameWorld from './GameWorld';
 import GameRenderer from './GameRenderer';
+import LoadingScreen from './Screens/LoadingScreen';
 
 /* Utils */
 import Seed from './Utils/Seed';
@@ -40,6 +42,7 @@ export default class Game {
 		}
 
 		this.engine = new Engine(this.canvas, true);
+		this.engine.loadingScreen = new LoadingScreen(this.canvas, new Color3(0.4,0.2,0.3));
 		this.engine.displayLoadingUI();
 
     this.scene = new Scene(this.engine);
