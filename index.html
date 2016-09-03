@@ -1,9 +1,19 @@
 <!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Project Hex</title><script src="polyfills.js"></script><style>html, body {
-	overflow: hidden;
-	width: 100%;
-	height: 100%;
 	margin: 0;
 	padding: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	font-family: Consolas, monaco, monospace;
+	background: black;
+}
+
+h1#support {
+	display: none;
+	margin-top: 10%;
+	padding: 10%;
+	color: white;
+	text-align: center;
 }
 
 canvas#game {
@@ -11,4 +21,4 @@ canvas#game {
 	height: 100%;
 	touch-action: none;
 }
-</style></head><body><canvas id="game"></canvas><script src="vendor.js"></script><script src="index.js"></script></body></html>
+</style></head><body><h1 id="support">Your browser does not support BabylonJS or WebGL is not enabled! <br /><br /> :(</h1><canvas id="game"></canvas><script src="vendor.js"></script><script src="index.js"></script></body></html>
