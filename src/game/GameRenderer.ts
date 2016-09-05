@@ -1,11 +1,10 @@
 import {
 	Vector2, Vector3, Vector4,
 	Color3, Color4,
-	Mesh, MeshBuilder, VertexBuffer,
+	Mesh, MeshBuilder,
 	Scene, ArcRotateCamera,
 	ShadowGenerator,
 	ActionManager, InterpolateValueAction, ExecuteCodeAction, SwitchBooleanAction,
-	SceneLoader,
 } from 'babylonjs';
 import Game from './Game';
 import GameWorld from './GameWorld';
@@ -22,7 +21,7 @@ export default class GameRenderer {
 	private lightManager: LightManager;
 	private materialManager: MaterialManager;
 
-	/* MESHES & LAYOUTS */
+	/* GENERAL */
 	private mainCamera: ArcRotateCamera;
 	private meshes: Mesh[];
 
@@ -70,13 +69,13 @@ export default class GameRenderer {
 	onCreate() {
 		this.createGround();
 		this.createTiles();
+		console.log(this.scene.createOrUpdateSelectionOctree());
 
 		/* Shadows */
 		const sunLight = this.lightManager.get('sunLight');
-    let shadowGenerator = new ShadowGenerator(1024, sunLight);
-		shadowGenerator.bias = 0.00001;
+    let shadowGenerator = new ShadowGenerator(4096, sunLight);
+		shadowGenerator.bias = 0.0001;
 		shadowGenerator.useBlurVarianceShadowMap = true;
-		//shadowGenerator.usePoissonSampling = true;
 		shadowGenerator.getShadowMap().refreshRate = 0;
 		shadowGenerator.getShadowMap().renderList = 
 			shadowGenerator.getShadowMap().renderList.concat(this.meshes);
@@ -159,11 +158,8 @@ export default class GameRenderer {
 			const entity = tile.environment[i];
 			const original = this.game.assetsManager.get(`mesh-${entity.type}`);
 			const mesh = original.createInstance(`tile-${tile.hexagon.toString()}-${entity.type}-${i}`);
-
-			mesh.position = this.world.layout.hexagonToPixel(tile.hexagon, 0.05);
-			mesh.position.x = mesh.position.x - 0.3 + Math.random() * 0.6;
-			mesh.position.z = mesh.position.z - 0.3 + Math.random() * 0.6;
-			mesh.position.y = mesh.position.y - original.getBoundingInfo().boundingBox.minimumWorld.y;
+			mesh.position = entity.position;
+			mesh.position.y = 0.05 - original.getBoundingInfo().boundingBox.minimumWorld.y;
 			this.meshes.push(mesh);
 		}
 	}

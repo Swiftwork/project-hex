@@ -54,13 +54,17 @@ export default class Hexagon {
     return (Math.abs(distance.q) + Math.abs(distance.r) + Math.abs(distance.s)) / 2;
 	}
 
-	/* Caclulate neighbor based on directional number [1-6], returning a new Hexagon */
+	/* Caclulate neighbor based on directional number [0-5] first being east, returning a new Hexagon */
 	neighbor(direction: number): Hexagon {
-	  return hexagonDirections[(6 + (direction % 6)) % 6];
+	  return this.add(hexagonDirections[(6 + (direction % 6)) % 6]);
 	}
 }
 
 export const hexagonDirections = [
-  new Hexagon(1, 0, -1), new Hexagon(1, -1, 0), new Hexagon(0, -1, 1), 
-  new Hexagon(-1, 0, 1), new Hexagon(-1, 1, 0), new Hexagon(0, 1, -1),
+  new Hexagon(0, 1, -1),
+  new Hexagon(1, 0, -1),
+  new Hexagon(1, -1, 0),
+	new Hexagon(0, -1, 1),
+	new Hexagon(-1, 0, 1),
+	new Hexagon(-1, 1, 0),
 ];

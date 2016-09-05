@@ -22,7 +22,7 @@ export default class LightManager {
 		/* Sun Light */
 		this.add('sunLight',
 			LightManager.LIGHT.DIRECTIONAL,
-			new Vector3(2, -4, 2),
+			new Vector3(-2, -8, 4),
 			null,
 			{
 				intensity: 0.7,
@@ -35,7 +35,7 @@ export default class LightManager {
 			new Vector3(0, 1, 0),
 			null,
 			{
-				intensity: 0.3,
+				intensity: 0.6,
 				diffuse: new Color3(1, 1, 1),
 				specular: new Color3(1, 1, 1),
 				groundColor: new Color3(0, 0, 0),
@@ -49,12 +49,12 @@ export default class LightManager {
 				light = new DirectionalLight(id, direction, this.scene);
 				break;
 
-			case LightManager.LIGHT.HEMISPHERIC:
-				light = new HemisphericLight(id, direction, this.scene);
+			case LightManager.LIGHT.SPOT:
+				light = new SpotLight(id, direction, position, 0.8, 2, this.scene);
 				break;
 
-			case LightManager.LIGHT.POINT:
-			default:
+			case LightManager.LIGHT.HEMISPHERIC:
+				light = new HemisphericLight(id, direction, this.scene);
 				break;
 		}
 		

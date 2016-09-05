@@ -26,41 +26,7 @@ export default class GameWorld {
     	new Vector2(0.5, 0.5),
     	new Vector3(0, 0, 0)
     );
-		const mapRadius = 2;
-		const visibility = 2;
-		const viewPoint = new Hexagon(0,0,0);
-
-		for (let q = -mapRadius; q <= mapRadius; q++) {
-	    const r1 = Math.max(-mapRadius, -q - mapRadius);
-	    const r2 = Math.min(mapRadius, -q + mapRadius);
-	    for (let r = r1; r <= r2; r++) {
-	    	const hex = new Hexagon(q, r, -q-r);
-	    	const id = hex.hash();
-	    	const tile = new Tile(hex, this.getTileType(id));
-
-	    	/* Visibility */
-	    	if (tile.hexagon.distance(viewPoint) <= visibility)
-	    		tile.explored = true;
-
-	    	if (tile.type === 'forest') {
-	    		tile.addEnvironment([
-	    			new Entity('tree-0', 'birch-tree'),
-	    			new Entity('tree-1', 'birch-tree'),
-	    			new Entity('tree-2', 'birch-tree'),
-	    			new Entity('tree-3', 'birch-tree'),
-	    			new Entity('tree-4', 'birch-tree'),
-	    			new Entity('tree-5', 'birch-tree'),
-	    			new Entity('tree-6', 'birch-tree'),
-	    			new Entity('tree-7', 'birch-tree'),
-	    			new Entity('tree-8', 'birch-tree'),
-	    			new Entity('tree-9', 'birch-tree'),
-	    			new Entity('tree-10', 'birch-tree'),
-	    		]);
-	    	}
-
-      	this.tiles.set(id, tile);
-      }
-		}
+		this.createTiles(10, 10);
 	}
 
 	onCreate() {
@@ -83,9 +49,116 @@ export default class GameWorld {
 
 	}
 
-	private getTileType(hash: number): string {
+	private createTiles(mapRadius: number, visibilityRadius: number): void {
+		const viewPoint = new Hexagon(0,0,0);
+
+		for (let q = -mapRadius; q <= mapRadius; q++) {
+	    const r1 = Math.max(-mapRadius, -q - mapRadius);
+	    const r2 = Math.min(mapRadius, -q + mapRadius);
+	    for (let r = r1; r <= r2; r++) {
+	    	const hex = new Hexagon(q, r, -q-r);
+	    	const hash = hex.hash();
+	    	const tile = new Tile(hex, this.generateTileType(hash, [
+	    		this.tiles.get(hex.neighbor(3).hash()),
+	    		this.tiles.get(hex.neighbor(4).hash()),
+	    		this.tiles.get(hex.neighbor(5).hash()),
+	    	]));
+
+	    	/* Visibility */
+	    	if (tile.hexagon.distance(viewPoint) <= visibilityRadius)
+	    		tile.explored = true;
+
+	    	/* Environment */
+	    	switch (tile.type) {
+	    		case 'forest':
+	    			this.createForest(tile);
+	    	}
+
+      	this.tiles.set(hash, tile);
+      }
+		}
+	}
+
+	private generateTileType(hash: number, neighbors: Tile[]): string {
+		const likelyhood = {};
+		for(let key in Tile.TYPES) likelyhood[Tile.TYPES[key]] = 1;
+
+		/* Affect likelyhood of tile type based on neighboring tiles */
+		for (var i = 0; i < neighbors.length; i++) {
+			let neighbor = neighbors[i];
+			if (typeof neighbor === 'undefined')
+				continue;
+
+			switch (neighbor.type) {
+				case 'mountain':
+					if (likelyhood[Tile.TYPES.MOUNTAIN] < 5)
+						likelyhood[Tile.TYPES.MOUNTAIN] = 10;
+					else
+						likelyhood[Tile.TYPES.MOUNTAIN] -= 5;
+					break;
+
+				case 'plain':
+					likelyhood[Tile.TYPES.PLAIN] += 5;
+					break;
+
+				case 'forest':
+					likelyhood[Tile.TYPES.FOREST] += 5;
+					break;
+
+				case 'ocean':
+					likelyhood[Tile.TYPES.OCEAN] += 10;
+					break;
+
+				default:
+					likelyhood[neighbor.type] += 1;
+			}
+		}
+
+		let sum = 0;
+		for(let key in likelyhood) sum += likelyhood[key];
+		let selection = Math.abs(this.game.settings.seed.random() * hash * 100 % sum) << 0;
+
+		for(let key in likelyhood) {
+			selection -= likelyhood[key];
+			if (selection < 0)
+				return key;
+		}
+
 		const types = Object.keys(Tile.TYPES);
 		const type = Math.abs(this.game.settings.seed.random() * hash % types.length) << 0;
+
 		return Tile.TYPES[types[type]];
+	}
+
+	//------------------------------------------------------------------------------------
+	// TILE ENVIRONMENT CREATION
+	//------------------------------------------------------------------------------------
+
+	private createForest(tile: Tile) {
+	  tile.biomeData.density = 0.2;
+	  tile.biomeData.treeType = ['pine', 'oak', 'birch'].random(
+	  	this.game.settings.seed.random() * tile.hexagon.hash() * 100
+	  );
+
+		const tilePosition = this.layout.hexagonToPixel(tile.hexagon, 0);
+		const forest = [];
+		for (let i = 0; i < 500; ++i) {
+			let position = tilePosition.add(this.layout.randomInside(tile.hexagon, 0));
+			let reject = false;
+			for (let ii = 0; ii < forest.length; ++ii) {
+				if (Vector3.Distance(forest[ii].position, position) < 0.2 * (1 - tile.biomeData.density)) {
+					reject = true;
+					break;
+				}
+			}
+
+			if (reject)
+				continue;
+
+			const tree = new Entity('tree', `${tile.biomeData.treeType}-tree`);
+			tree.position = position;
+			forest.push(tree);
+		}
+		tile.addEnvironment(forest);
 	}
 }

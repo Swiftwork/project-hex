@@ -33,7 +33,7 @@ export default class Game {
 	
 	constructor(public canvas: HTMLCanvasElement) {
 		this.settings = {
-			seed: new Seed(2),
+			seed: new Seed(1),
 			difficulty: 1,
 			paused: false,
 			graphics: {

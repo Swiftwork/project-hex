@@ -5,17 +5,23 @@ import Unit from './Unit';
 
 export default class Tile {
 
+	/* Tile biome types */
 	public static TYPES = {
+		MOUNTAIN: 'mountain',
 		BARREN: 'barren',
 		PLAIN: 'plain',
 		DESERT: 'desert',
 		OCEAN: 'ocean',
-		MOUNTAIN: 'mountain',
 		FOREST: 'forest',
 	};
 
+	/* Tile biome data e.g. forest density */
+	public biomeData: any = {}
+
+	/* Tile states */
 	public explored = false;
 
+	/* Entities residing on top of tile */
 	public environment: Entity[] = [];
 	public structure: Structure;
 	public unit: Unit;
