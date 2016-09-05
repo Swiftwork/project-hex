@@ -157,9 +157,10 @@ export default class GameRenderer {
 		for (var i = 0; i < tile.environment.length; ++i) {
 			const entity = tile.environment[i];
 			const original = this.game.assetsManager.get(`mesh-${entity.type}`);
+			const bounds = original.getBoundingInfo().boundingBox;
 			const mesh = original.createInstance(`tile-${tile.hexagon.toString()}-${entity.type}-${i}`);
 			mesh.position = entity.position;
-			mesh.position.y = 0.05 - original.getBoundingInfo().boundingBox.minimumWorld.y;
+			mesh.position.y = 0.05 + (bounds.maximumWorld.y - bounds.minimumWorld.y) / 2 - bounds.center.y;
 			this.meshes.push(mesh);
 		}
 	}
