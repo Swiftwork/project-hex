@@ -21,7 +21,7 @@ export default class MaterialManager {
 
 		const desert = this.add('desert', 'sand');
 
-		const mountain = this.add('mountain', 'stone');
+		const mountain = this.add('mountain', 'stone', [-1, -1]);
 
 		const forest = this.add('forest', 'grass', [-1, -1]);
 		forest.diffuseColor = new Color3(0.7, 0.7, 0.7);

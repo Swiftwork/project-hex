@@ -84,8 +84,8 @@ const assetsManifest = {
 			bump: require('../Assets/textures/sand-bump.jpg'),
 		},
 		stone: {
-			diffuse: require('../Assets/textures/stone.jpg'),
-			bump: require('../Assets/textures/stone-bump.jpg'),
+			diffuse: require('../Assets/textures/stone.svg'),
+			//bump: require('../Assets/textures/stone-bump.jpg'),
 		},
 		water: {
 			diffuse: require('../Assets/textures/water.svg'),
