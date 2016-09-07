@@ -76,8 +76,8 @@ const assetsManifest = {
 			bump: require('../Assets/textures/dirt-bump.jpg'),
 		},
 		grass: {
-			diffuse: require('../Assets/textures/grass.jpg'),
-			bump: require('../Assets/textures/grass-bump.jpg'),
+			diffuse: require('../Assets/textures/grass.svg'),
+			//bump: require('../Assets/textures/grass-bump.jpg'),
 		},
 		sand: {
 			diffuse: require('../Assets/textures/sand.jpg'),
@@ -88,8 +88,8 @@ const assetsManifest = {
 			bump: require('../Assets/textures/stone-bump.jpg'),
 		},
 		water: {
-			diffuse: require('../Assets/textures/water.jpg'),
-			bump: require('../Assets/textures/water-bump.jpg'),
+			diffuse: require('../Assets/textures/water.svg'),
+			//bump: require('../Assets/textures/water-bump.jpg'),
 		},
 	},
 

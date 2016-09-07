@@ -12,34 +12,52 @@ export default class MaterialManager {
 	constructor(private scene: Scene, private assetsManager: AssetsManager) {
 		this.materials = new Map<string, StandardMaterial>();
 		/* GROUND */
-		this.add('paper', 'paper', [50, 50]);
+		this.add('paper', 'paper', [-50, -50]);
 
 		/* TERRAIN TYPES */
-		this.add('barren', 'dirt');
-		this.add('plain', 'grass');
-		this.add('desert', 'sand');
-		this.add('mountain', 'stone');
-		this.add('ocean', 'water');
-		this.add('forest', 'grass');
+		const barren = this.add('barren', 'dirt');
+
+		const plain = this.add('plain', 'grass');
+
+		const desert = this.add('desert', 'sand');
+
+		const mountain = this.add('mountain', 'stone');
+
+		const forest = this.add('forest', 'grass', [-1, -1]);
+		forest.diffuseColor = new Color3(0.7, 0.7, 0.7);
+
+		const ocean = this.add('ocean', 'water', [-1, -1]);
+		ocean.alpha = 0.8;
 	}
 
-	public add(id: string, texture: string, uv?: number[]): StandardMaterial {
+	public add(id: string, texture: string, uv?: number[], uvOffset?: number[]): StandardMaterial {
 		const material = new StandardMaterial(id, this.scene);
 
 		material.diffuseTexture = this.assetsManager.get(`texture-${texture}-diffuse`);
-		if (material.diffuseTexture && typeof uv !== 'undefined') {
-			(<Texture> material.diffuseTexture).uScale = uv[0];
-			(<Texture> material.diffuseTexture).vScale = uv[1];
+		if (material.diffuseTexture) {
+			if (typeof uv !== 'undefined') {
+				(<Texture> material.diffuseTexture).uScale = uv[0];
+				(<Texture> material.diffuseTexture).vScale = uv[1];
+			}
+			if (typeof uvOffset !== 'undefined') {
+				(<Texture> material.diffuseTexture).uOffset = uvOffset[0];
+				(<Texture> material.diffuseTexture).vOffset = uvOffset[1];
+			}
 		}
 
 		material.bumpTexture = this.assetsManager.get(`texture-${texture}-bump`);
-		if (material.bumpTexture && typeof uv !== 'undefined') {
-			(<Texture> material.bumpTexture).uScale = uv[0];
-			(<Texture> material.bumpTexture).vScale = uv[1];
+		if (material.bumpTexture) {
+			if (typeof uv !== 'undefined') {
+				(<Texture> material.bumpTexture).uScale = uv[0];
+				(<Texture> material.bumpTexture).vScale = uv[1];
+			}
+			if (typeof uvOffset !== 'undefined') {
+				(<Texture> material.bumpTexture).uOffset = uvOffset[0];
+				(<Texture> material.bumpTexture).vOffset = uvOffset[1];
+			}
 		}
 
 		material.specularTexture = material.diffuseTexture;
-
 		material.specularPower = 100;
 		this.materials.set(id, material);
 		return material;

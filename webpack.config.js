@@ -20,7 +20,7 @@ var config = {
 
   output: {
     filename: '[name].js',
-    path: path.join(process.cwd(), 'build'),
+    path: path.resolve(process.cwd(), 'build'),
   },
 
   resolve: {
@@ -40,11 +40,7 @@ var config = {
         loader: 'pug',
       },
       {
-        test: /\.svg$/,
-        loader: 'raw',
-      },
-      {
-        test: /\.(png|jpe?g|gif|woff|woff2|ttf|eot|ico|mp4|babylon|manifest)$/,
+        test: /\.(png|jpe?g|svg|gif|woff|woff2|ttf|eot|ico|mp4|babylon|manifest)$/,
         loader: 'file',
         query: {
           name: PROD ? 'assets/[hash].[ext]' : 'assets/[name].[ext]',

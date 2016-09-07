@@ -26,7 +26,7 @@ export default class GameWorld {
     	new Vector2(0.5, 0.5),
     	new Vector3(0, 0, 0)
     );
-		this.createTiles(10, 10);
+		this.createTiles(10, 6);
 	}
 
 	onCreate() {
@@ -80,10 +80,10 @@ export default class GameWorld {
 	}
 
 	private generateTileType(hash: number, neighbors: Tile[]): string {
-		const likelyhood = {};
-		for(let key in Tile.TYPES) likelyhood[Tile.TYPES[key]] = 1;
+		const probability = {};
+		for(let key in Tile.TYPES) probability[Tile.TYPES[key]] = 1;
 
-		/* Affect likelyhood of tile type based on neighboring tiles */
+		/* Affect probability of tile type based on neighboring tiles */
 		for (var i = 0; i < neighbors.length; i++) {
 			let neighbor = neighbors[i];
 			if (typeof neighbor === 'undefined')
@@ -91,43 +91,38 @@ export default class GameWorld {
 
 			switch (neighbor.type) {
 				case 'mountain':
-					if (likelyhood[Tile.TYPES.MOUNTAIN] < 5)
-						likelyhood[Tile.TYPES.MOUNTAIN] = 10;
+					if (probability[Tile.TYPES.MOUNTAIN] < 4)
+						probability[Tile.TYPES.MOUNTAIN] = 10;
 					else
-						likelyhood[Tile.TYPES.MOUNTAIN] -= 5;
+						probability[Tile.TYPES.MOUNTAIN] -= 6;
 					break;
 
 				case 'plain':
-					likelyhood[Tile.TYPES.PLAIN] += 5;
+					probability[Tile.TYPES.PLAIN] += 5;
 					break;
 
 				case 'forest':
-					likelyhood[Tile.TYPES.FOREST] += 5;
+					probability[Tile.TYPES.FOREST] += 5;
 					break;
 
 				case 'ocean':
-					likelyhood[Tile.TYPES.OCEAN] += 10;
+					probability[Tile.TYPES.OCEAN] += 10;
 					break;
 
 				default:
-					likelyhood[neighbor.type] += 1;
+					probability[neighbor.type] += 1;
 			}
 		}
 
 		let sum = 0;
-		for(let key in likelyhood) sum += likelyhood[key];
+		for(let key in probability) sum += probability[key];
 		let selection = Math.abs(this.game.settings.seed.random() * hash * 100 % sum) << 0;
 
-		for(let key in likelyhood) {
-			selection -= likelyhood[key];
+		for(let key in probability) {
+			selection -= probability[key];
 			if (selection < 0)
 				return key;
 		}
-
-		const types = Object.keys(Tile.TYPES);
-		const type = Math.abs(this.game.settings.seed.random() * hash % types.length) << 0;
-
-		return Tile.TYPES[types[type]];
 	}
 
 	//------------------------------------------------------------------------------------
