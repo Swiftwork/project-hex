@@ -69,7 +69,7 @@ export default class GameRenderer {
 	onCreate() {
 		this.createGround();
 		this.createTiles();
-		console.log(this.scene.createOrUpdateSelectionOctree());
+		this.scene.createOrUpdateSelectionOctree();
 
 		/* Shadows */
 		const sunLight = this.lightManager.get('sunLight');
@@ -160,7 +160,7 @@ export default class GameRenderer {
 			const bounds = original.getBoundingInfo().boundingBox;
 			const mesh = original.createInstance(`tile-${tile.hexagon.toString()}-${entity.type}-${i}`);
 			mesh.position = entity.position;
-			mesh.position.y = 0.05 + (bounds.maximumWorld.y - bounds.minimumWorld.y) / 2 - bounds.center.y;
+			mesh.position.y = 0.05 + (bounds.maximumWorld.y - bounds.minimumWorld.y) / 2;
 			this.meshes.push(mesh);
 		}
 	}

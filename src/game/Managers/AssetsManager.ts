@@ -98,7 +98,6 @@ const assetsManifest = {
 		/* ENVIRONMENT */
 		trees: {
 			mesh: require('../Assets/models/trees.babylon'),
-			manifest: require('../Assets/models/trees.babylon.manifest'),
 		}
 	},
 }

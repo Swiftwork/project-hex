@@ -40,8 +40,15 @@ var config = {
         loader: 'pug',
       },
       {
-        test: /\.(png|jpe?g|svg|gif|woff|woff2|ttf|eot|ico|mp4|babylon|manifest)$/,
+        test: /\.(png|jpe?g|svg|gif|woff|woff2|ttf|eot|ico|mp4)$/,
         loader: 'file',
+        query: {
+          name: PROD ? 'assets/[hash].[ext]' : 'assets/[name].[ext]',
+        },
+      },
+      {
+        test: /\.babylon$/,
+        loader: 'babylon-file',
         query: {
           name: PROD ? 'assets/[hash].[ext]' : 'assets/[name].[ext]',
         },
