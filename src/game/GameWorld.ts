@@ -1,6 +1,6 @@
 import {
-	Scene,
-	Vector2, Vector3,
+  Scene,
+  Vector2, Vector3,
 } from 'babylonjs';
 import Game from './Game';
 import Hexagon from './Math/Hexagon';
@@ -10,190 +10,194 @@ import { HexagonLayout } from './Math/HexagonLayout';
 
 export default class GameWorld {
 
-	public tiles: Map<number, Tile>;
-	public layout: HexagonLayout;
+  public tiles: Map<number, Tile>;
+  public layout: HexagonLayout;
 
-	constructor(
-		private game: Game,
-		private scene: Scene
-	) {
-		/* Scene */
+  constructor(
+    private game: Game,
+    private scene: Scene
+  ) {
+    /* Scene */
     this.scene.collisionsEnabled = false;
 
     /* Tiles */
-		this.tiles = new Map<number, Tile>();
+    this.tiles = new Map<number, Tile>();
     this.layout = new HexagonLayout(HexagonLayout.LAYOUT_HORIZONTAL,
-    	new Vector2(0.5, 0.5),
-    	new Vector3(0, 0, 0)
+      new Vector2(0.5, 0.5),
+      new Vector3(0, 0, 0)
     );
-		this.createTiles(10, 6);
-	}
+    this.createTiles(5, 5);
+  }
 
-	onCreate() {
-		this.onUpdate();
-	}
+  onCreate() {
+    this.onUpdate();
+  }
 
-	onResume() {
-		this.onUpdate();
-	}
+  onResume() {
+    this.onUpdate();
+  }
 
-	onUpdate() {
+  onUpdate() {
 
-	}
+  }
 
-	onPause () {
-		
-	}
+  onPause () {
+    
+  }
 
-	onDestroy () {
+  onDestroy () {
 
-	}
+  }
 
-	private createTiles(mapRadius: number, visibilityRadius: number): void {
-		const viewPoint = new Hexagon(0,0,0);
+  private createTiles(mapRadius: number, visibilityRadius: number): void {
+    const viewPoint = new Hexagon(0,0,0);
 
-		for (let q = -mapRadius; q <= mapRadius; q++) {
-	    const r1 = Math.max(-mapRadius, -q - mapRadius);
-	    const r2 = Math.min(mapRadius, -q + mapRadius);
-	    for (let r = r1; r <= r2; r++) {
-	    	const hex = new Hexagon(q, r, -q-r);
-	    	const hash = hex.hash();
-	    	const tile = new Tile(hex, this.generateTileType(hash, [
-	    		this.tiles.get(hex.neighbor(3).hash()),
-	    		this.tiles.get(hex.neighbor(4).hash()),
-	    		this.tiles.get(hex.neighbor(5).hash()),
-	    	]));
+    for (let q = -mapRadius; q <= mapRadius; q++) {
+      const r1 = Math.max(-mapRadius, -q - mapRadius);
+      const r2 = Math.min(mapRadius, -q + mapRadius);
+      for (let r = r1; r <= r2; r++) {
+        const hex = new Hexagon(q, r, -q-r);
+        const hash = hex.hash();
+        const tile = new Tile(hex, this.generateTileType(hash, [
+          this.tiles.get(hex.neighbor(3).hash()),
+          this.tiles.get(hex.neighbor(4).hash()),
+          this.tiles.get(hex.neighbor(5).hash()),
+        ]));
 
-	    	/* Visibility */
-	    	if (tile.hexagon.distance(viewPoint) <= visibilityRadius)
-	    		tile.explored = true;
+        /* Visibility */
+        if (tile.hexagon.distance(viewPoint) <= visibilityRadius)
+          tile.explored = true;
 
-	    	/* Environment */
-	    	switch (tile.type) {
-	    		case 'mountain':
-	    			this.createMountains(tile);
-						break;
+        /* Environment */
+        switch (tile.type) {
+          case 'mountain':
+            this.createMountains(tile);
+            break;
 
-	    		case 'forest':
-	    			this.createForest(tile);
-						break;
-	    	}
+          case 'forest':
+            this.createForest(tile);
+            break;
+        }
 
-      	this.tiles.set(hash, tile);
+        this.tiles.set(hash, tile);
       }
-		}
-	}
+    }
+  }
 
-	private generateTileType(hash: number, neighbors: Tile[]): string {
-		const probability = {};
-		for(let key in Tile.TYPES) probability[Tile.TYPES[key]] = 1;
+  private generateTileType(hash: number, neighbors: Tile[]): string {
+    const probability = {};
+    for(let key in Tile.TYPES) probability[Tile.TYPES[key]] = 1;
 
-		/* Affect probability of tile type based on neighboring tiles */
-		for (var i = 0; i < neighbors.length; i++) {
-			let neighbor = neighbors[i];
-			if (typeof neighbor === 'undefined')
-				continue;
+    /* Affect probability of tile type based on neighboring tiles */
+    for (var i = 0; i < neighbors.length; i++) {
+      let neighbor = neighbors[i];
+      if (typeof neighbor === 'undefined')
+        continue;
 
-			switch (neighbor.type) {
-				case 'mountain':
-					if (probability[Tile.TYPES.MOUNTAIN] < 4)
-						probability[Tile.TYPES.MOUNTAIN] = 10;
-					else
-						probability[Tile.TYPES.MOUNTAIN] -= 6;
-					break;
+      switch (neighbor.type) {
+        case 'mountain':
+          if (probability[Tile.TYPES.MOUNTAIN] < 4)
+            probability[Tile.TYPES.MOUNTAIN] = 10;
+          else
+            probability[Tile.TYPES.MOUNTAIN] -= 6;
+          break;
 
-				case 'plain':
-					probability[Tile.TYPES.PLAIN] += 5;
-					break;
+        case 'plain':
+          probability[Tile.TYPES.PLAIN] += 5;
+          break;
 
-				case 'forest':
-					probability[Tile.TYPES.FOREST] += 5;
-					break;
+        case 'desert':
+          probability[Tile.TYPES.DESERT] += 5;
+          break;
 
-				case 'ocean':
-					probability[Tile.TYPES.OCEAN] += 10;
-					break;
+        case 'forest':
+          probability[Tile.TYPES.FOREST] += 5;
+          break;
 
-				default:
-					probability[neighbor.type] += 1;
-			}
-		}
+        case 'ocean':
+          probability[Tile.TYPES.OCEAN] *= 3;
+          break;
 
-		let sum = 0;
-		for(let key in probability) sum += probability[key];
-		let selection = Math.abs(this.game.settings.seed.random() * hash * 100 % sum) << 0;
+        default:
+          probability[neighbor.type] += 1;
+      }
+    }
 
-		for(let key in probability) {
-			selection -= probability[key];
-			if (selection < 0)
-				return key;
-		}
-	}
+    let sum = 0;
+    for(let key in probability) sum += probability[key];
+    let selection = Math.abs(this.game.settings.seed.random() * hash * 100 % sum) << 0;
 
-	//------------------------------------------------------------------------------------
-	// TILE ENVIRONMENT CREATION
-	//------------------------------------------------------------------------------------
+    for(let key in probability) {
+      selection -= probability[key];
+      if (selection < 0)
+        return key;
+    }
+  }
 
-	private createForest(tile: Tile) {
-	  tile.biomeData.density = 0.2;
-	  tile.biomeData.treeType = ['pine', 'oak', 'birch'].random(
-	  	this.game.settings.seed.random() * tile.hexagon.hash() * 100
-	  );
+  //------------------------------------------------------------------------------------
+  // TILE ENVIRONMENT CREATION
+  //------------------------------------------------------------------------------------
 
-		const tilePosition = this.layout.hexagonToPixel(tile.hexagon, 0);
-		const forest = [];
-		for (let i = 0; i < 500; ++i) {
-			let position = tilePosition.add(this.layout.randomInside(tile.hexagon, 0));
-			let reject = false;
-			for (let ii = 0; ii < forest.length; ++ii) {
-				if (Vector3.Distance(forest[ii].position, position) < 0.2 * (1 - tile.biomeData.density)) {
-					reject = true;
-					break;
-				}
-			}
+  private createForest(tile: Tile) {
+    tile.biomeData.density = 0.2;
+    tile.biomeData.treeType = ['pine', 'oak', 'birch'].random(
+      this.game.settings.seed.random() * tile.hexagon.hash() * 100
+    );
 
-			if (reject)
-				continue;
+    const tilePosition = this.layout.hexagonToPixel(tile.hexagon, 0);
+    const forest = [];
+    for (let i = 0; i < 500; ++i) {
+      let position = tilePosition.add(this.layout.randomInside(tile.hexagon, 0));
+      let reject = false;
+      for (let ii = 0; ii < forest.length; ++ii) {
+        if (Vector3.Distance(forest[ii].position, position) < 0.2 * (1 - tile.biomeData.density)) {
+          reject = true;
+          break;
+        }
+      }
 
-			const tree = new Environment('tree', `${tile.biomeData.treeType}-tree`);
-			tree.position = position;
-			forest.push(tree);
-		}
-		tile.addEnvironment(forest);
-	}
+      if (reject)
+        continue;
 
-	private createMountains(tile: Tile) {
-	  tile.biomeData.height = 1;
+      const tree = new Environment('tree', `${tile.biomeData.treeType}-tree`);
+      tree.position = position;
+      forest.push(tree);
+    }
+    tile.addEnvironment(forest);
+  }
 
-		const tilePosition = this.layout.hexagonToPixel(tile.hexagon, 0);
-		const mountains = [];
-		let mountain = new Environment('mountain');
-		mountain.pathArray = [
-			[new Vector3(-0.25, 0.25, 0), new Vector3(0.25, 0.25, 0), new Vector3(0.25, -0.25, 0), new Vector3(-0.25, -0.25, 0)],
-			[new Vector3(-0.25, 0.25, 0.5), new Vector3(0.25, 0.25, 0.5), new Vector3(0.25, -0.25, 0.5), new Vector3(-0.25, -0.25, 0.5)],
-		];
-		mountain.position = tilePosition;
-		mountains.push(mountain);
+  private createMountains(tile: Tile) {
+    tile.biomeData.height = 1;
 
-		/*
-		for (let i = 0; i < 500; ++i) {
-			let position = tilePosition.add(this.layout.randomInside(tile.hexagon, 0));
-			let reject = false;
-			for (let ii = 0; ii < forest.length; ++ii) {
-				if (Vector3.Distance(forest[ii].position, position) < 0.2 * (1 - tile.biomeData.density)) {
-					reject = true;
-					break;
-				}
-			}
+    const tilePosition = this.layout.hexagonToPixel(tile.hexagon, 0);
+    const mountains = [];
+    let mountain = new Environment('mountain');
+    mountain.pathArray = [
+      [new Vector3(-0.25, 0.25, 0), new Vector3(0.25, 0.25, 0), new Vector3(0.25, -0.25, 0), new Vector3(-0.25, -0.25, 0)],
+      [new Vector3(-0.25, 0.25, 0.5), new Vector3(0.25, 0.25, 0.5), new Vector3(0.25, -0.25, 0.5), new Vector3(-0.25, -0.25, 0.5)],
+    ];
+    mountain.position = tilePosition;
+    mountains.push(mountain);
 
-			if (reject)
-				continue;
+    /*
+    for (let i = 0; i < 500; ++i) {
+      let position = tilePosition.add(this.layout.randomInside(tile.hexagon, 0));
+      let reject = false;
+      for (let ii = 0; ii < forest.length; ++ii) {
+        if (Vector3.Distance(forest[ii].position, position) < 0.2 * (1 - tile.biomeData.density)) {
+          reject = true;
+          break;
+        }
+      }
 
-			const tree = new Entity('tree', `${tile.biomeData.treeType}-tree`);
-			tree.position = position;
-			forest.push(tree);
-		}
-		*/
-		tile.addEnvironment(mountains);
-	}
+      if (reject)
+        continue;
+
+      const tree = new Entity('tree', `${tile.biomeData.treeType}-tree`);
+      tree.position = position;
+      forest.push(tree);
+    }
+    */
+    tile.addEnvironment(mountains);
+  }
 }

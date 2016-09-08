@@ -103,9 +103,6 @@ if (PROD) {
 
   config = extend(true, config, {
 
-    output: {
-      publicPath: 'http://localhost:8080/',
-    },
 
     plugins: [
       new webpack.DefinePlugin({

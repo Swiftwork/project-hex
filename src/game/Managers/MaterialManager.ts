@@ -19,7 +19,7 @@ export default class MaterialManager {
 
 		const plain = this.add('plain', 'grass');
 
-		const desert = this.add('desert', 'sand');
+		const desert = this.add('desert', 'sand', [-1, -1]);
 
 		const mountain = this.add('mountain', 'stone', [-1, -1]);
 
