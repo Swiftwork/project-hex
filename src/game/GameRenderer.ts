@@ -8,11 +8,12 @@ import {
 } from 'babylonjs';
 import Game from './Game';
 import GameWorld from './GameWorld';
+import Hexagon from './Math/Hexagon';
+import CustomMesh from './Math/CustomMesh';
+import Tile from './Entities/Tile';
 import CameraManager from './Managers/CameraManager';
 import LightManager from './Managers/LightManager';
 import MaterialManager from './Managers/MaterialManager';
-import Hexagon from './Math/Hexagon';
-import Tile from './Entities/Tile';
 
 export default class GameRenderer {
 
@@ -155,12 +156,25 @@ export default class GameRenderer {
 
 	createEntities(tile: Tile, parent: Mesh ) {
 		for (var i = 0; i < tile.environment.length; ++i) {
-			const entity = tile.environment[i];
-			const original = this.game.assetsManager.get(`mesh-${entity.type}`);
-			const bounds = original.getBoundingInfo().boundingBox;
-			const mesh = original.createInstance(`tile-${tile.hexagon.toString()}-${entity.type}-${i}`);
-			mesh.position = entity.position;
-			mesh.position.y = 0.05 + (bounds.maximumWorld.y - bounds.minimumWorld.y) / 2;
+			const environment = tile.environment[i];
+			let mesh;
+
+			if (typeof environment.model !== 'undefined') {
+				const original = this.game.assetsManager.get(`mesh-${environment.model}`);
+				const bounds = original.getBoundingInfo().boundingBox;
+				mesh = original.createInstance(`tile-${tile.hexagon.toString()}-${environment.id}-${i}`);
+				mesh.position = environment.position;
+				mesh.position.y = 0.05 + (bounds.maximumWorld.y - bounds.minimumWorld.y) / 2;
+			} else {
+				mesh = CustomMesh.CreateMountain(`tile-${tile.hexagon.toString()}-${environment.id}-${i}`, {
+					base: environment.pathArray[0],
+					peak: environment.pathArray[1],
+					//sideOrientation: Mesh.DOUBLESIDE,
+				}, this.scene);
+				mesh.position = environment.position;
+				mesh.position.y = 0.05;
+			}
+
 			this.meshes.push(mesh);
 		}
 	}

@@ -4,7 +4,7 @@ import {
 } from 'babylonjs';
 import Game from './Game';
 import Hexagon from './Math/Hexagon';
-import Entity from './Entities/Entity';
+import Environment from './Entities/Environment';
 import Tile from './Entities/Tile';
 import { HexagonLayout } from './Math/HexagonLayout';
 
@@ -70,8 +70,13 @@ export default class GameWorld {
 
 	    	/* Environment */
 	    	switch (tile.type) {
+	    		case 'mountain':
+	    			this.createMountains(tile);
+						break;
+
 	    		case 'forest':
 	    			this.createForest(tile);
+						break;
 	    	}
 
       	this.tiles.set(hash, tile);
@@ -150,10 +155,45 @@ export default class GameWorld {
 			if (reject)
 				continue;
 
-			const tree = new Entity('tree', `${tile.biomeData.treeType}-tree`);
+			const tree = new Environment('tree', `${tile.biomeData.treeType}-tree`);
 			tree.position = position;
 			forest.push(tree);
 		}
 		tile.addEnvironment(forest);
+	}
+
+	private createMountains(tile: Tile) {
+	  tile.biomeData.height = 1;
+
+		const tilePosition = this.layout.hexagonToPixel(tile.hexagon, 0);
+		const mountains = [];
+		let mountain = new Environment('mountain');
+		mountain.pathArray = [
+			[new Vector3(-0.25, 0.25, 0), new Vector3(0.25, 0.25, 0), new Vector3(0.25, -0.25, 0), new Vector3(-0.25, -0.25, 0)],
+			[new Vector3(-0.25, 0.25, 0.5), new Vector3(0.25, 0.25, 0.5), new Vector3(0.25, -0.25, 0.5), new Vector3(-0.25, -0.25, 0.5)],
+		];
+		mountain.position = tilePosition;
+		mountains.push(mountain);
+
+		/*
+		for (let i = 0; i < 500; ++i) {
+			let position = tilePosition.add(this.layout.randomInside(tile.hexagon, 0));
+			let reject = false;
+			for (let ii = 0; ii < forest.length; ++ii) {
+				if (Vector3.Distance(forest[ii].position, position) < 0.2 * (1 - tile.biomeData.density)) {
+					reject = true;
+					break;
+				}
+			}
+
+			if (reject)
+				continue;
+
+			const tree = new Entity('tree', `${tile.biomeData.treeType}-tree`);
+			tree.position = position;
+			forest.push(tree);
+		}
+		*/
+		tile.addEnvironment(mountains);
 	}
 }
