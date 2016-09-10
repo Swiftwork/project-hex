@@ -173,25 +173,11 @@ export default class GameRenderer {
   createEntities(tile: Tile, parent: Mesh ) {
     for (var i = 0; i < tile.environment.length; ++i) {
       const environment = tile.environment[i];
-      let mesh;
-
-      if (typeof environment.model !== 'undefined') {
-        const original = this.game.assetsManager.get(`mesh-${environment.model}`);
-        const bounds = original.getBoundingInfo().boundingBox;
-        mesh = original.createInstance(`tile-${tile.hexagon.toString()}-${environment.id}-${i}`);
-        mesh.position = environment.position;
-        mesh.position.y = 0.05 + (bounds.maximumWorld.y - bounds.minimumWorld.y) / 2;
-      } else {
-        mesh = CustomMesh.CreateMountain(`tile-${tile.hexagon.toString()}-${environment.id}-${i}`, {
-          base: environment.pathArray[0],
-          peak: environment.pathArray[1],
-          //sideOrientation: Mesh.DOUBLESIDE,
-        }, this.scene);
-        mesh.material = this.materialManager.get('mountain');
-        mesh.position = environment.position;
-        mesh.position.y = 0.25;
-      }
-
+      const original = this.game.assetsManager.get(`mesh-${environment.model}`);
+      const bounds = original.getBoundingInfo().boundingBox;
+      const mesh = original.createInstance(`tile-${tile.hexagon.toString()}-${environment.id}-${i}`);
+      mesh.position = environment.position;
+      mesh.position.y = 0.05 + (bounds.maximumWorld.y - bounds.minimumWorld.y) / 2;
       this.meshes.push(mesh);
     }
   }

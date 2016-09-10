@@ -4,14 +4,18 @@ import {
 } from 'babylonjs';
 import Game from './Game';
 import Hexagon from './Math/Hexagon';
-import Environment from './Entities/Environment';
-import Tile from './Entities/Tile';
 import { HexagonLayout } from './Math/HexagonLayout';
+import Tile from './Entities/Tile';
+import Environment from './Entities/Environment';
+import Player from './Actors/Player';
+import PlayerManager from './Managers/PlayerManager';
 
 export default class GameWorld {
 
   public tiles: Map<number, Tile>;
   public layout: HexagonLayout;
+
+  private playerManager: PlayerManager;
 
   constructor(
     private game: Game,
@@ -19,6 +23,9 @@ export default class GameWorld {
   ) {
     /* Scene */
     this.scene.collisionsEnabled = false;
+
+    /* Managers */
+    this.playerManager = new PlayerManager(this.scene);
 
     /* Tiles */
     this.tiles = new Map<number, Tile>();
@@ -30,6 +37,9 @@ export default class GameWorld {
   }
 
   onCreate() {
+    const player = this.playerManager.add('TestMan', Player.TYPES.LOCAL);
+    player.createBase(this.tiles.get(new Hexagon(0,0,0).hash()));
+    console.log(player);
     this.onUpdate();
   }
 
@@ -172,10 +182,6 @@ export default class GameWorld {
     const tilePosition = this.layout.hexagonToPixel(tile.hexagon, 0);
     const mountains = [];
     let mountain = new Environment('mountain');
-    mountain.pathArray = [
-      [new Vector3(-0.25, 0.25, 0), new Vector3(0.25, 0.25, 0), new Vector3(0.25, -0.25, 0), new Vector3(-0.25, -0.25, 0)],
-      [new Vector3(-0.25, 0.25, 0.5), new Vector3(0.25, 0.25, 0.5), new Vector3(0.25, -0.25, 0.5), new Vector3(-0.25, -0.25, 0.5)],
-    ];
     mountain.position = tilePosition;
     mountains.push(mountain);
 
@@ -198,6 +204,6 @@ export default class GameWorld {
       forest.push(tree);
     }
     */
-    tile.addEnvironment(mountains);
+    //tile.addEnvironment(mountains);
   }
 }
