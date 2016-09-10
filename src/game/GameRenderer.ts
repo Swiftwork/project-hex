@@ -110,34 +110,49 @@ export default class GameRenderer {
   }
 
   createTiles() {
-    /* Unexplored Tiles */
+    /* Cached tiles */
+    const firstInstance = {}
+
+    /* Unexplored tiles */
     const unexploredMesh = MeshBuilder.CreateCylinder(`tile-unexplored`, {
       height: 0.05,
       diameter: this.world.layout.size.x * 2 - 0.05,
       tessellation: 6,
     }, this.scene);
+    unexploredMesh.setEnabled(false);
     unexploredMesh.visibility = 0.4;
+    firstInstance['unexplored'] = unexploredMesh;
 
-    /* Explored Tiles */
+    /* Explored tiles */
     this.world.tiles.forEach( (tile: Tile) => {
+      const id = `tile-${tile.hexagon.toString()}`;
       let mesh;
 
       if (tile.explored) {
-        mesh = MeshBuilder.CreateCylinder(`tile-${tile.hexagon.toString()}`, {
-          height: 0.05,
-          diameter: this.world.layout.size.x * 2 - 0.05,
-          tessellation: 6,
-          faceUV: [new Vector4(0, 0, 0, 0), new Vector4(0, 0, 6, 0.1), new Vector4(0, 0, 1, 1)],
-        }, this.scene);
-        mesh.material = this.materialManager.get(tile.type);
-        mesh.receiveShadows = true;
-        mesh.edgesWidth = 2;
-        mesh.edgesColor = new Color4(0.5, 0, 0.5, 1);
+        if (!firstInstance[tile.type]) {
+          mesh = MeshBuilder.CreateCylinder(id, {
+            height: 0.05,
+            diameter: this.world.layout.size.x * 2 - 0.05,
+            tessellation: 6,
+            faceUV: [new Vector4(0, 0, 0, 0), new Vector4(0, 0, 6, 0.1), new Vector4(0, 0, 1, 1)],
+          }, this.scene);
+          mesh.material = this.materialManager.get(tile.type);
+          mesh.receiveShadows = true;
 
+          /* Add to cache */
+          firstInstance[tile.type] = mesh;
+          //this.meshes.push(mesh);
+        } else {
+          /* Create new instance of cached tile */
+          mesh = firstInstance[tile.type].createInstance(id);
+
+        }
         /* Entities on tile */
         this.createEntities(tile, mesh);
-
-        /* Tile Actions */
+        
+        /* Tile actions */
+        mesh.edgesWidth = 2;
+        mesh.edgesColor = new Color4(0.5, 0, 0.5, 1);
         mesh.actionManager = new ActionManager(this.scene);
         mesh.actionManager.registerAction(new ExecuteCodeAction(
           ActionManager.OnPickTrigger,
@@ -145,10 +160,11 @@ export default class GameRenderer {
             mesh.enableEdgesRendering(1)
           })
         );
-        //this.meshes.push(mesh);
+
       } else {
-        mesh = unexploredMesh.createInstance(`tile-${tile.hexagon.toString()}`);
+        mesh = unexploredMesh.createInstance(id);
       }
+
       mesh.position = this.world.layout.hexagonToPixel(tile.hexagon, 0.025);
       mesh.rotation = new Vector3(0, Math.PI / 3, 0);
     }, this);

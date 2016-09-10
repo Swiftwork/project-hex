@@ -43,6 +43,7 @@ export default class AssetsManager {
  			task.onSuccess = (task: MeshAssetTask) => {
  				for (var i = 0; i < task.loadedMeshes.length; ++i) {
  					let mesh = task.loadedMeshes[i];
+ 					mesh.setEnabled(false);
  					this.add(`mesh-${mesh.id}`, mesh)
  				}
  			}
@@ -72,16 +73,22 @@ const assetsManifest = {
 
 		/* TILES */
 		dirt: {
-			diffuse: require('../Assets/textures/dirt.jpg'),
-			bump: require('../Assets/textures/dirt-bump.jpg'),
+			diffuse: require('../Assets/textures/dirt.svg'),
+			//bump: require('../Assets/textures/dirt-bump.jpg'),
 		},
 		grass: {
 			diffuse: require('../Assets/textures/grass.svg'),
 			//bump: require('../Assets/textures/grass-bump.jpg'),
 		},
+		ice: {
+			diffuse: require('../Assets/textures/ice.svg'),
+		},
 		sand: {
 			diffuse: require('../Assets/textures/sand.svg'),
 			//bump: require('../Assets/textures/sand-bump.jpg'),
+		},
+		snow: {
+			diffuse: require('../Assets/textures/snow.svg'),
 		},
 		stone: {
 			diffuse: require('../Assets/textures/stone.svg'),

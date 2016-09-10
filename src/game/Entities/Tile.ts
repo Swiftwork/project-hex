@@ -7,12 +7,14 @@ export default class Tile {
 
 	/* Tile biome types */
 	public static TYPES = {
-		MOUNTAIN: 'mountain',
+		ARCTIC: 'arctic',
 		BARREN: 'barren',
-		PLAIN: 'plain',
 		DESERT: 'desert',
-		OCEAN: 'ocean',
 		FOREST: 'forest',
+		GLACIER: 'glacier',
+		MOUNTAIN: 'mountain',
+		OCEAN: 'ocean',
+		PLAIN: 'plain',
 	};
 
 	/* Tile biome data e.g. forest density */

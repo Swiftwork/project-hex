@@ -15,19 +15,24 @@ export default class MaterialManager {
 		this.add('paper', 'paper', [-50, -50]);
 
 		/* TERRAIN TYPES */
-		const barren = this.add('barren', 'dirt');
+		const actic = this.add('arctic', 'snow', [-1, -1]);
 
-		const plain = this.add('plain', 'grass');
+		const barren = this.add('barren', 'dirt', [-1, -1]);
 
 		const desert = this.add('desert', 'sand', [-1, -1]);
-
-		const mountain = this.add('mountain', 'stone', [-1, -1]);
 
 		const forest = this.add('forest', 'grass', [-1, -1]);
 		forest.diffuseColor = new Color3(0.7, 0.7, 0.7);
 
+		const glacier = this.add('glacier', 'ice', [-1, -1]);
+		glacier.alpha = 0.9;
+
+		const mountain = this.add('mountain', 'stone', [-1, -1]);
+
 		const ocean = this.add('ocean', 'water', [-1, -1]);
-		ocean.alpha = 0.8;
+		ocean.alpha = 0.9;
+
+		const plain = this.add('plain', 'grass', [-1, -1]);
 	}
 
 	public add(id: string, texture: string, uv?: number[], uvOffset?: number[]): StandardMaterial {
