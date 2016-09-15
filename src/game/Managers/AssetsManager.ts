@@ -62,40 +62,46 @@ const assetsManifest = {
 	textures: {
 
 		/* GROUND */
-		paper: {
+		'paper': {
 			diffuse: require('../Assets/textures/paper.jpg'),
 			bump: require('../Assets/textures/paper-bump.jpg'),
 		},
-		wood: {
+		'wood': {
 			diffuse: require('../Assets/textures/wood.jpg'),
 			bump: require('../Assets/textures/wood-bump.jpg'),
 		},
 
 		/* TILES */
-		dirt: {
+		'dirt': {
 			diffuse: require('../Assets/textures/dirt.svg'),
 			//bump: require('../Assets/textures/dirt-bump.jpg'),
 		},
-		grass: {
+		'grass': {
 			diffuse: require('../Assets/textures/grass.svg'),
 			//bump: require('../Assets/textures/grass-bump.jpg'),
 		},
-		ice: {
+		'ice': {
 			diffuse: require('../Assets/textures/ice.svg'),
 		},
-		sand: {
+		'sand': {
 			diffuse: require('../Assets/textures/sand.svg'),
 			//bump: require('../Assets/textures/sand-bump.jpg'),
 		},
-		snow: {
+		'snow': {
 			diffuse: require('../Assets/textures/snow.svg'),
 		},
-		stone: {
+		'stone': {
 			diffuse: require('../Assets/textures/stone.svg'),
 			//bump: require('../Assets/textures/stone-bump.jpg'),
 		},
-		water: {
+		'water': {
 			diffuse: require('../Assets/textures/water.svg'),
+			//bump: require('../Assets/textures/water-bump.jpg'),
+		},
+
+    /* UNITS */
+    'scout': {
+			diffuse: require('../Assets/models/scout_CM_TEXTURE.jpg'),
 			//bump: require('../Assets/textures/water-bump.jpg'),
 		},
 	},
@@ -103,8 +109,18 @@ const assetsManifest = {
 	models: {
 
 		/* ENVIRONMENT */
-		trees: {
+		'trees': {
 			mesh: require('../Assets/models/trees.babylon'),
-		}
+		},
+
+    /* STRUCTURES */
+		'viking-village': {
+			mesh: require('../Assets/models/viking-village.babylon'),
+		},
+
+    /* UNITS */
+		'scout': {
+			mesh: require('../Assets/models/scout.babylon'),
+		},
 	},
 }

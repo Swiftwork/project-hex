@@ -1,5 +1,5 @@
 import Hexagon from '../Math/Hexagon';
-import Entity from './Entity';
+import Environment from './Environment';
 import Structure from './Structure';
 import Unit from './Unit';
 
@@ -21,10 +21,11 @@ export default class Tile {
 	public biomeData: any = {}
 
 	/* Tile states */
-	public explored = false;
+	public isExplored = false;
+	public isVisible = false;
 
 	/* Entities residing on top of tile */
-	public environment: Entity[] = [];
+	public environment: Environment[] = [];
 	public structure: Structure;
 	public unit: Unit;
 
@@ -38,17 +39,21 @@ export default class Tile {
 		}
 	}
 
-	/* Add entity belonging to this tile */
-	public addEnvironment(entities: Entity[]): Entity[] {
-		this.environment = this.environment.concat(entities);
-		return entities;
+	/* Add entities belonging to this tile */
+	public addEnvironment(environment: Environment[]): Environment[] {
+		this.environment = this.environment.concat(environment);
+		return environment;
 	}
 
-	/* Get all entities belonging to this tile */
-	public getEntities(...entity: Entity[]) {
+  /* Add a structure belonging to this tile */
+	public setStructure(structure: Structure): Structure {
+		this.structure = structure;
+		return structure;
 	}
 
-	public clearEntities(): boolean {
-		return true;
+  /* Add a structure belonging to this tile */
+	public setUnit(unit: Unit): Unit {
+		this.unit = unit;
+		return unit;
 	}
 }

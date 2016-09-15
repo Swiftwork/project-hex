@@ -3,7 +3,7 @@ import {
   Color3, Color4,
   Mesh, MeshBuilder,
   Scene, ArcRotateCamera,
-  ShadowGenerator,
+  DirectionalLight, ShadowGenerator,
   ActionManager, InterpolateValueAction, ExecuteCodeAction, SwitchBooleanAction,
 } from 'babylonjs';
 import Game from './Game';
@@ -24,6 +24,7 @@ export default class GameRenderer {
 
   /* GENERAL */
   private mainCamera: ArcRotateCamera;
+  private sunLight: DirectionalLight;
   private meshes: Mesh[];
 
   constructor(
@@ -34,7 +35,7 @@ export default class GameRenderer {
     /* Scene Defaults */
     this.scene.clearColor = new Color3(0.9, 0.87, 0.85);
     this.scene.fogColor = this.scene.clearColor;
-    this.scene.fogMode = Scene.FOGMODE_LINEAR;
+    //this.scene.fogMode = Scene.FOGMODE_LINEAR;
     this.scene.fogStart = 10;
     this.scene.fogEnd = 15;
 
@@ -47,6 +48,9 @@ export default class GameRenderer {
     this.mainCamera = this.cameraManager.get('main');
     this.mainCamera.setTarget(Vector3.Zero());
     this.mainCamera.attachControl(this.game.canvas, false, false);
+
+    /* Lights */
+    this.sunLight = this.lightManager.get('sunLight');
 
     /* Tile Storage */
     this.meshes = [];
@@ -73,8 +77,7 @@ export default class GameRenderer {
     this.scene.createOrUpdateSelectionOctree();
 
     /* Shadows */
-    const sunLight = this.lightManager.get('sunLight');
-    let shadowGenerator = new ShadowGenerator(4096, sunLight);
+    let shadowGenerator = new ShadowGenerator(4096, this.sunLight);
     shadowGenerator.bias = 0.0001;
     shadowGenerator.useBlurVarianceShadowMap = true;
     shadowGenerator.getShadowMap().refreshRate = 0;
@@ -90,7 +93,7 @@ export default class GameRenderer {
 
   onUpdate() {
     this.scene.render();
-    this.mainCamera.panningSensibility = 100 * (this.mainCamera.upperRadiusLimit / this.mainCamera.radius);
+    this.mainCamera.panningSensibility = 10 * (this.mainCamera.upperRadiusLimit / this.mainCamera.radius);
   }
 
   onPause () {
@@ -110,10 +113,10 @@ export default class GameRenderer {
   }
 
   createTiles() {
-    /* Cached tiles */
+    /* Cached meshes */
     const firstInstance = {}
 
-    /* Unexplored tiles */
+    /* Unexplored mesh */
     const unexploredMesh = MeshBuilder.CreateCylinder(`tile-unexplored`, {
       height: 0.05,
       diameter: this.world.layout.size.x * 2 - 0.05,
@@ -123,12 +126,13 @@ export default class GameRenderer {
     unexploredMesh.visibility = 0.4;
     firstInstance['unexplored'] = unexploredMesh;
 
-    /* Explored tiles */
+    /* Loop through world tiles and generate meshes */
     this.world.tiles.forEach( (tile: Tile) => {
       const id = `tile-${tile.hexagon.toString()}`;
       let mesh;
 
-      if (tile.explored) {
+      /* Explored tile */
+      if (tile.isExplored) {
         if (!firstInstance[tile.type]) {
           mesh = MeshBuilder.CreateCylinder(id, {
             height: 0.05,
@@ -143,23 +147,31 @@ export default class GameRenderer {
           firstInstance[tile.type] = mesh;
           //this.meshes.push(mesh);
         } else {
-          /* Create new instance of cached tile */
-          mesh = firstInstance[tile.type].createInstance(id);
-
+          /* Create new clone of cached tile */
+          mesh = firstInstance[tile.type].clone(id);
         }
-        /* Entities on tile */
-        this.createEntities(tile, mesh);
+
+        /* Create nature on tile */
+        this.createEnvironment(tile, mesh);
+        this.createUnit(tile, mesh);
+
+        if (tile.isVisible) {
+          /* Create buildings on tile */
+          this.createStructure(tile, mesh);
+        } else {
+          this.sunLight.excludedMeshes.push(mesh);
+        }
         
         /* Tile actions */
-        mesh.edgesWidth = 2;
-        mesh.edgesColor = new Color4(0.5, 0, 0.5, 1);
+        //mesh.edgesWidth = 2;
+        mesh.overlayColor = new Color3(0, 0, 1);
+        mesh.overlayAlpha = 0.3;
         mesh.actionManager = new ActionManager(this.scene);
-        mesh.actionManager.registerAction(new ExecuteCodeAction(
+        mesh.actionManager.registerAction(new SwitchBooleanAction(
           ActionManager.OnPickTrigger,
-          () => {
-            mesh.enableEdgesRendering(1)
-          })
-        );
+          mesh,
+          'renderOverlay'
+        ));
 
       } else {
         mesh = unexploredMesh.createInstance(id);
@@ -170,14 +182,60 @@ export default class GameRenderer {
     }, this);
   }
 
-  createEntities(tile: Tile, parent: Mesh ) {
+  //------------------------------------------------------------------------------------
+  // MESH CREATORS
+  //------------------------------------------------------------------------------------
+
+  createEnvironment(tile: Tile, parent: Mesh): void {
+    /* Cached tiles */
+    const firstInstance = {}
+    let original, bounds, mesh;
+
     for (var i = 0; i < tile.environment.length; ++i) {
       const environment = tile.environment[i];
-      const original = this.game.assetsManager.get(`mesh-${environment.model}`);
-      const bounds = original.getBoundingInfo().boundingBox;
-      const mesh = original.createInstance(`tile-${tile.hexagon.toString()}-${environment.id}-${i}`);
+      const id = `tile-${tile.hexagon.toString()}-${environment.id}-${i}`;
+      
+      if (!firstInstance[environment.model]) {
+        original = this.game.assetsManager.get(`mesh-${environment.model}`);
+        mesh = original.clone(id);
+        mesh.makeGeometryUnique();
+        mesh.subMeshes = original.subMeshes;
+        bounds = mesh.getBoundingInfo().boundingBox;
+        if (!tile.isVisible)
+          this.sunLight.excludedMeshes.push(mesh);
+        firstInstance[environment.model] = mesh;
+      } else {
+        mesh = firstInstance[environment.model].createInstance(id);
+      }
+
       mesh.position = environment.position;
       mesh.position.y = 0.05 + (bounds.maximumWorld.y - bounds.minimumWorld.y) / 2;
+      this.meshes.push(mesh);
+    }
+  }
+  
+  createStructure(tile: Tile, parent: Mesh): void {
+    if (tile.structure) {
+      const original = this.game.assetsManager.get(`mesh-${tile.structure.model}`);
+      const bounds = original.getBoundingInfo().boundingBox;
+      let mesh = original.createInstance(`tile-${tile.hexagon.toString()}-${tile.structure.id}`);
+      mesh.scaling = new Vector3(0.9, 0.9, 0.9);
+      mesh.rotation = new Vector3(0, CameraManager.toRadians(125), 0);
+      mesh.position = tile.structure.position;
+      mesh.position.y = 0.05 + (bounds.maximumWorld.y - bounds.minimumWorld.y) / 2 - bounds.center.y;
+      this.meshes.push(mesh);
+    }
+  }
+
+  createUnit(tile: Tile, parent: Mesh): void {
+    if (tile.unit) {
+      const original = this.game.assetsManager.get(`mesh-${tile.unit.model}`);
+      const bounds = original.getBoundingInfo().boundingBox;
+      let mesh = original.createInstance(`tile-${tile.hexagon.toString()}-${tile.unit.id}`);
+      mesh.scaling = new Vector3(0.9, 0.9, 0.9);
+      mesh.rotation = new Vector3(0, CameraManager.toRadians(125), 0);
+      mesh.position = tile.unit.position;
+      mesh.position.y = 0.05 + (bounds.maximumWorld.y - bounds.minimumWorld.y) / 2 - bounds.center.y;
       this.meshes.push(mesh);
     }
   }

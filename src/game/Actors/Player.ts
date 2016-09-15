@@ -1,14 +1,12 @@
 import Tile from '../Entities/Tile';
+import Structure from '../Entities/Structure';
+import Unit from '../Entities/Unit';
 
-class Base {
+/* Structures */
+import Base from '../Entities/Structures/Base';
 
-  public stage = 0;
-
-  constructor(
-    public tile: Tile
-  ) {
-  }
-}
+/* Units */
+import Scout from '../Entities/Units/Scout';
 
 export default class Player {
 
@@ -18,7 +16,8 @@ export default class Player {
     NPC: 2,
   }
 
-  public base: Base;
+  public structures: Structure[] = [];
+  public units: Unit[] = [];
 
   constructor(
     public name: string,
@@ -26,7 +25,17 @@ export default class Player {
   ) {
   }
 
-  createBase(tile: Tile) {
-    this.base = new Base(tile);
+  createBase(tile: Tile): Base {
+    const base = new Base(`base-${this.structures.length}`, tile, 'viking-village')
+    tile.setStructure(base);
+    this.structures.push(base);
+    return base;
+  }
+
+  createScout(tile: Tile): Scout {
+    const scout = new Scout(`scout-${this.units.length}`, tile, 'scout');
+    tile.setUnit(scout);
+    this.units.push(scout);
+    return scout;
   }
 }

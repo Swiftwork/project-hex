@@ -7,6 +7,7 @@ import Hexagon from './Math/Hexagon';
 import { HexagonLayout } from './Math/HexagonLayout';
 import Tile from './Entities/Tile';
 import Environment from './Entities/Environment';
+import Structure from './Entities/Structure';
 import Player from './Actors/Player';
 import PlayerManager from './Managers/PlayerManager';
 
@@ -33,13 +34,23 @@ export default class GameWorld {
       new Vector2(0.5, 0.5),
       new Vector3(0, 0, 0)
     );
-    this.createTiles(5, 5);
   }
 
   onCreate() {
+    this.createTiles(40);
+
     const player = this.playerManager.add('TestMan', Player.TYPES.LOCAL);
-    player.createBase(this.tiles.get(new Hexagon(0,0,0).hash()));
-    console.log(player);
+
+    const base1 = player.createBase(this.tiles.get(new Hexagon(0,0,0).hash()));
+    const base2 = player.createBase(this.tiles.get(new Hexagon(5,3,-8).hash()));
+    const base3 = player.createBase(this.tiles.get(new Hexagon(-5,-5,10).hash()));
+    base1.tile.structure.position = this.layout.hexagonToPixel(base1.tile.hexagon, 0);
+    base2.tile.structure.position = this.layout.hexagonToPixel(base2.tile.hexagon, 0);
+    base3.tile.structure.position = this.layout.hexagonToPixel(base3.tile.hexagon, 0);
+
+    const scout1 = player.createScout(this.tiles.get(new Hexagon(-3,5,-2).hash()));
+    scout1.tile.unit.position = this.layout.hexagonToPixel(scout1.tile.hexagon, 0);
+
     this.onUpdate();
   }
 
@@ -48,7 +59,7 @@ export default class GameWorld {
   }
 
   onUpdate() {
-
+    this.updateVisiblity();
   }
 
   onPause () {
@@ -59,7 +70,38 @@ export default class GameWorld {
 
   }
 
-  private createTiles(mapRadius: number, visibilityRadius: number): void {
+  //------------------------------------------------------------------------------------
+  // VISIBILITY
+  //------------------------------------------------------------------------------------
+
+  private updateVisiblity() {
+    const player = this.playerManager.getLocal();
+    this.tiles.forEach((tile: Tile) => {
+      tile.isVisible = false;
+      
+      for (let i = 0; i < player.structures.length; i++) {
+        const distance = tile.hexagon.distance(player.structures[i].tile.hexagon);
+        if (distance <= 2)
+          tile.isVisible = true;
+        if (distance <= 3)
+          tile.isExplored = true;
+      }
+
+      for (let i = 0; i < player.units.length; i++) {
+        const distance = tile.hexagon.distance(player.units[i].tile.hexagon);
+        if (distance <= 1)
+          tile.isVisible = true;
+        if (distance <= 3)
+          tile.isExplored = true;
+      }
+    });
+  }
+
+  //------------------------------------------------------------------------------------
+  // TILE GENERATION
+  //------------------------------------------------------------------------------------
+
+  private createTiles(mapRadius: number): void {
     const viewPoint = new Hexagon(0,0,0);
 
     for (let q = -mapRadius; q <= mapRadius; q++) {
@@ -75,8 +117,10 @@ export default class GameWorld {
         ]));
 
         /* Visibility */
-        if (tile.hexagon.distance(viewPoint) <= visibilityRadius)
-          tile.explored = true;
+        if (tile.hexagon.distance(viewPoint) <= 0)
+          tile.isExplored = true;
+        if (tile.hexagon.distance(viewPoint) <= 2)
+          tile.isVisible = true;
 
         /* Environment */
         switch (tile.type) {
@@ -145,7 +189,7 @@ export default class GameWorld {
   }
 
   //------------------------------------------------------------------------------------
-  // TILE ENVIRONMENT CREATION
+  // TILE ENVIRONMENT GENERATION
   //------------------------------------------------------------------------------------
 
   private createForest(tile: Tile) {

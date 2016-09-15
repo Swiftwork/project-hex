@@ -35,11 +35,11 @@ export default class CameraManager {
 			position: Vector3.Zero(),
 			settings: {
 				lowerRadiusLimit: 3,
-				upperRadiusLimit: 10,
+				upperRadiusLimit: 100,
 				lowerAlphaLimit: CameraManager.toRadians(360),
 				upperAlphaLimit: CameraManager.toRadians(360),
 				lowerBetaLimit: CameraManager.toRadians(30),
-				//upperBetaLimit: CameraManager.toRadians(65),
+				upperBetaLimit: CameraManager.toRadians(65),
 				panningAxis: new Vector3(1, 0, 1),
 				inertia: 0.5,
 			}
