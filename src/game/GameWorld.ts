@@ -6,6 +6,7 @@ import Game from './Game';
 import Hexagon from './Math/Hexagon';
 import { HexagonLayout } from './Math/HexagonLayout';
 import Tile from './Entities/Tile';
+import Entity from './Entities/Entity';
 import Environment from './Entities/Environment';
 import Structure from './Entities/Structure';
 import Player from './Actors/Player';
@@ -37,7 +38,7 @@ export default class GameWorld {
   }
 
   onCreate() {
-    this.createTiles(40);
+    this.createTiles(20);
 
     const player = this.playerManager.add('TestMan', Player.TYPES.LOCAL);
 
@@ -76,25 +77,24 @@ export default class GameWorld {
 
   private updateVisiblity() {
     const player = this.playerManager.getLocal();
+    const structuresUnts = player.structures.concat(<any>player.units);
     this.tiles.forEach((tile: Tile) => {
       tile.isVisible = false;
       
-      for (let i = 0; i < player.structures.length; i++) {
-        const distance = tile.hexagon.distance(player.structures[i].tile.hexagon);
-        if (distance <= 2)
-          tile.isVisible = true;
-        if (distance <= 3)
-          tile.isExplored = true;
-      }
+      for (let i = 0; i < structuresUnts.length; i++) {
+        const entity = structuresUnts[i];
+        const distance = tile.hexagon.distance(entity.tile.hexagon);
 
-      for (let i = 0; i < player.units.length; i++) {
-        const distance = tile.hexagon.distance(player.units[i].tile.hexagon);
-        if (distance <= 1)
-          tile.isVisible = true;
-        if (distance <= 3)
+        if (distance <= 4) {
           tile.isExplored = true;
+        }
+
+        if (distance <= entity.visibility) {
+          tile.isVisible = true;
+          return;
+        }
       }
-    });
+    });  
   }
 
   //------------------------------------------------------------------------------------
@@ -194,7 +194,12 @@ export default class GameWorld {
 
   private createForest(tile: Tile) {
     tile.biomeData.density = 0.2;
-    tile.biomeData.treeType = ['pine', 'oak', 'birch'].random(
+    tile.biomeData.treeType = [
+      'oak-1','oak-2','oak-3','oak-4',
+      'cacti-1','cacti-2',
+      'pine-1','pine-2','pine-3','pine-4','pine-5',
+      'snow-pine-1','snow-pine-2','snow-pine-3','snow-pine-4','snow-pine-5',
+    ].random(
       this.game.settings.seed.random() * tile.hexagon.hash() * 100
     );
 
@@ -213,7 +218,7 @@ export default class GameWorld {
       if (reject)
         continue;
 
-      const tree = new Environment('tree', `${tile.biomeData.treeType}-tree`);
+      const tree = new Environment('tree', tile, `${tile.biomeData.treeType}`);
       tree.position = position;
       forest.push(tree);
     }
@@ -225,7 +230,7 @@ export default class GameWorld {
 
     const tilePosition = this.layout.hexagonToPixel(tile.hexagon, 0);
     const mountains = [];
-    let mountain = new Environment('mountain');
+    let mountain = new Environment('mountain', tile);
     mountain.position = tilePosition;
     mountains.push(mountain);
 

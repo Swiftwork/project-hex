@@ -19,6 +19,6 @@ export default class Structure extends Entity {
     public tile: Tile,
     public model?: string
   ) {
-    super(id, model);
+    super(id, tile, model);
   }
 }

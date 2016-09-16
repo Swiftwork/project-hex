@@ -77,9 +77,9 @@ export default class GameRenderer {
     this.scene.createOrUpdateSelectionOctree();
 
     /* Shadows */
-    let shadowGenerator = new ShadowGenerator(4096, this.sunLight);
+    let shadowGenerator = new ShadowGenerator(8192, this.sunLight);
     shadowGenerator.bias = 0.0001;
-    shadowGenerator.useBlurVarianceShadowMap = true;
+    //shadowGenerator.useBlurVarianceShadowMap = true;
     shadowGenerator.getShadowMap().refreshRate = 0;
     shadowGenerator.getShadowMap().renderList = 
       shadowGenerator.getShadowMap().renderList.concat(this.meshes);
@@ -209,7 +209,7 @@ export default class GameRenderer {
       }
 
       mesh.position = environment.position;
-      mesh.position.y = 0.05 + (bounds.maximumWorld.y - bounds.minimumWorld.y) / 2;
+      mesh.position.y = 0.05;
       this.meshes.push(mesh);
     }
   }
@@ -222,7 +222,7 @@ export default class GameRenderer {
       mesh.scaling = new Vector3(0.9, 0.9, 0.9);
       mesh.rotation = new Vector3(0, CameraManager.toRadians(125), 0);
       mesh.position = tile.structure.position;
-      mesh.position.y = 0.05 + (bounds.maximumWorld.y - bounds.minimumWorld.y) / 2 - bounds.center.y;
+      mesh.position.y = 0.05;
       this.meshes.push(mesh);
     }
   }
@@ -235,7 +235,7 @@ export default class GameRenderer {
       mesh.scaling = new Vector3(0.9, 0.9, 0.9);
       mesh.rotation = new Vector3(0, CameraManager.toRadians(125), 0);
       mesh.position = tile.unit.position;
-      mesh.position.y = 0.05 + (bounds.maximumWorld.y - bounds.minimumWorld.y) / 2 - bounds.center.y;
+      mesh.position.y = 0.05;
       this.meshes.push(mesh);
     }
   }

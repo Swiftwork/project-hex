@@ -26,7 +26,7 @@ export default class Player {
   }
 
   createBase(tile: Tile): Base {
-    const base = new Base(`base-${this.structures.length}`, tile, 'viking-village')
+    const base = new Base(`base-${this.structures.length}`, tile, 'viking-village-1')
     tile.setStructure(base);
     this.structures.push(base);
     return base;

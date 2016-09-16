@@ -19,8 +19,8 @@ declare global {
 }
 
 Array.prototype.random = function<T>(seed?: number): T {
-	seed = Math.abs(seed) || Math.random();
-	seed = seed <= 1 ? seed * this.length : seed % this.length;
-	seed <<= 0;
-	return this[seed];
+	seed = seed || Math.random() * 100;
+	seed = seed % this.length;
+	seed = seed << 0;
+	return this[Math.abs(seed)];
 }

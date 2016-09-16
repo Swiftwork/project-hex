@@ -1,8 +1,9 @@
 import Entity from './Entity';
+import Tile from '../Entities/Tile';
 
 export default class Environment extends Entity {
   
-  constructor(public id: string, public model?: string) {
-    super(id, model);
+  constructor(id: string, tile: Tile, model?: string) {
+    super(id, tile, model);
   }
 }

@@ -26,7 +26,6 @@ export default class AssetsManager {
 		/* Register textures to be loaded */
  		for (let id in assetsManifest.textures) {
  			let textures = assetsManifest.textures[id];
-
  			for (let textureType in textures) {
  				let texture = textures[textureType];
  				let task = assetsLoader.addTextureTask(`${id}-${textureType}`, texture);
@@ -44,7 +43,7 @@ export default class AssetsManager {
  				for (var i = 0; i < task.loadedMeshes.length; ++i) {
  					let mesh = task.loadedMeshes[i];
  					mesh.setEnabled(false);
- 					this.add(`mesh-${mesh.id}`, mesh)
+ 					this.add(`mesh-${mesh.name}`, mesh);
  				}
  			}
  		}
@@ -109,13 +108,13 @@ const assetsManifest = {
 	models: {
 
 		/* ENVIRONMENT */
-		'trees': {
-			mesh: require('../Assets/models/trees.babylon'),
+		'environment': {
+			mesh: require('../Assets/models/Environment.babylon'),
 		},
 
     /* STRUCTURES */
-		'viking-village': {
-			mesh: require('../Assets/models/viking-village.babylon'),
+		'structures': {
+			mesh: require('../Assets/models/Structures.babylon'),
 		},
 
     /* UNITS */

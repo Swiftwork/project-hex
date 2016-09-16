@@ -22,9 +22,11 @@ export default class MaterialManager {
 		const desert = this.add('desert', 'sand', [-1, -1]);
 
 		const forest = this.add('forest', 'grass', [-1, -1]);
-		forest.diffuseColor = new Color3(0.7, 0.7, 0.7);
+		forest.diffuseColor = new Color3(0.5, 0.5, 0.5);
 
 		const glacier = this.add('glacier', 'ice', [-1, -1]);
+		glacier.specularColor = new Color3(0.5, 0.5, 0.5);
+		glacier.specularPower = 100;
 		glacier.alpha = 0.9;
 
 		const mountain = this.add('mountain', 'stone', [-1, -1]);
@@ -62,9 +64,10 @@ export default class MaterialManager {
 			}
 		}
 
-		material.specularTexture = material.diffuseTexture;
-		material.specularPower = 100;
+		material.specularColor = new Color3(0, 0, 0);
+		material.specularPower = 0;
 		this.materials.set(id, material);
+    console.log(material);
 		return material;
 	}
 
