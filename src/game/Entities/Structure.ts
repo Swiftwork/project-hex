@@ -1,5 +1,5 @@
 import Entity from './Entity';
-import Tile from '../Entities/Tile';
+import Tile from '../Logic/Tile'
 import Player from '../Actors/Player';
 
 export default class Structure extends Entity {

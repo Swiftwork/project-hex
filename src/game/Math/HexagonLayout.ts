@@ -17,7 +17,7 @@ export class HexagonOrientation {
 // LAYOUT
 //------------------------------------------------------------------------------------
 
-export class HexagonLayout {
+export default class HexagonLayout {
 
 	public static LAYOUT_VERTICAL = new HexagonOrientation(
 		Math.sqrt(3.0), Math.sqrt(3.0) / 2.0, 0.0, 3.0 / 2.0, 

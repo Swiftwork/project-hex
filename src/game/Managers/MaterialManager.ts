@@ -32,6 +32,8 @@ export default class MaterialManager {
 		const mountain = this.add('mountain', 'stone', [-1, -1]);
 
 		const ocean = this.add('ocean', 'water', [-1, -1]);
+		ocean.specularColor = new Color3(0.3, 0.3, 0.3);
+		ocean.specularPower = 100;
 		ocean.alpha = 0.9;
 
 		const plain = this.add('plain', 'grass', [-1, -1]);
@@ -67,7 +69,6 @@ export default class MaterialManager {
 		material.specularColor = new Color3(0, 0, 0);
 		material.specularPower = 0;
 		this.materials.set(id, material);
-    console.log(material);
 		return material;
 	}
 

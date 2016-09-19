@@ -1,6 +1,6 @@
 import {
   Vector2, Vector3, Vector4,
-  Color3, Color4,
+  Color3, Color4, StandardMaterial,
   Mesh, MeshBuilder,
   Scene, ArcRotateCamera,
   DirectionalLight, ShadowGenerator,
@@ -9,8 +9,7 @@ import {
 import Game from './Game';
 import GameWorld from './GameWorld';
 import Hexagon from './Math/Hexagon';
-import CustomMesh from './Math/CustomMesh';
-import Tile from './Entities/Tile';
+import Tile from './Logic/Tile';
 import CameraManager from './Managers/CameraManager';
 import LightManager from './Managers/LightManager';
 import MaterialManager from './Managers/MaterialManager';
@@ -113,72 +112,95 @@ export default class GameRenderer {
   }
 
   createTiles() {
+    /* Base Geometry */
+    const tileMesh = {
+      base: <Mesh> this.game.assetsManager.get(`mesh-hex-bottom`),
+      plain: <Mesh> this.game.assetsManager.get(`mesh-hex-plain`),
+    }
+
     /* Cached meshes */
     const firstInstance = {}
 
-    /* Unexplored mesh */
+    /* Unexplored mesh
     const unexploredMesh = MeshBuilder.CreateCylinder(`tile-unexplored`, {
       height: 0.05,
       diameter: this.world.layout.size.x * 2 - 0.05,
       tessellation: 6,
     }, this.scene);
-    unexploredMesh.setEnabled(false);
-    unexploredMesh.visibility = 0.4;
-    firstInstance['unexplored'] = unexploredMesh;
+    */
+
+    let base, surface;
+    base = tileMesh.base.clone(`tile-unexplored`);
+    surface = tileMesh.base.clone(`tile-unexplored`);
+    base.setEnabled(false);
+    surface.setEnabled(false);
+    base.visibility = surface.visibility = 0.4;
+    firstInstance['unexplored'] = { base: base, surface: surface, };
 
     /* Loop through world tiles and generate meshes */
     this.world.tiles.forEach( (tile: Tile) => {
       const id = `tile-${tile.hexagon.toString()}`;
-      let mesh;
 
       /* Explored tile */
       if (tile.isExplored) {
         if (!firstInstance[tile.type]) {
+          /*
           mesh = MeshBuilder.CreateCylinder(id, {
             height: 0.05,
             diameter: this.world.layout.size.x * 2 - 0.05,
             tessellation: 6,
             faceUV: [new Vector4(0, 0, 0, 0), new Vector4(0, 0, 6, 0.1), new Vector4(0, 0, 1, 1)],
           }, this.scene);
-          mesh.material = this.materialManager.get(tile.type);
-          mesh.receiveShadows = true;
+          */
+          base = tileMesh.base.clone(id);
+          surface = tileMesh.plain.clone(id);
+          base.material = surface.material = this.materialManager.get(tile.type);
+          surface.receiveShadows = true;
 
           /* Add to cache */
-          firstInstance[tile.type] = mesh;
+          firstInstance[tile.type] = { base: base, surface: surface, };
+          
           //this.meshes.push(mesh);
         } else {
           /* Create new clone of cached tile */
-          mesh = firstInstance[tile.type].clone(id);
+          base = firstInstance[tile.type].base.clone(id);
+          surface = firstInstance[tile.type].surface.clone(id);
+          console.log(base);
         }
 
         /* Create nature on tile */
-        this.createEnvironment(tile, mesh);
-        this.createUnit(tile, mesh);
+        this.createEnvironment(tile);
+        this.createUnit(tile);
 
         if (tile.isVisible) {
           /* Create buildings on tile */
-          this.createStructure(tile, mesh);
+          this.createStructure(tile);
         } else {
-          this.sunLight.excludedMeshes.push(mesh);
+          //this.sunLight.excludedMeshes.push(base);
+          //this.sunLight.excludedMeshes.push(surface);
         }
         
-        /* Tile actions */
+        /* Tile actions
         //mesh.edgesWidth = 2;
-        mesh.overlayColor = new Color3(0, 0, 1);
-        mesh.overlayAlpha = 0.3;
-        mesh.actionManager = new ActionManager(this.scene);
-        mesh.actionManager.registerAction(new SwitchBooleanAction(
+        surface.overlayColor = new Color3(0, 0, 1);
+        surface.overlayAlpha = 0.3;
+        surface.actionManager = new ActionManager(this.scene);
+        surface.actionManager.registerAction(new SwitchBooleanAction(
           ActionManager.OnPickTrigger,
-          mesh,
+          surface,
           'renderOverlay'
         ));
+        */
 
       } else {
-        mesh = unexploredMesh.createInstance(id);
+        base = firstInstance['unexplored'].base.createInstance(id);
+        surface = firstInstance['unexplored'].surface.createInstance(id);
       }
 
-      mesh.position = this.world.layout.hexagonToPixel(tile.hexagon, 0.025);
-      mesh.rotation = new Vector3(0, Math.PI / 3, 0);
+      base.position = this.game.settings.world.layout.hexagonToPixel(tile.hexagon, 0)
+      surface.position = this.game.settings.world.layout.hexagonToPixel(tile.hexagon, 0.093);
+      base.scaling = surface.scaling = new Vector3(0.8,0.8,0.8);
+      base.rotation = surface.rotation = new Vector3(0, Math.PI / 2, 0);
     }, this);
   }
 
@@ -186,7 +208,7 @@ export default class GameRenderer {
   // MESH CREATORS
   //------------------------------------------------------------------------------------
 
-  createEnvironment(tile: Tile, parent: Mesh): void {
+  createEnvironment(tile: Tile): void {
     /* Cached tiles */
     const firstInstance = {}
     let original, bounds, mesh;
@@ -209,12 +231,12 @@ export default class GameRenderer {
       }
 
       mesh.position = environment.position;
-      mesh.position.y = 0.05;
+      mesh.position.y = 0.1;
       this.meshes.push(mesh);
     }
   }
   
-  createStructure(tile: Tile, parent: Mesh): void {
+  createStructure(tile: Tile): void {
     if (tile.structure) {
       const original = this.game.assetsManager.get(`mesh-${tile.structure.model}`);
       const bounds = original.getBoundingInfo().boundingBox;
@@ -222,12 +244,12 @@ export default class GameRenderer {
       mesh.scaling = new Vector3(0.9, 0.9, 0.9);
       mesh.rotation = new Vector3(0, CameraManager.toRadians(125), 0);
       mesh.position = tile.structure.position;
-      mesh.position.y = 0.05;
+      mesh.position.y = 0.1;
       this.meshes.push(mesh);
     }
   }
 
-  createUnit(tile: Tile, parent: Mesh): void {
+  createUnit(tile: Tile): void {
     if (tile.unit) {
       const original = this.game.assetsManager.get(`mesh-${tile.unit.model}`);
       const bounds = original.getBoundingInfo().boundingBox;
@@ -235,7 +257,7 @@ export default class GameRenderer {
       mesh.scaling = new Vector3(0.9, 0.9, 0.9);
       mesh.rotation = new Vector3(0, CameraManager.toRadians(125), 0);
       mesh.position = tile.unit.position;
-      mesh.position.y = 0.05;
+      mesh.position.y = 0.1;
       this.meshes.push(mesh);
     }
   }

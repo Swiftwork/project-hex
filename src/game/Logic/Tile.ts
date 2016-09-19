@@ -1,7 +1,7 @@
 import Hexagon from '../Math/Hexagon';
-import Environment from './Environment';
-import Structure from './Structure';
-import Unit from './Unit';
+import Environment from '../Entities/Environment';
+import Structure from '../Entities/Structure';
+import Unit from '../Entities/Unit';
 
 export default class Tile {
 
@@ -17,8 +17,14 @@ export default class Tile {
 		PLAIN: 'plain',
 	};
 
+  /* Tile biome types */
+	public static SURFACES = {
+    PLAIN: 'plain',
+	};
+
 	/* Tile biome data e.g. forest density */
 	public biomeData: any = {}
+  public surface: string;
 
 	/* Tile states */
 	public isExplored = false;

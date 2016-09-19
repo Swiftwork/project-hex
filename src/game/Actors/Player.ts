@@ -1,4 +1,4 @@
-import Tile from '../Entities/Tile';
+import Tile from '../Logic/Tile';
 import Structure from '../Entities/Structure';
 import Unit from '../Entities/Unit';
 

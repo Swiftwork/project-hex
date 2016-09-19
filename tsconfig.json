@@ -6,8 +6,5 @@
 		"sourceMap": true,
 		"removeComments": false,
 		"suppressImplicitAnyIndexErrors": true
-	},
-	"files": [
-		"typings/index.d.ts"
-	]
+	}
 }

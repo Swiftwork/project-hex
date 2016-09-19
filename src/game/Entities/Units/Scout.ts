@@ -1,5 +1,5 @@
 import Unit from '../Unit';
-import Tile from '../../Entities/Tile';
+import Tile from '../../Logic/Tile'
 
 export default class Scout extends Unit {
 

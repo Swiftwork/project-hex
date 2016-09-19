@@ -1,7 +1,7 @@
 import {
   Vector3,
 } from 'babylonjs';
-import Tile from './Tile'
+import Tile from '../Logic/Tile'
 
 export default class Entity {
 

@@ -1,5 +1,5 @@
 import Structure from '../Structure';
-import Tile from '../../Entities/Tile';
+import Tile from '../../Logic/Tile'
 
 export default class Base extends Structure{
 

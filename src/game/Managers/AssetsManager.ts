@@ -97,24 +97,18 @@ const assetsManifest = {
 			diffuse: require('../Assets/textures/water.svg'),
 			//bump: require('../Assets/textures/water-bump.jpg'),
 		},
-
-    /* UNITS */
-    'scout': {
-			diffuse: require('../Assets/models/scout_CM_TEXTURE.jpg'),
-			//bump: require('../Assets/textures/water-bump.jpg'),
-		},
 	},
 
 	models: {
 
 		/* ENVIRONMENT */
 		'environment': {
-			mesh: require('../Assets/models/Environment.babylon'),
+			mesh: require('../Assets/models/environment.babylon'),
 		},
 
     /* STRUCTURES */
 		'structures': {
-			mesh: require('../Assets/models/Structures.babylon'),
+			mesh: require('../Assets/models/structures.babylon'),
 		},
 
     /* UNITS */

@@ -1,100 +1,33 @@
 import {
+  Vector3,
   Scene,
-  Vector2, Vector3,
 } from 'babylonjs';
 import Game from './Game';
 import Hexagon from './Math/Hexagon';
-import { HexagonLayout } from './Math/HexagonLayout';
-import Tile from './Entities/Tile';
+import Tile from './Logic/Tile';
+import Settings from './Logic/Settings';
 import Entity from './Entities/Entity';
 import Environment from './Entities/Environment';
 import Structure from './Entities/Structure';
-import Player from './Actors/Player';
-import PlayerManager from './Managers/PlayerManager';
 
 export default class GameWorld {
 
-  public tiles: Map<number, Tile>;
-  public layout: HexagonLayout;
+  public static TREES = ['oak-1','oak-2','oak-3','oak-4', 'cacti-1','cacti-2', 'pine-1','pine-2','pine-3','pine-4','pine-5', 'snow-pine-1','snow-pine-2','snow-pine-3','snow-pine-4','snow-pine-5',];
 
-  private playerManager: PlayerManager;
+  public tiles: Map<number, Tile>;
 
   constructor(
-    private game: Game,
-    private scene: Scene
+    public game: Game
   ) {
-    /* Scene */
-    this.scene.collisionsEnabled = false;
-
-    /* Managers */
-    this.playerManager = new PlayerManager(this.scene);
-
-    /* Tiles */
     this.tiles = new Map<number, Tile>();
-    this.layout = new HexagonLayout(HexagonLayout.LAYOUT_HORIZONTAL,
-      new Vector2(0.5, 0.5),
-      new Vector3(0, 0, 0)
-    );
+    if (this.game.settings.seed)
+      this.generate();
   }
 
-  onCreate() {
-    this.createTiles(20);
-
-    const player = this.playerManager.add('TestMan', Player.TYPES.LOCAL);
-
-    const base1 = player.createBase(this.tiles.get(new Hexagon(0,0,0).hash()));
-    const base2 = player.createBase(this.tiles.get(new Hexagon(5,3,-8).hash()));
-    const base3 = player.createBase(this.tiles.get(new Hexagon(-5,-5,10).hash()));
-    base1.tile.structure.position = this.layout.hexagonToPixel(base1.tile.hexagon, 0);
-    base2.tile.structure.position = this.layout.hexagonToPixel(base2.tile.hexagon, 0);
-    base3.tile.structure.position = this.layout.hexagonToPixel(base3.tile.hexagon, 0);
-
-    const scout1 = player.createScout(this.tiles.get(new Hexagon(-3,5,-2).hash()));
-    scout1.tile.unit.position = this.layout.hexagonToPixel(scout1.tile.hexagon, 0);
-
-    this.onUpdate();
-  }
-
-  onResume() {
-    this.onUpdate();
-  }
-
-  onUpdate() {
-    this.updateVisiblity();
-  }
-
-  onPause () {
-    
-  }
-
-  onDestroy () {
-
-  }
-
-  //------------------------------------------------------------------------------------
-  // VISIBILITY
-  //------------------------------------------------------------------------------------
-
-  private updateVisiblity() {
-    const player = this.playerManager.getLocal();
-    const structuresUnts = player.structures.concat(<any>player.units);
-    this.tiles.forEach((tile: Tile) => {
-      tile.isVisible = false;
-      
-      for (let i = 0; i < structuresUnts.length; i++) {
-        const entity = structuresUnts[i];
-        const distance = tile.hexagon.distance(entity.tile.hexagon);
-
-        if (distance <= 4) {
-          tile.isExplored = true;
-        }
-
-        if (distance <= entity.visibility) {
-          tile.isVisible = true;
-          return;
-        }
-      }
-    });  
+  public generate(): GameWorld {
+    this.tiles.clear();
+    this.createTiles(this.game.settings.world.size);
+    return this;
   }
 
   //------------------------------------------------------------------------------------
@@ -102,8 +35,6 @@ export default class GameWorld {
   //------------------------------------------------------------------------------------
 
   private createTiles(mapRadius: number): void {
-    const viewPoint = new Hexagon(0,0,0);
-
     for (let q = -mapRadius; q <= mapRadius; q++) {
       const r1 = Math.max(-mapRadius, -q - mapRadius);
       const r2 = Math.min(mapRadius, -q + mapRadius);
@@ -115,12 +46,6 @@ export default class GameWorld {
           this.tiles.get(hex.neighbor(4).hash()),
           this.tiles.get(hex.neighbor(5).hash()),
         ]));
-
-        /* Visibility */
-        if (tile.hexagon.distance(viewPoint) <= 0)
-          tile.isExplored = true;
-        if (tile.hexagon.distance(viewPoint) <= 2)
-          tile.isVisible = true;
 
         /* Environment */
         switch (tile.type) {
@@ -194,19 +119,14 @@ export default class GameWorld {
 
   private createForest(tile: Tile) {
     tile.biomeData.density = 0.2;
-    tile.biomeData.treeType = [
-      'oak-1','oak-2','oak-3','oak-4',
-      'cacti-1','cacti-2',
-      'pine-1','pine-2','pine-3','pine-4','pine-5',
-      'snow-pine-1','snow-pine-2','snow-pine-3','snow-pine-4','snow-pine-5',
-    ].random(
+    tile.biomeData.treeType = GameWorld.TREES.random(
       this.game.settings.seed.random() * tile.hexagon.hash() * 100
     );
 
-    const tilePosition = this.layout.hexagonToPixel(tile.hexagon, 0);
+    const tilePosition = this.game.settings.world.layout.hexagonToPixel(tile.hexagon, 0);
     const forest = [];
     for (let i = 0; i < 500; ++i) {
-      let position = tilePosition.add(this.layout.randomInside(tile.hexagon, 0));
+      let position = tilePosition.add(this.game.settings.world.layout.randomInside(tile.hexagon, 0));
       let reject = false;
       for (let ii = 0; ii < forest.length; ++ii) {
         if (Vector3.Distance(forest[ii].position, position) < 0.2 * (1 - tile.biomeData.density)) {
@@ -228,31 +148,10 @@ export default class GameWorld {
   private createMountains(tile: Tile) {
     tile.biomeData.height = 1;
 
-    const tilePosition = this.layout.hexagonToPixel(tile.hexagon, 0);
+    const tilePosition = this.game.settings.world.layout.hexagonToPixel(tile.hexagon, 0);
     const mountains = [];
     let mountain = new Environment('mountain', tile);
     mountain.position = tilePosition;
     mountains.push(mountain);
-
-    /*
-    for (let i = 0; i < 500; ++i) {
-      let position = tilePosition.add(this.layout.randomInside(tile.hexagon, 0));
-      let reject = false;
-      for (let ii = 0; ii < forest.length; ++ii) {
-        if (Vector3.Distance(forest[ii].position, position) < 0.2 * (1 - tile.biomeData.density)) {
-          reject = true;
-          break;
-        }
-      }
-
-      if (reject)
-        continue;
-
-      const tree = new Entity('tree', `${tile.biomeData.treeType}-tree`);
-      tree.position = position;
-      forest.push(tree);
-    }
-    */
-    //tile.addEnvironment(mountains);
   }
 }
