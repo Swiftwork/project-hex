@@ -50,7 +50,15 @@ export default class GameWorld {
         /* Environment */
         switch (tile.type) {
           case 'mountain':
-            this.createMountains(tile);
+            tile.surface = Tile.SURFACES.MOUNTAIN;
+            break;
+
+          case 'plain':
+            //tile.surface = Tile.SURFACES.GRASS;
+            break;
+
+          case 'desert':
+            //tile.surface = Tile.SURFACES.DUNES;
             break;
 
           case 'forest':
@@ -143,15 +151,5 @@ export default class GameWorld {
       forest.push(tree);
     }
     tile.addEnvironment(forest);
-  }
-
-  private createMountains(tile: Tile) {
-    tile.biomeData.height = 1;
-
-    const tilePosition = this.game.settings.world.layout.hexagonToPixel(tile.hexagon, 0);
-    const mountains = [];
-    let mountain = new Environment('mountain', tile);
-    mountain.position = tilePosition;
-    mountains.push(mountain);
   }
 }

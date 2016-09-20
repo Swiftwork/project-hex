@@ -19,12 +19,15 @@ export default class Tile {
 
   /* Tile biome types */
 	public static SURFACES = {
-    PLAIN: 'plain',
+    PLAIN: 'hex-plain',
+    MOUNTAIN: 'mountain-plain',
+    GRASS: 'grass-small',
+    DUNES: 'desert-dunes',
 	};
 
 	/* Tile biome data e.g. forest density */
 	public biomeData: any = {}
-  public surface: string;
+  public surface: string = Tile.SURFACES.PLAIN;
 
 	/* Tile states */
 	public isExplored = false;

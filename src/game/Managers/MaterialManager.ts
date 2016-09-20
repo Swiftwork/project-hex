@@ -11,9 +11,14 @@ export default class MaterialManager {
 
 	constructor(private scene: Scene, private assetsManager: AssetsManager) {
 		this.materials = new Map<string, StandardMaterial>();
-		/* GROUND */
+
+		/* TABLE */
 		this.add('paper', 'paper', [-50, -50]);
 
+    /* UNEXPLORED */
+		const unexplored = this.add('unexplored', '');
+    unexplored.diffuseColor = new Color3(1, 1, 1);
+    
 		/* TERRAIN TYPES */
 		const actic = this.add('arctic', 'snow', [-1, -1]);
 

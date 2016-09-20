@@ -71,7 +71,7 @@ export default class GameRenderer {
   }
 
   onCreate() {
-    this.createGround();
+    this.createTable();
     this.createTiles();
     this.scene.createOrUpdateSelectionOctree();
 
@@ -103,81 +103,68 @@ export default class GameRenderer {
 
   }
 
-  /* MESH CREATION */
+  //------------------------------------------------------------------------------------
+  // GAME BOARD MESH CREATORS
+  //------------------------------------------------------------------------------------
 
-  createGround() {
-    let ground = Mesh.CreateGround("ground", 100, 100, 2, this.scene);
-    ground.material = this.materialManager.get('paper');
-    ground.receiveShadows = true;
+  private createTable() {
+    let table = Mesh.CreateGround('table', 100, 100, 2, this.scene);
+    table.material = this.materialManager.get('paper');
+    table.receiveShadows = true;
   }
 
-  createTiles() {
-    /* Base Geometry */
-    const tileMesh = {
-      base: <Mesh> this.game.assetsManager.get(`mesh-hex-bottom`),
-      plain: <Mesh> this.game.assetsManager.get(`mesh-hex-plain`),
-    }
-
+  private createTiles() {
     /* Cached meshes */
-    const firstInstance = {}
+    const cache = {}
 
-    /* Unexplored mesh
-    const unexploredMesh = MeshBuilder.CreateCylinder(`tile-unexplored`, {
-      height: 0.05,
-      diameter: this.world.layout.size.x * 2 - 0.05,
-      tessellation: 6,
-    }, this.scene);
-    */
-
-    let base, surface;
-    base = tileMesh.base.clone(`tile-unexplored`);
-    surface = tileMesh.base.clone(`tile-unexplored`);
-    base.setEnabled(false);
-    surface.setEnabled(false);
-    base.visibility = surface.visibility = 0.4;
-    firstInstance['unexplored'] = { base: base, surface: surface, };
+    /* Unexplored mesh */
+    cache['unexplored'] = {
+      base: this.game.assetsManager.get(`mesh-hex-bottom`).clone(`tile-unexplored-base`),
+      surface: this.game.assetsManager.get(`mesh-hex-plain`).clone(`tile-unexplored-surface`),
+    };
+    cache['unexplored'].base.setEnabled(false);
+    cache['unexplored'].surface.setEnabled(false);
+    cache['unexplored'].base.visibility = cache['unexplored'].surface.visibility = 0.4;
+    cache['unexplored'].base.material = cache['unexplored'].surface.material = this.materialManager.get('unexplored');
 
     /* Loop through world tiles and generate meshes */
     this.world.tiles.forEach( (tile: Tile) => {
       const id = `tile-${tile.hexagon.toString()}`;
+      let base, surface;
 
       /* Explored tile */
       if (tile.isExplored) {
-        if (!firstInstance[tile.type]) {
-          /*
-          mesh = MeshBuilder.CreateCylinder(id, {
-            height: 0.05,
-            diameter: this.world.layout.size.x * 2 - 0.05,
-            tessellation: 6,
-            faceUV: [new Vector4(0, 0, 0, 0), new Vector4(0, 0, 6, 0.1), new Vector4(0, 0, 1, 1)],
-          }, this.scene);
-          */
-          base = tileMesh.base.clone(id);
-          surface = tileMesh.plain.clone(id);
+        if (!cache[tile.type]) {
+          /* faceUV: [new Vector4(0, 0, 0, 0), new Vector4(0, 0, 6, 0.1), new Vector4(0, 0, 1, 1)] */
+          base = this.game.assetsManager.get(`mesh-hex-bottom`).clone(`${id}-base`);
+          surface = this.game.assetsManager.get(`mesh-${tile.surface}`).clone(`${id}-surface`);
           base.material = surface.material = this.materialManager.get(tile.type);
           surface.receiveShadows = true;
+          this.meshes.push(base);
 
           /* Add to cache */
-          firstInstance[tile.type] = { base: base, surface: surface, };
-          
-          //this.meshes.push(mesh);
+          cache[tile.type] = {
+            base: base,
+            surface: surface,
+          };
         } else {
           /* Create new clone of cached tile */
-          base = firstInstance[tile.type].base.clone(id);
-          surface = firstInstance[tile.type].surface.clone(id);
-          console.log(base);
+          base = cache[tile.type].base.clone(`${id}-base`);
+          surface = cache[tile.type].surface.clone(`${id}-surface`);
         }
 
         /* Create nature on tile */
         this.createEnvironment(tile);
-        this.createUnit(tile);
 
         if (tile.isVisible) {
           /* Create buildings on tile */
           this.createStructure(tile);
+          /* Create units on tile */
+          this.createUnit(tile);
         } else {
-          //this.sunLight.excludedMeshes.push(base);
-          //this.sunLight.excludedMeshes.push(surface);
+          /* Darken hidden tiles */
+          this.sunLight.excludedMeshes.push(base);
+          this.sunLight.excludedMeshes.push(surface);
         }
         
         /* Tile actions
@@ -193,8 +180,8 @@ export default class GameRenderer {
         */
 
       } else {
-        base = firstInstance['unexplored'].base.createInstance(id);
-        surface = firstInstance['unexplored'].surface.createInstance(id);
+        base = cache['unexplored'].base.clone(`${id}-base`);
+        surface = cache['unexplored'].surface.clone(`${id}-surface`);
       }
 
       base.position = this.game.settings.world.layout.hexagonToPixel(tile.hexagon, 0)
@@ -205,10 +192,10 @@ export default class GameRenderer {
   }
 
   //------------------------------------------------------------------------------------
-  // MESH CREATORS
+  // TILE MESH ENTITY CREATORS
   //------------------------------------------------------------------------------------
 
-  createEnvironment(tile: Tile): void {
+  private createEnvironment(tile: Tile): void {
     /* Cached tiles */
     const firstInstance = {}
     let original, bounds, mesh;
@@ -236,7 +223,7 @@ export default class GameRenderer {
     }
   }
   
-  createStructure(tile: Tile): void {
+  private createStructure(tile: Tile): void {
     if (tile.structure) {
       const original = this.game.assetsManager.get(`mesh-${tile.structure.model}`);
       const bounds = original.getBoundingInfo().boundingBox;
@@ -249,7 +236,7 @@ export default class GameRenderer {
     }
   }
 
-  createUnit(tile: Tile): void {
+  private createUnit(tile: Tile): void {
     if (tile.unit) {
       const original = this.game.assetsManager.get(`mesh-${tile.unit.model}`);
       const bounds = original.getBoundingInfo().boundingBox;
