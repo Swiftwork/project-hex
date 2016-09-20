@@ -1,7 +1,7 @@
 import {
   Vector2, Vector3,
 	Color3,
-	Engine, Scene,
+	Engine, Scene, ScreenSpaceCanvas2D,
 	AssetsManager as AssetsLoader,
 } from 'babylonjs';
 
@@ -21,6 +21,7 @@ export default class Game {
 	public settings: Settings;
 	public engine: Engine;
 	public scene: Scene;
+  public gui: ScreenSpaceCanvas2D;
 	public world: GameWorld;
 	public logic: GameLogic;
 	public renderer: GameRenderer;
@@ -50,6 +51,7 @@ export default class Game {
 
     /* Scene & Assets */
     this.scene = new Scene(this.engine);
+    this.gui = new ScreenSpaceCanvas2D(this.scene, { id: "gui" });
     this.assetsManager = new AssetsManager();
     this.assetsManager.loadAllAssets(new AssetsLoader(this.scene), (tasks) => {
 			this.world = new GameWorld(this);

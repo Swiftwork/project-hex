@@ -10,6 +10,7 @@ import Game from './Game';
 import GameWorld from './GameWorld';
 import Hexagon from './Math/Hexagon';
 import Tile from './Logic/Tile';
+import GUIManager from './Managers/GUIManager';
 import CameraManager from './Managers/CameraManager';
 import LightManager from './Managers/LightManager';
 import MaterialManager from './Managers/MaterialManager';
@@ -17,6 +18,7 @@ import MaterialManager from './Managers/MaterialManager';
 export default class GameRenderer {
 
   /* MANAGERS */
+  private guiManager: GUIManager;
   private cameraManager: CameraManager;
   private lightManager: LightManager;
   private materialManager: MaterialManager;
@@ -39,6 +41,7 @@ export default class GameRenderer {
     this.scene.fogEnd = 15;
 
     /* Managers */
+    this.guiManager = new GUIManager(this.game.gui);
     this.cameraManager = new CameraManager(this.scene);
     this.lightManager = new LightManager(this.scene);
     this.materialManager = new MaterialManager(this.scene, this.game.assetsManager);
@@ -71,14 +74,14 @@ export default class GameRenderer {
   }
 
   onCreate() {
-    this.createTable();
-    this.createTiles();
+    this.renderTable();
+    this.renderTiles();
     this.scene.createOrUpdateSelectionOctree();
 
     /* Shadows */
     let shadowGenerator = new ShadowGenerator(8192, this.sunLight);
     shadowGenerator.bias = 0.0001;
-    //shadowGenerator.useBlurVarianceShadowMap = true;
+    shadowGenerator.useBlurVarianceShadowMap = true;
     shadowGenerator.getShadowMap().refreshRate = 0;
     shadowGenerator.getShadowMap().renderList = 
       shadowGenerator.getShadowMap().renderList.concat(this.meshes);
@@ -104,16 +107,16 @@ export default class GameRenderer {
   }
 
   //------------------------------------------------------------------------------------
-  // GAME BOARD MESH CREATORS
+  // GAME BOARD MESH RENDERERS
   //------------------------------------------------------------------------------------
 
-  private createTable() {
+  private renderTable(): void {
     let table = Mesh.CreateGround('table', 100, 100, 2, this.scene);
     table.material = this.materialManager.get('paper');
     table.receiveShadows = true;
   }
 
-  private createTiles() {
+  private renderTiles(): void {
     /* Cached meshes */
     const cache = {}
 
@@ -130,7 +133,7 @@ export default class GameRenderer {
     /* Loop through world tiles and generate meshes */
     this.world.tiles.forEach( (tile: Tile) => {
       const id = `tile-${tile.hexagon.toString()}`;
-      let base, surface;
+      let base: Mesh, surface: Mesh;
 
       /* Explored tile */
       if (tile.isExplored) {
@@ -140,7 +143,6 @@ export default class GameRenderer {
           surface = this.game.assetsManager.get(`mesh-${tile.surface}`).clone(`${id}-surface`);
           base.material = surface.material = this.materialManager.get(tile.type);
           surface.receiveShadows = true;
-          this.meshes.push(base);
 
           /* Add to cache */
           cache[tile.type] = {
@@ -148,19 +150,19 @@ export default class GameRenderer {
             surface: surface,
           };
         } else {
-          /* Create new clone of cached tile */
+          /* Render new clone of cached tile */
           base = cache[tile.type].base.clone(`${id}-base`);
           surface = cache[tile.type].surface.clone(`${id}-surface`);
         }
 
-        /* Create nature on tile */
-        this.createEnvironment(tile);
+        /* Render nature on tile */
+        this.renderEnvironment(tile);
 
         if (tile.isVisible) {
-          /* Create buildings on tile */
-          this.createStructure(tile);
-          /* Create units on tile */
-          this.createUnit(tile);
+          /* Render buildings on tile */
+          this.renderStructure(tile);
+          /* Render units on tile */
+          this.renderUnit(tile);
         } else {
           /* Darken hidden tiles */
           this.sunLight.excludedMeshes.push(base);
@@ -192,10 +194,10 @@ export default class GameRenderer {
   }
 
   //------------------------------------------------------------------------------------
-  // TILE MESH ENTITY CREATORS
+  // TILE MESH ENTITY RENDERERS
   //------------------------------------------------------------------------------------
 
-  private createEnvironment(tile: Tile): void {
+  private renderEnvironment(tile: Tile): void {
     /* Cached tiles */
     const firstInstance = {}
     let original, bounds, mesh;
@@ -223,7 +225,7 @@ export default class GameRenderer {
     }
   }
   
-  private createStructure(tile: Tile): void {
+  private renderStructure(tile: Tile): void {
     if (tile.structure) {
       const original = this.game.assetsManager.get(`mesh-${tile.structure.model}`);
       const bounds = original.getBoundingInfo().boundingBox;
@@ -236,7 +238,7 @@ export default class GameRenderer {
     }
   }
 
-  private createUnit(tile: Tile): void {
+  private renderUnit(tile: Tile): void {
     if (tile.unit) {
       const original = this.game.assetsManager.get(`mesh-${tile.unit.model}`);
       const bounds = original.getBoundingInfo().boundingBox;
@@ -247,5 +249,12 @@ export default class GameRenderer {
       mesh.position.y = 0.1;
       this.meshes.push(mesh);
     }
+  }
+
+  //------------------------------------------------------------------------------------
+  // INTERFACE RENDERERS
+  //------------------------------------------------------------------------------------
+
+  private renderInterface(): void {
   }
 }
