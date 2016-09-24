@@ -182,12 +182,11 @@ export default class GameRenderer {
         */
 
         base.position = this.game.settings.world.layout.hexagonToPixel(tile.hexagon, 0)
-        surface.position = this.game.settings.world.layout.hexagonToPixel(tile.hexagon, 0.093);
-        base.scaling = surface.scaling = new Vector3(0.8,0.8,0.8);
+        surface.position = base.position.clone();
+        surface.position.y = 0.1;
         base.rotation = surface.rotation = new Vector3(0, Math.PI / 2, 0);
-
+        base.scaling = surface.scaling = new Vector3(0.93, 0.93, 0.93);
         this.meshes.push(surface);
-
       } else {
         //base = cache['unexplored'].base.clone(`${id}-base`);
         //surface = cache['unexplored'].surface.clone(`${id}-surface`);
