@@ -40,7 +40,7 @@ export default class Game {
 			},
       world: {
         layout: new HexagonLayout(HexagonLayout.LAYOUT_HORIZONTAL, new Vector2(0.5, 0.5), Vector3.Zero()),
-        size: 32,
+        size: 16,
       }
 		}
 

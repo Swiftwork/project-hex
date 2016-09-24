@@ -80,8 +80,8 @@ export default class GameRenderer {
 
     /* Shadows */
     let shadowGenerator = new ShadowGenerator(8192, this.sunLight);
-    shadowGenerator.bias = 0.0001;
-    shadowGenerator.useBlurVarianceShadowMap = true;
+    shadowGenerator.bias = 0.0000005;
+    shadowGenerator.usePoissonSampling = true;
     shadowGenerator.getShadowMap().refreshRate = 0;
     shadowGenerator.getShadowMap().renderList = 
       shadowGenerator.getShadowMap().renderList.concat(this.meshes);
@@ -111,7 +111,7 @@ export default class GameRenderer {
   //------------------------------------------------------------------------------------
 
   private renderTable(): void {
-    let table = Mesh.CreateGround('table', 100, 100, 2, this.scene);
+    let table = Mesh.CreateGround('table', this.game.settings.world.size * 2, this.game.settings.world.size * 2, 2, this.scene);
     table.material = this.materialManager.get('paper');
     table.receiveShadows = true;
   }
@@ -142,7 +142,7 @@ export default class GameRenderer {
           base = this.game.assetsManager.get(`mesh-hex-bottom`).clone(`${id}-base`);
           surface = this.game.assetsManager.get(`mesh-${tile.surface}`).clone(`${id}-surface`);
           base.material = surface.material = this.materialManager.get(tile.type);
-          surface.receiveShadows = true;
+          base.receiveShadows = surface.receiveShadows = true;
 
           /* Add to cache */
           cache[tile.type] = {
@@ -181,15 +181,17 @@ export default class GameRenderer {
         ));
         */
 
-      } else {
-        base = cache['unexplored'].base.clone(`${id}-base`);
-        surface = cache['unexplored'].surface.clone(`${id}-surface`);
-      }
+        base.position = this.game.settings.world.layout.hexagonToPixel(tile.hexagon, 0)
+        surface.position = this.game.settings.world.layout.hexagonToPixel(tile.hexagon, 0.093);
+        base.scaling = surface.scaling = new Vector3(0.8,0.8,0.8);
+        base.rotation = surface.rotation = new Vector3(0, Math.PI / 2, 0);
 
-      base.position = this.game.settings.world.layout.hexagonToPixel(tile.hexagon, 0)
-      surface.position = this.game.settings.world.layout.hexagonToPixel(tile.hexagon, 0.093);
-      base.scaling = surface.scaling = new Vector3(0.8,0.8,0.8);
-      base.rotation = surface.rotation = new Vector3(0, Math.PI / 2, 0);
+        this.meshes.push(surface);
+
+      } else {
+        //base = cache['unexplored'].base.clone(`${id}-base`);
+        //surface = cache['unexplored'].surface.clone(`${id}-surface`);
+      }
     }, this);
   }
 

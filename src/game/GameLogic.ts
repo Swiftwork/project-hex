@@ -75,7 +75,7 @@ export default class GameLogic {
         const entity = structuresUnts[i];
         const distance = tile.hexagon.distance(entity.tile.hexagon);
 
-        if (distance <= 4) {
+        if (distance <= 3) {
           tile.isExplored = true;
         }
 
