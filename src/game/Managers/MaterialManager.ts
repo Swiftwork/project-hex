@@ -13,7 +13,7 @@ export default class MaterialManager {
 		this.materials = new Map<string, StandardMaterial>();
 
 		/* TABLE */
-		const base = this.add('felt', 'felt', [-30, -30]);
+		const base = this.add('felt', 'felt', [-10, -10]);
 		base.diffuseColor = new Color3(0.04, 0.28, 0.42);
 
     const edge = this.add('wood', 'wood', [-50, -50]);

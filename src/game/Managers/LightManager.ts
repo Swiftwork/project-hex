@@ -36,9 +36,6 @@ export default class LightManager {
 			null,
 			{
 				intensity: 0.6,
-				diffuse: new Color3(1, 1, 1),
-				specular: new Color3(1, 1, 1),
-				groundColor: new Color3(0, 0, 0),
 		});
 	}
 
