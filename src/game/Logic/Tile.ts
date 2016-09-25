@@ -20,9 +20,10 @@ export default class Tile {
   /* Tile biome types */
 	public static SURFACES = {
     PLAIN: 'hex-plain',
-    MOUNTAIN: 'mountain-plain',
-    GRASS: 'grass-small',
-    DUNES: 'desert-dunes',
+    MOUNTAIN: 'hex-mountain-high',
+    GRASS: 'hex-plain-low',
+    DUNES: 'hex-desert-dunes',
+    OCEAN: 'hex-ocean-low',
 	};
 
 	/* Tile biome data e.g. forest density */

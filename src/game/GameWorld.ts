@@ -54,11 +54,15 @@ export default class GameWorld {
             break;
 
           case 'plain':
-            //tile.surface = Tile.SURFACES.GRASS;
+            tile.surface = Tile.SURFACES.GRASS;
             break;
 
           case 'desert':
-            //tile.surface = Tile.SURFACES.DUNES;
+            tile.surface = Tile.SURFACES.DUNES;
+            break;
+
+          case 'ocean':
+            tile.surface = Tile.SURFACES.OCEAN;
             break;
 
           case 'forest':
