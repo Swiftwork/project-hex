@@ -9,6 +9,7 @@ import {
 import Game from './Game';
 import GameWorld from './GameWorld';
 import Hexagon from './Math/Hexagon';
+import CustomMeshes from './Math/CustomMeshes';
 import Tile from './Logic/Tile';
 import GUIManager from './Managers/GUIManager';
 import CameraManager from './Managers/CameraManager';
@@ -95,7 +96,7 @@ export default class GameRenderer {
 
   onUpdate() {
     this.scene.render();
-    this.mainCamera.panningSensibility = 10 * (this.mainCamera.upperRadiusLimit / this.mainCamera.radius);
+    this.mainCamera.panningSensibility = this.mainCamera.upperRadiusLimit * (this.mainCamera.upperRadiusLimit / this.mainCamera.radius);
   }
 
   onPause () {
@@ -111,9 +112,19 @@ export default class GameRenderer {
   //------------------------------------------------------------------------------------
 
   private renderTable(): void {
-    let table = Mesh.CreateGround('table', this.game.settings.world.size * 2, this.game.settings.world.size * 2, 2, this.scene);
-    table.material = this.materialManager.get('paper');
-    table.receiveShadows = true;
+    let base = Mesh.CreateGround('table', this.game.settings.world.size * 2, this.game.settings.world.size * 2, 2, this.scene);
+    base.material = this.materialManager.get('felt');
+    base.receiveShadows = true;
+
+    const edge = CustomMeshes.CreateFrame('table-frame', {
+      length: this.game.settings.world.size * 2,
+      depth: this.game.settings.world.size * 2,
+      height: 0.6,
+      thickness: 2,
+      alignment: CustomMeshes.ALIGNMENT.OUTSIDE,
+    }, this.scene);
+    edge.material = this.materialManager.get('wood');
+    this.meshes.push(edge);
   }
 
   private renderTiles(): void {

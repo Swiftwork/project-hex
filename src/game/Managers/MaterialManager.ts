@@ -13,7 +13,12 @@ export default class MaterialManager {
 		this.materials = new Map<string, StandardMaterial>();
 
 		/* TABLE */
-		this.add('paper', 'paper', [-50, -50]);
+		const base = this.add('felt', 'felt', [-30, -30]);
+		base.diffuseColor = new Color3(0.04, 0.28, 0.42);
+
+    const edge = this.add('wood', 'wood', [-50, -50]);
+		edge.specularColor = new Color3(0.5, 0.5, 0.5);
+		edge.specularPower = 100;
 
     /* UNEXPLORED */
 		const unexplored = this.add('unexplored', '');

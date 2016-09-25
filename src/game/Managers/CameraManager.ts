@@ -34,14 +34,14 @@ export default class CameraManager {
 			radius: 5,
 			position: Vector3.Zero(),
 			settings: {
-				lowerRadiusLimit: 3,
-				upperRadiusLimit: 100,
+				lowerRadiusLimit: 2,
+				upperRadiusLimit: 50,
 				//lowerAlphaLimit: CameraManager.toRadians(360),
 				//upperAlphaLimit: CameraManager.toRadians(360),
 				lowerBetaLimit: CameraManager.toRadians(30),
-				//upperBetaLimit: CameraManager.toRadians(65),
+				upperBetaLimit: CameraManager.toRadians(75),
 				panningAxis: new Vector3(1, 0, 1),
-				inertia: 0.5,
+				inertia: 0.7,
 			}
 		});
 	}
