@@ -14,7 +14,7 @@ export default class MaterialManager {
 
     /* TABLE */
     const base = this.add('felt', 'felt', [-10, -10]);
-    base.diffuseColor = new Color3(0.04, 0.28, 0.42);
+    base.diffuseColor = new Color3(0.05, 0.32, 0.50);
 
     const edge = this.add('wood', 'wood', [-50, -50]);
     edge.specularColor = new Color3(0.5, 0.5, 0.5);

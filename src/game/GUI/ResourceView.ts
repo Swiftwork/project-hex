@@ -1,5 +1,5 @@
 import {
-  Color4,
+  Vector2, Color4,
   ScreenSpaceCanvas2D,
   Texture, 
 } from 'babylonjs';
@@ -15,14 +15,27 @@ export default class ResourceView extends View {
   constructor(
     public id: string,
     public canvas: ScreenSpaceCanvas2D,
+    public options: {
+      position: Vector2,
+      textSize: number,
+    }
   ) {
     super(id, canvas);
     this.resources = new Map<string, Label>();
   }
 
   public layout() {
+    const offset = this.options.position.clone();
     this.resources.forEach((label: Label) => {
-      console.log(label.text2d.size);
+      if (label.icon2d) {
+        label.icon2d.position = offset.clone();
+        offset.x += label.icon2d.size.width + 12;
+        label.text2d.position = offset.clone();
+        offset.x += label.text2d.size.width + 64;
+      } else {
+        label.text2d.position = this.options.position;
+        offset.x += label.text2d.size.width + 64;
+      }
     })
   }
 
@@ -31,7 +44,7 @@ export default class ResourceView extends View {
       resource.type,
       this.canvas,
       `${resource.value} ${resource.type.capitalize()}`, {
-        textSize: 32,
+        textSize: this.options.textSize,
         color: color,
         icon: icon,
       }

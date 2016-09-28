@@ -9,11 +9,12 @@ import View from './View';
 export default class Label extends View {
 
   static ICON = {
-    LOG: '\e900',
-    GOLD: '\e901',
-    MAN: '\e902',
-    STEAK: '\e903',
-    STONE: '\e904',
+    LOG: '\uE900',
+    GOLD: '\uE901',
+    MAN: '\uE902',
+    STEAK: '\uE903',
+    STONE: '\uE904',
+    MENU: '\uE905',
   };
 
   public icon2d: Text2D;
@@ -36,6 +37,7 @@ export default class Label extends View {
         id: `${this.id}-icon`,
         parent: this.canvas,
         fontName: `${this.options.textSize}px icons`,
+        defaultFontColor: this.options.color,
       });
     }
 
@@ -43,6 +45,7 @@ export default class Label extends View {
       id: this.id,
       parent: this.canvas,
       fontName: `${this.options.textSize}px outage`,
+      defaultFontColor: this.options.color,
     });
   }
 }

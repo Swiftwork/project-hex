@@ -19,19 +19,19 @@ export default class GameInterface {
   private mainCamera: ArcRotateCamera;
 
   /* VIEWS */
+  private menu: Label;
   private compass: CompassView;
+  private resources: ResourceView;
 
   constructor(
     private game: Game,
     private scene: Scene
   ) {
     this.mainCamera = <ArcRotateCamera> this.game.cameraManager.get('main');
-
-    this.compass = <CompassView> this.game.guiManager.add('compass',
-      new CompassView('compass', this.game.gui, this.game.assetsManager.get('interface-compass')));
   }
 
   onCreate() {
+    this.createCompass();
     this.createTopBar();
     this.game.engine.runRenderLoop(this.onUpdate.bind(this));
   }
@@ -59,16 +59,34 @@ export default class GameInterface {
   // INTERFACE GROUPS
   //------------------------------------------------------------------------------------
 
+  private createCompass() {
+    this.compass = <CompassView> this.game.guiManager.add('compass',
+      new CompassView('compass', this.game.gui, this.game.assetsManager.get('interface-compass')));
+  }
+
   private createTopBar() {
-   const bar = new Rectangle2D({id: 'top-bar', parent: this.game.gui,
-      y: this.game.gui.height - 100,
+    const bar = new Rectangle2D({id: 'top-bar', parent: this.game.gui,
+      y: this.game.gui.height - 80,
       width: this.game.gui.width,
-      height: 100,
+      height: 80,
       fill: '#00000090',
     });
 
-    const resourceView = new ResourceView('resource-view', this.game.gui);
-    resourceView.addResource(new Resource('gold'), Label.ICON.GOLD, new Color4(0, 1, 1, 1));
+    this.resources = new ResourceView('resource-view', this.game.gui, {
+      position: new Vector2(40, this.game.gui.height - 56),
+      textSize: 32,
+    });
+    this.resources.addResource(new Resource('wood'), Label.ICON.LOG, new Color4(0.50, 0.38, 0.30, 1));
+    this.resources.addResource(new Resource('stone'), Label.ICON.STONE, new Color4(0.70, 0.70, 0.70, 1));
+    this.resources.addResource(new Resource('metal'), Label.ICON.GOLD, new Color4(0.95, 0.87, 0, 1));
+    this.resources.addResource(new Resource('food'), Label.ICON.STEAK, new Color4(0.95, 0.24, 0.32, 1));
+    this.resources.addResource(new Resource('units'), Label.ICON.MAN, new Color4(0.22, 1, 0.26, 1));
+
+    this.menu = new Label('menu', this.game.gui, '', {
+      textSize: 32,
+      icon: Label.ICON.MENU,
+    })
+    this.menu.text2d.position = new Vector2(this.game.gui.width - 80, this.game.gui.height - 56);
   }
 
   //------------------------------------------------------------------------------------
