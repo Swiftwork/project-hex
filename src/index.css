@@ -1,0 +1,30 @@
+/* FONTS */
+@import './game/Assets/fonts/cubic/cubic.css';
+@import './game/Assets/fonts/outage/outage.css';
+@import './game/Assets/fonts/icons/icons.css';
+
+/* MAIN */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'cubic', Consolas, monaco, monospace;
+  background: black;
+}
+
+h1#support {
+  display: none;
+  margin-top: 10%;
+  padding: 10%;
+  color: white;
+  text-align: center;
+}
+
+canvas#game {
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}

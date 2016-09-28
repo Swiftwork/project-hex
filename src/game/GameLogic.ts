@@ -15,8 +15,6 @@ import PlayerManager from './Managers/PlayerManager';
 
 export default class GameLogic {
 
-  private playerManager: PlayerManager;
-
   constructor(
     private game: Game,
     private world: GameWorld,
@@ -24,13 +22,10 @@ export default class GameLogic {
   ) {
     /* Scene */
     this.scene.collisionsEnabled = false;
-
-    /* Managers */
-    this.playerManager = new PlayerManager(this.scene);
   }
 
   onCreate() {
-    const player = this.playerManager.add('TestMan', Player.TYPES.LOCAL);
+    const player = this.game.playerManager.add('TestMan', Player.TYPES.LOCAL);
 
     const base1 = player.createBase(this.world.tiles.get(new Hexagon(0,0,0).hash()));
     const base2 = player.createBase(this.world.tiles.get(new Hexagon(5,3,-8).hash()));
@@ -66,7 +61,7 @@ export default class GameLogic {
   //------------------------------------------------------------------------------------
 
   private updateVisiblity() {
-    const player = this.playerManager.getLocal();
+    const player = this.game.playerManager.getLocal();
     const structuresUnts = player.structures.concat(<any>player.units);
     this.world.tiles.forEach((tile: Tile) => {
       tile.isVisible = false;

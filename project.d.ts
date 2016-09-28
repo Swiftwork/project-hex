@@ -17,6 +17,13 @@ interface Array<T> {
   random(seed?: number): T;
 }
 
+interface String {
+  /*
+   * Capitalizes the first letter of the string.
+   */
+  capitalize(): string;
+}
+
 /* Export of the BabylonJS declarations to allow the components to be imported into project */
 declare module "babylonjs" {
   export = BABYLON;

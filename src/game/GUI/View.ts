@@ -1,12 +1,12 @@
 import {
-  Vector2,
+  ScreenSpaceCanvas2D,
 } from 'babylonjs';
 
-export default class GUI {
+export default class View {
 
   constructor(
     public id: string,
-    public position: Vector2
+    public canvas: ScreenSpaceCanvas2D
   ) {
     
   }

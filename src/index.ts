@@ -1,12 +1,16 @@
 import { Engine } from 'babylonjs';
 import Game from './game/Game';
 
+/* Global Styles */
+require('./index.css');
+
+/* Check For WebGL Support */
 if (!Engine.isSupported()) {
-	(<HTMLElement>document.querySelector('h1#support')).style.display = 'block';
-	document.querySelector('canvas#game').remove();
-	throw 'Your browser does not support BabylonJS or WebGL is not enabled!';
+  (<HTMLElement>document.querySelector('h1#support')).style.display = 'block';
+  document.querySelector('canvas#game').remove();
+  throw 'Your browser does not support BabylonJS or WebGL is not enabled!';
 } else {
-	document.querySelector('h1#support').remove();
+  document.querySelector('h1#support').remove();
 }
 
 const game = new Game(<HTMLCanvasElement>document.querySelector('canvas#game'));

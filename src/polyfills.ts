@@ -5,8 +5,12 @@ Math.randomBetween = function(min: number, max: number): number {
 };
 
 Array.prototype.random = function<T>(seed?: number): T {
-	seed = seed || Math.random() * 100;
-	seed = seed % this.length;
-	seed = seed << 0;
-	return this[Math.abs(seed)];
+  seed = seed || Math.random() * 100;
+  seed = seed % this.length;
+  seed = seed << 0;
+  return this[Math.abs(seed)];
+}
+
+String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
 }

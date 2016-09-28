@@ -2,6 +2,7 @@ var path = require('path');
 var extend = require('webpack-merge');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 var PROD = process.argv.indexOf('--production') != -1 || process.env.NODE_ENV == 'production';
 
@@ -33,14 +34,18 @@ var config = {
     loaders: [
       {
         test: /\.ts$/,
-        loaders: ['ts'],
+        loader: 'ts',
       },
       {
         test: /\.pug$/,
         loader: 'pug',
       },
       {
-        test: /\.(png|jpe?g|svg|gif|woff|woff2|ttf|eot|ico|mp4)$/,
+        test: /\.css$/,
+        loader: ExtractTextPlugin.extract('css'),
+      },
+      {
+        test: /\.(png|jpe?g|svg|fx|woff2?)$/,
         loader: 'file',
         query: {
           name: PROD ? 'assets/[hash].[ext]' : 'assets/[name].[ext]',
@@ -64,6 +69,7 @@ var config = {
       inject: false,
       template: './index.pug',
     }),
+    new ExtractTextPlugin('./index.css'),
   ],
 };
 

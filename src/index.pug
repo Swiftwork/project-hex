@@ -1,40 +1,16 @@
 html
-	head
-		meta(name="viewport", content="width=device-width, initial-scale=1.0")
-		
-		title Project Hex
+  head
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    
+    title Project Hex
 
-		script(src="polyfills.js")
+    script(src="polyfills.js")
+    link(href="index.css", rel="stylesheet")
 
-		style.
-			html, body {
-				margin: 0;
-				padding: 0;
-				width: 100%;
-				height: 100%;
-				overflow: hidden;
-				font-family: Consolas, monaco, monospace;
-				background: black;
-			}
+  body
 
-			h1#support {
-				display: none;
-				margin-top: 10%;
-				padding: 10%;
-				color: white;
-				text-align: center;
-			}
+    h1#support Your browser does not support BabylonJS or WebGL is not enabled! <br /><br /> :(
+    canvas#game
 
-			canvas#game {
-				width: 100%;
-				height: 100%;
-				touch-action: none;
-			}
-
-	body
-
-		h1#support Your browser does not support BabylonJS or WebGL is not enabled! <br /><br /> :(
-		canvas#game
-
-		script(src="vendor.js")
-		script(src="index.js")
+    script(src="vendor.js")
+    script(src="index.js")

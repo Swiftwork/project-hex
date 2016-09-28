@@ -1,6 +1,6 @@
 import {
   Vector2, Vector3, Vector4,
-  Color3, Color4, StandardMaterial,
+  Color3, Color4, StandardMaterial, ShaderMaterial,
   Mesh, MeshBuilder,
   Scene, ArcRotateCamera,
   DirectionalLight, ShadowGenerator,
@@ -11,18 +11,9 @@ import GameWorld from './GameWorld';
 import Hexagon from './Math/Hexagon';
 import CustomMeshes from './Math/CustomMeshes';
 import Tile from './Logic/Tile';
-import GUIManager from './Managers/GUIManager';
 import CameraManager from './Managers/CameraManager';
-import LightManager from './Managers/LightManager';
-import MaterialManager from './Managers/MaterialManager';
 
 export default class GameRenderer {
-
-  /* MANAGERS */
-  private guiManager: GUIManager;
-  private cameraManager: CameraManager;
-  private lightManager: LightManager;
-  private materialManager: MaterialManager;
 
   /* GENERAL */
   private mainCamera: ArcRotateCamera;
@@ -41,19 +32,13 @@ export default class GameRenderer {
     this.scene.fogStart = 10;
     this.scene.fogEnd = 15;
 
-    /* Managers */
-    this.guiManager = new GUIManager(this.game.gui);
-    this.cameraManager = new CameraManager(this.scene);
-    this.lightManager = new LightManager(this.scene);
-    this.materialManager = new MaterialManager(this.scene, this.game.assetsManager);
-
     /* Cameras */
-    this.mainCamera = this.cameraManager.get('main');
+    this.mainCamera = <ArcRotateCamera> this.game.cameraManager.get('main');
     this.mainCamera.setTarget(Vector3.Zero());
     this.mainCamera.attachControl(this.game.canvas, false, false);
 
     /* Lights */
-    this.sunLight = this.lightManager.get('sunLight');
+    this.sunLight = this.game.lightManager.get('sunLight');
 
     /* Tile Storage */
     this.meshes = [];
@@ -113,7 +98,7 @@ export default class GameRenderer {
 
   private renderTable(): void {
     let base = Mesh.CreateGround('table', this.game.settings.world.size * 2, this.game.settings.world.size * 2, 2, this.scene);
-    base.material = this.materialManager.get('felt');
+    base.material = this.game.materialManager.get('felt');
     base.receiveShadows = true;
 
     const edge = CustomMeshes.CreateFrame('table-frame', {
@@ -123,7 +108,7 @@ export default class GameRenderer {
       thickness: 2,
       alignment: CustomMeshes.ALIGNMENT.OUTSIDE,
     }, this.scene);
-    edge.material = this.materialManager.get('wood');
+    edge.material = this.game.materialManager.get('wood');
     this.meshes.push(edge);
   }
 
@@ -139,7 +124,7 @@ export default class GameRenderer {
     cache['unexplored'].base.setEnabled(false);
     cache['unexplored'].surface.setEnabled(false);
     cache['unexplored'].base.visibility = cache['unexplored'].surface.visibility = 0.4;
-    cache['unexplored'].base.material = cache['unexplored'].surface.material = this.materialManager.get('unexplored');
+    cache['unexplored'].base.material = cache['unexplored'].surface.material = this.game.materialManager.get('unexplored');
 
     /* Loop through world tiles and generate meshes */
     this.world.tiles.forEach( (tile: Tile) => {
@@ -152,7 +137,6 @@ export default class GameRenderer {
           /* faceUV: [new Vector4(0, 0, 0, 0), new Vector4(0, 0, 6, 0.1), new Vector4(0, 0, 1, 1)] */
           base = this.game.assetsManager.get(`mesh-hex-bottom`).clone(`${id}-base`);
           surface = this.game.assetsManager.get(`mesh-${tile.surface}`).clone(`${id}-surface`);
-          base.material = surface.material = this.materialManager.get(tile.type);
           base.receiveShadows = surface.receiveShadows = true;
 
           /* Add to cache */
@@ -170,14 +154,18 @@ export default class GameRenderer {
         this.renderEnvironment(tile);
 
         if (tile.isVisible) {
+          
+          base.material = surface.material = this.game.materialManager.get(tile.type);
+
           /* Render buildings on tile */
           this.renderStructure(tile);
           /* Render units on tile */
           this.renderUnit(tile);
         } else {
+
           /* Darken hidden tiles */
-          this.sunLight.excludedMeshes.push(base);
-          this.sunLight.excludedMeshes.push(surface);
+          base.material = surface.material = this.game.materialManager.get(`${tile.type}-hidden`);
+          (<ShaderMaterial> base.material).setVector3("cameraPosition", this.game.cameraManager.get('main').position);
         }
         
         /* Tile actions
@@ -261,12 +249,5 @@ export default class GameRenderer {
       mesh.position.y = 0.1;
       this.meshes.push(mesh);
     }
-  }
-
-  //------------------------------------------------------------------------------------
-  // INTERFACE RENDERERS
-  //------------------------------------------------------------------------------------
-
-  private renderInterface(): void {
   }
 }

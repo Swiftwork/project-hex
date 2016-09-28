@@ -50,19 +50,19 @@ export default class GameWorld {
         /* Environment */
         switch (tile.type) {
           case 'mountain':
-            tile.surface = Tile.SURFACES.MOUNTAIN;
+            tile.surface = Tile.SURFACE.MOUNTAIN;
             break;
 
           case 'plain':
-            tile.surface = Tile.SURFACES.GRASS;
+            tile.surface = Tile.SURFACE.GRASS;
             break;
 
           case 'desert':
-            tile.surface = Tile.SURFACES.DUNES;
+            tile.surface = Tile.SURFACE.DUNES;
             break;
 
           case 'ocean':
-            tile.surface = Tile.SURFACES.OCEAN;
+            tile.surface = Tile.SURFACE.OCEAN;
             break;
 
           case 'forest':
@@ -77,7 +77,7 @@ export default class GameWorld {
 
   private generateTileType(hash: number, neighbors: Tile[]): string {
     const probability = {};
-    for(let key in Tile.TYPES) probability[Tile.TYPES[key]] = 1;
+    for(let key in Tile.TYPE) probability[Tile.TYPE[key]] = 1;
 
     /* Affect probability of tile type based on neighboring tiles */
     for (var i = 0; i < neighbors.length; i++) {
@@ -87,26 +87,26 @@ export default class GameWorld {
 
       switch (neighbor.type) {
         case 'mountain':
-          if (probability[Tile.TYPES.MOUNTAIN] < 4)
-            probability[Tile.TYPES.MOUNTAIN] = 10;
+          if (probability[Tile.TYPE.MOUNTAIN] < 4)
+            probability[Tile.TYPE.MOUNTAIN] = 10;
           else
-            probability[Tile.TYPES.MOUNTAIN] -= 6;
+            probability[Tile.TYPE.MOUNTAIN] -= 6;
           break;
 
         case 'plain':
-          probability[Tile.TYPES.PLAIN] += 5;
+          probability[Tile.TYPE.PLAIN] += 5;
           break;
 
         case 'desert':
-          probability[Tile.TYPES.DESERT] += 5;
+          probability[Tile.TYPE.DESERT] += 5;
           break;
 
         case 'forest':
-          probability[Tile.TYPES.FOREST] += 5;
+          probability[Tile.TYPE.FOREST] += 5;
           break;
 
         case 'ocean':
-          probability[Tile.TYPES.OCEAN] *= 3;
+          probability[Tile.TYPE.OCEAN] *= 3;
           break;
 
         default:
