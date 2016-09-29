@@ -20,6 +20,8 @@ export default class GameInterface {
 
   /* VIEWS */
   private menu: Label;
+  private clock: Label;
+  private fps: Label;
   private compass: CompassView;
   private resources: ResourceView;
 
@@ -42,6 +44,8 @@ export default class GameInterface {
 
   onUpdate() {
     this.compass.sprite.rotation = -this.mainCamera.alpha;
+    this.clock.setText(new Date().toLocaleTimeString('sv-SV'));
+    this.fps.setText(`${Math.floor(this.game.engine.getFps()).toString()} fps`);
   }
 
   onResize() {
@@ -69,11 +73,11 @@ export default class GameInterface {
       y: this.game.gui.height - 80,
       width: this.game.gui.width,
       height: 80,
-      fill: '#00000090',
+      fill: '#000000ff',
     });
 
     this.resources = new ResourceView('resource-view', this.game.gui, {
-      position: new Vector2(40, this.game.gui.height - 56),
+      position: new Vector2(40, this.game.gui.height - (80 + 32) / 2),
       textSize: 32,
     });
     this.resources.addResource(new Resource('wood'), Label.ICON.LOG, new Color4(0.50, 0.38, 0.30, 1));
@@ -82,11 +86,26 @@ export default class GameInterface {
     this.resources.addResource(new Resource('food'), Label.ICON.STEAK, new Color4(0.95, 0.24, 0.32, 1));
     this.resources.addResource(new Resource('units'), Label.ICON.MAN, new Color4(0.22, 1, 0.26, 1));
 
-    this.menu = new Label('menu', this.game.gui, '', {
-      textSize: 32,
+    this.menu = new Label('menu', this.game.gui, {
+      position: new Vector2(this.game.gui.width - 80, this.game.gui.height - (80 + 48) / 2),
+      textSize: 48,
       icon: Label.ICON.MENU,
-    })
-    this.menu.text2d.position = new Vector2(this.game.gui.width - 80, this.game.gui.height - 56);
+      click: (eventData, eventState) => {
+        console.log(eventData);
+      },
+    });
+
+    this.clock = new Label('clock', this.game.gui, {
+      position: new Vector2(this.game.gui.width - 300, this.game.gui.height - (80 + 32) / 2),
+      text: new Date().toLocaleTimeString('sv-SV'),
+      textSize: 32,
+    });
+
+    this.fps = new Label('fps', this.game.gui, {
+      position: new Vector2(this.game.gui.width - 480, this.game.gui.height - (80 + 32) / 2),
+      text: `${Math.floor(this.game.engine.getFps()).toString()} fps`,
+      textSize: 32,
+    });
   }
 
   //------------------------------------------------------------------------------------

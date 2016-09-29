@@ -168,8 +168,7 @@ export default class GameRenderer {
           (<ShaderMaterial> base.material).setVector3("cameraPosition", this.game.cameraManager.get('main').position);
         }
         
-        /* Tile actions
-        //mesh.edgesWidth = 2;
+        /* Tile actions */
         surface.overlayColor = new Color3(0, 0, 1);
         surface.overlayAlpha = 0.3;
         surface.actionManager = new ActionManager(this.scene);
@@ -178,7 +177,6 @@ export default class GameRenderer {
           surface,
           'renderOverlay'
         ));
-        */
 
         base.position = this.game.settings.world.layout.hexagonToPixel(tile.hexagon, 0)
         surface.position = base.position.clone();
