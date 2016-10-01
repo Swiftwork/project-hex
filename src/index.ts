@@ -5,15 +5,18 @@ import Game from './game/Game';
 require('./index.css');
 
 /* Check For WebGL Support */
+const canvas = <HTMLCanvasElement> document.getElementById('game');
+const support = <HTMLElement> document.getElementById('support');
+
 if (!Engine.isSupported()) {
-  (<HTMLElement>document.querySelector('h1#support')).style.display = 'block';
-  document.querySelector('canvas#game').remove();
+  support.style.display = 'block';
+  document.body.removeChild(canvas);
   throw 'Your browser does not support BabylonJS or WebGL is not enabled!';
 } else {
-  document.querySelector('h1#support').remove();
+  document.body.removeChild(support);
 }
 
-const game = new Game(<HTMLCanvasElement>document.querySelector('canvas#game'));
+const game = new Game(canvas);
 window['game'] = game;
 
 /* EVENTS */

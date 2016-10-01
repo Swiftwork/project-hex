@@ -8,6 +8,8 @@ import Seed from './Math/Seed';
 import HexagonLayout from './Math/HexagonLayout';
 import Settings from './Logic/Settings';
 
+import NetworkClient from './Network/NetworkClient';
+
 import GameWorld from './GameWorld';
 import GameLogic from './GameLogic';
 import GameRenderer from './GameRenderer';
@@ -61,15 +63,12 @@ export default class Game {
 
     /* Engine */
     this.engine = new Engine(this.canvas, true);
-    this.engine.loadingScreen = new LoadingScreen(this.canvas, new Color3(0.4,0.2,0.3));
+    this.engine.loadingScreen = new LoadingScreen(this.canvas, new Color3(0.4, 0.2, 0.3));
     this.engine.displayLoadingUI();
 
     /* Scene & Assets */
     this.scene = new Scene(this.engine);
-    this.gui = new ScreenSpaceCanvas2D(this.scene, { id: 'gui', size: new Size(
-      this.canvas.clientWidth * this.settings.graphics.dpr,
-      this.canvas.clientHeight * this.settings.graphics.dpr)
-    });
+    this.gui = new ScreenSpaceCanvas2D(this.scene, { id: 'gui'});
     this.assetsManager = new AssetsManager();
     this.assetsManager.loadAllAssets(new AssetsLoader(this.scene), (tasks) => {
 
@@ -79,6 +78,9 @@ export default class Game {
       this.lightManager = new LightManager(this.scene);
       this.materialManager = new MaterialManager(this.scene, this.assetsManager);
       this.playerManager = new PlayerManager(this.scene);
+
+      /* Network */
+      const networkClient = new NetworkClient();
 
       /* Game */
       this.world = new GameWorld(this);

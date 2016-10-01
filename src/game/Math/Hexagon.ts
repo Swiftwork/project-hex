@@ -7,7 +7,8 @@ export default class Hexagon {
   ) {
     if (typeof s === 'undefined')
       this.s = s = -q - r;
-    console.assert(q + r + s == 0, 'Coordinates (Q, R, S) must amount to 0');
+    if (q + r + s !== 0)
+      console.error('Coordinates (Q, R, S) must amount to 0');
   }
 
   /* A string ID for this Hexagon */

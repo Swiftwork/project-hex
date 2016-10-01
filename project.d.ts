@@ -25,6 +25,12 @@ interface String {
 }
 
 /* Export of the BabylonJS declarations to allow the components to be imported into project */
-declare module "babylonjs" {
+declare module 'babylonjs' {
   export = BABYLON;
+}
+
+/* Export of a dummy module declaration for socket.io-p2p */
+declare module 'socket.io-p2p' {
+  var P2P: any;
+  export = P2P;
 }

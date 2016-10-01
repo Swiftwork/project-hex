@@ -14,6 +14,7 @@ export default class Player {
     LOCAL: 0,
     REMOTE: 1,
     NPC: 2,
+    SPECTATOR: 3,
   }
 
   public structures: Structure[] = [];

@@ -17,6 +17,8 @@ export default class GameInterface {
 
   /* GENERAL */
   private mainCamera: ArcRotateCamera;
+  private GUIWidth: number;
+  private GUIHeight: number;
 
   /* VIEWS */
   private menu: Label;
@@ -30,6 +32,7 @@ export default class GameInterface {
     private scene: Scene
   ) {
     this.mainCamera = <ArcRotateCamera> this.game.cameraManager.get('main');
+    this.onResize();
   }
 
   onCreate() {
@@ -49,8 +52,8 @@ export default class GameInterface {
   }
 
   onResize() {
-    //this.gui.size.width = this.canvas.clientWidth * this.settings.graphics.dpr;
-    //this.gui.size.height = this.canvas.clientHeight * this.settings.graphics.dpr;
+    this.GUIWidth = this.game.engine.getRenderWidth();
+    this.GUIHeight = this.game.engine.getRenderHeight();
   }
 
   onPause () {
@@ -69,15 +72,16 @@ export default class GameInterface {
   }
 
   private createTopBar() {
+
     const bar = new Rectangle2D({id: 'top-bar', parent: this.game.gui,
-      y: this.game.gui.height - 80,
-      width: this.game.gui.width,
+      y: this.GUIHeight - 80,
+      width: this.GUIWidth,
       height: 80,
       fill: '#000000ff',
     });
 
     this.resources = new ResourceView('resource-view', this.game.gui, {
-      position: new Vector2(40, this.game.gui.height - (80 + 32) / 2),
+      position: new Vector2(40, this.GUIHeight - (80 + 32) / 2),
       textSize: 32,
     });
     this.resources.addResource(new Resource('wood'), Label.ICON.LOG, new Color4(0.50, 0.38, 0.30, 1));
@@ -87,7 +91,7 @@ export default class GameInterface {
     this.resources.addResource(new Resource('units'), Label.ICON.MAN, new Color4(0.22, 1, 0.26, 1));
 
     this.menu = new Label('menu', this.game.gui, {
-      position: new Vector2(this.game.gui.width - 80, this.game.gui.height - (80 + 48) / 2),
+      position: new Vector2(this.GUIWidth - 80, this.GUIHeight - (80 + 48) / 2),
       textSize: 48,
       icon: Label.ICON.MENU,
       click: (eventData, eventState) => {
@@ -96,13 +100,13 @@ export default class GameInterface {
     });
 
     this.clock = new Label('clock', this.game.gui, {
-      position: new Vector2(this.game.gui.width - 300, this.game.gui.height - (80 + 32) / 2),
+      position: new Vector2(this.GUIWidth - 300, this.GUIHeight - (80 + 32) / 2),
       text: new Date().toLocaleTimeString('sv-SV'),
       textSize: 32,
     });
 
     this.fps = new Label('fps', this.game.gui, {
-      position: new Vector2(this.game.gui.width - 480, this.game.gui.height - (80 + 32) / 2),
+      position: new Vector2(this.GUIWidth - 480, this.GUIHeight - (80 + 32) / 2),
       text: `${Math.floor(this.game.engine.getFps()).toString()} fps`,
       textSize: 32,
     });
