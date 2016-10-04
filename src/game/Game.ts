@@ -8,44 +8,64 @@ import Seed from './Math/Seed';
 import HexagonLayout from './Math/HexagonLayout';
 import Settings from './Logic/Settings';
 
-import NetworkClient from './Network/NetworkClient';
-
-import GameWorld from './GameWorld';
-import GameLogic from './GameLogic';
-import GameRenderer from './GameRenderer';
-import GameInterface from './GameInterface';
-
 import AssetsLoader from './Lib/AssetsLoader';
 import LoadingScreen from './Screens/LoadingScreen';
 
-import AssetsManager from './Managers/AssetsManager';
-import GUIManager from './Managers/GUIManager';
-import CameraManager from './Managers/CameraManager';
-import LightManager from './Managers/LightManager';
+import AssetManager from './Managers/AssetManager';
+import ScreenManager from './Managers/ScreenManager';
 import MaterialManager from './Managers/MaterialManager';
+import LightManager from './Managers/LightManager';
+import CameraManager from './Managers/CameraManager';
 import PlayerManager from './Managers/PlayerManager';
+import ViewManager from './Managers/ViewManager';
 
-export default class Game {
+//------------------------------------------------------------------------------------
+// GAME FLOW INTERFACE
+//------------------------------------------------------------------------------------
 
-  /* GAME */
+export interface IGameFlow {
+  
+  onCreate(): void;
+
+  onResume(): void;
+
+  onUpdate(): void;
+
+  onResize(): void;
+
+  onPause(): void;
+
+  onDestroy(): void;
+  
+}
+
+//------------------------------------------------------------------------------------
+// GAME
+//------------------------------------------------------------------------------------
+
+export default class Game implements IGameFlow {
+
+  private static game: Game;
+
+  /* GAME ENGINE */
   public settings: Settings;
   public engine: Engine;
   public scene: Scene;
-  public gui: ScreenSpaceCanvas2D;
-  public world: GameWorld;
-  public logic: GameLogic;
-  public renderer: GameRenderer;
-  public interface: GameInterface;
+  public scene2d: ScreenSpaceCanvas2D;
 
   /* MANAGERS */
-  public assetsManager: AssetsManager;
-  public guiManager: GUIManager;
-  public cameraManager: CameraManager;
-  public lightManager: LightManager;
+  public assetManager: AssetManager;
+  public screenManager: ScreenManager;
   public materialManager: MaterialManager;
+  public lightManager: LightManager;
+  public cameraManager: CameraManager;
   public playerManager: PlayerManager;
+  public viewManager: ViewManager;
   
   constructor(public canvas: HTMLCanvasElement) {
+    if (!Game.game)
+      Game.game = this;
+
     /* Settings */
     this.settings = {
       seed: new Seed(1),
@@ -68,57 +88,49 @@ export default class Game {
 
     /* Scene & Assets */
     this.scene = new Scene(this.engine);
-    this.gui = new ScreenSpaceCanvas2D(this.scene, { id: 'gui'});
-    this.assetsManager = new AssetsManager();
-    this.assetsManager.loadAllAssets(new AssetsLoader(this.scene), (tasks) => {
+    this.scene2d = new ScreenSpaceCanvas2D(this.scene, { id: 'gui' });
+    this.assetManager = new AssetManager();
+    this.assetManager.loadAllAssets(new AssetsLoader(this.scene), (tasks) => {
 
       /* Managers */
-      this.guiManager = new GUIManager(this.gui);
-      this.cameraManager = new CameraManager(this.scene);
+      this.screenManager = new ScreenManager(this);
+      this.materialManager = new MaterialManager(this.scene, this.assetManager);
       this.lightManager = new LightManager(this.scene);
-      this.materialManager = new MaterialManager(this.scene, this.assetsManager);
+      this.cameraManager = new CameraManager(this.scene);
       this.playerManager = new PlayerManager(this.scene);
+      //this.viewManager = new ViewManager(this.scene2d);
 
-      /* Network */
-      const networkClient = new NetworkClient();
-
-      /* Game */
-      this.world = new GameWorld(this);
-      this.logic = new GameLogic(this, this.world, this.scene);
-      this.renderer = new GameRenderer(this, this.world, this.scene);
-      this.interface = new GameInterface(this, this.scene);
-      this.onStart();
+      this.onCreate();
     });
+
+    return Game.game;
   }
 
-  onStart() {
-    this.logic.onCreate();
-    this.renderer.onCreate();
-    this.interface.onCreate();
+  onCreate() {
+    const mainMenu = this.screenManager.setCurrent('main-menu');
+    mainMenu.onCreate();
+    this.engine.runRenderLoop(this.onUpdate.bind(this));
   }
 
   onResume() {
     this.settings.paused = false;
-    this.logic.onResume();
-    this.renderer.onResume();
-    this.interface.onResume();
+    this.engine.runRenderLoop(this.onUpdate.bind(this));
+  }
+
+  onUpdate() {
+    this.scene.render();
   }
 
   onResize() {
     this.engine.resize();
-    this.interface.onResize();
   }
 
   onPause() {
     this.settings.paused = true;
-    this.logic.onPause();
-    this.renderer.onPause();
-    this.interface.onPause();
+    this.engine.stopRenderLoop();
   }
 
-  onQuit() {
-    this.logic.onDestroy();
-    this.renderer.onDestroy();
-    this.interface.onDestroy();
+  onDestroy() {
+    this.engine.stopRenderLoop();
   }
 }

@@ -4,7 +4,7 @@ import {
   Texture, 
 } from 'babylonjs';
 
-import Label from './Label';
+import Label from './LabelView';
 import Resource from '../Logic/Resource';
 import View from './View';
 

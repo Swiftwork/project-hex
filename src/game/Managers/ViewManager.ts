@@ -4,14 +4,13 @@ import {
 } from 'babylonjs';
 
 /* VIEWS */
-import View from '../GUI/View';
-import Compass from '../GUI/View';
+import View from '../Views/View';
 
 export default class GUIManager {
   
   private views: Map<string, View>;
 
-  constructor(private canvas: ScreenSpaceCanvas2D) {
+  constructor(private scene2d: ScreenSpaceCanvas2D) {
     this.views = new Map<string, View>();
   }
 

@@ -6,7 +6,7 @@ require('./index.css');
 
 /* Check For WebGL Support */
 const canvas = <HTMLCanvasElement> document.getElementById('game');
-const support = <HTMLElement> document.getElementById('support');
+let support = <HTMLElement> document.getElementById('support');
 
 if (!Engine.isSupported()) {
   support.style.display = 'block';
@@ -14,10 +14,10 @@ if (!Engine.isSupported()) {
   throw 'Your browser does not support BabylonJS or WebGL is not enabled!';
 } else {
   document.body.removeChild(support);
+  support = null;
 }
 
 const game = new Game(canvas);
-window['game'] = game;
 
 /* EVENTS */
 

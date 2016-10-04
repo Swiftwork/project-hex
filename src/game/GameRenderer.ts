@@ -22,15 +22,14 @@ export default class GameRenderer {
 
   constructor(
     private game: Game,
-    private world: GameWorld,
-    private scene: Scene
+    private world: GameWorld
   ) {
     /* Scene Defaults */
-    this.scene.clearColor = new Color3(0.9, 0.87, 0.85);
-    this.scene.fogColor = this.scene.clearColor;
-    //this.scene.fogMode = Scene.FOGMODE_LINEAR;
-    this.scene.fogStart = 10;
-    this.scene.fogEnd = 15;
+    this.game.scene.clearColor = new Color3(0.9, 0.87, 0.85);
+    this.game.scene.fogColor = this.game.scene.clearColor;
+    //this.game.scene.fogMode = Scene.FOGMODE_LINEAR;
+    this.game.scene.fogStart = 10;
+    this.game.scene.fogEnd = 15;
 
     /* Cameras */
     this.mainCamera = <ArcRotateCamera> this.game.cameraManager.get('main');
@@ -44,16 +43,16 @@ export default class GameRenderer {
     this.meshes = [];
 
     /* Scene Actions */
-    this.scene.actionManager = new ActionManager(this.scene);
-    this.scene.actionManager.registerAction(new ExecuteCodeAction(
+    this.game.scene.actionManager = new ActionManager(this.game.scene);
+    this.game.scene.actionManager.registerAction(new ExecuteCodeAction(
       ActionManager.OnKeyDownTrigger,
       (event) => {
         /* Debug */
         if (event.sourceEvent.keyCode === 192) {
-          if (!this.scene.debugLayer.isVisible())
-            this.scene.debugLayer.show();
+          if (!this.game.scene.debugLayer.isVisible())
+            this.game.scene.debugLayer.show();
           else
-            this.scene.debugLayer.hide();
+            this.game.scene.debugLayer.hide();
         }
       }
     ));
@@ -62,7 +61,7 @@ export default class GameRenderer {
   onCreate() {
     this.renderTable();
     this.renderTiles();
-    this.scene.createOrUpdateSelectionOctree();
+    this.game.scene.createOrUpdateSelectionOctree();
 
     /* Shadows */
     let shadowGenerator = new ShadowGenerator(8192, this.sunLight);
@@ -72,20 +71,16 @@ export default class GameRenderer {
     shadowGenerator.getShadowMap().renderList = 
       shadowGenerator.getShadowMap().renderList.concat(this.meshes);
 
-    this.game.engine.runRenderLoop(this.onUpdate.bind(this));
   }
 
   onResume() {
-    this.game.engine.runRenderLoop(this.onUpdate.bind(this));
   }
 
   onUpdate() {
-    this.scene.render();
     this.mainCamera.panningSensibility = this.mainCamera.upperRadiusLimit * (this.mainCamera.upperRadiusLimit / this.mainCamera.radius);
   }
 
   onPause () {
-    this.game.engine.stopRenderLoop();
   }
 
   onDestroy () {
@@ -97,7 +92,7 @@ export default class GameRenderer {
   //------------------------------------------------------------------------------------
 
   private renderTable(): void {
-    let base = Mesh.CreateGround('table', this.game.settings.world.size * 2, this.game.settings.world.size * 2, 2, this.scene);
+    let base = Mesh.CreateGround('table', this.game.settings.world.size * 2, this.game.settings.world.size * 2, 2, this.game.scene);
     base.material = this.game.materialManager.get('felt');
     base.receiveShadows = true;
 
@@ -107,7 +102,7 @@ export default class GameRenderer {
       height: 0.6,
       thickness: 2,
       alignment: CustomMeshes.ALIGNMENT.OUTSIDE,
-    }, this.scene);
+    }, this.game.scene);
     edge.material = this.game.materialManager.get('wood');
     this.meshes.push(edge);
   }
@@ -118,8 +113,8 @@ export default class GameRenderer {
 
     /* Unexplored mesh */
     cache['unexplored'] = {
-      base: this.game.assetsManager.get(`mesh-hex-bottom`).clone(`tile-unexplored-base`),
-      surface: this.game.assetsManager.get(`mesh-hex-plain`).clone(`tile-unexplored-surface`),
+      base: this.game.assetManager.get(`mesh-hex-bottom`).clone(`tile-unexplored-base`),
+      surface: this.game.assetManager.get(`mesh-hex-plain`).clone(`tile-unexplored-surface`),
     };
     cache['unexplored'].base.setEnabled(false);
     cache['unexplored'].surface.setEnabled(false);
@@ -135,8 +130,8 @@ export default class GameRenderer {
       if (tile.isExplored) {
         if (!cache[tile.type]) {
           /* faceUV: [new Vector4(0, 0, 0, 0), new Vector4(0, 0, 6, 0.1), new Vector4(0, 0, 1, 1)] */
-          base = this.game.assetsManager.get(`mesh-hex-bottom`).clone(`${id}-base`);
-          surface = this.game.assetsManager.get(`mesh-${tile.surface}`).clone(`${id}-surface`);
+          base = this.game.assetManager.get(`mesh-hex-bottom`).clone(`${id}-base`);
+          surface = this.game.assetManager.get(`mesh-${tile.surface}`).clone(`${id}-surface`);
           base.receiveShadows = surface.receiveShadows = true;
 
           /* Add to cache */
@@ -171,7 +166,7 @@ export default class GameRenderer {
         /* Tile actions */
         surface.overlayColor = new Color3(0, 0, 1);
         surface.overlayAlpha = 0.3;
-        surface.actionManager = new ActionManager(this.scene);
+        surface.actionManager = new ActionManager(this.game.scene);
         surface.actionManager.registerAction(new SwitchBooleanAction(
           ActionManager.OnPickTrigger,
           surface,
@@ -205,7 +200,7 @@ export default class GameRenderer {
       const id = `tile-${tile.hexagon.toString()}-${environment.id}-${i}`;
       
       if (!firstInstance[environment.model]) {
-        original = this.game.assetsManager.get(`mesh-${environment.model}`);
+        original = this.game.assetManager.get(`mesh-${environment.model}`);
         mesh = original.clone(id);
         mesh.makeGeometryUnique();
         mesh.subMeshes = original.subMeshes;
@@ -225,7 +220,7 @@ export default class GameRenderer {
   
   private renderStructure(tile: Tile): void {
     if (tile.structure) {
-      const original = this.game.assetsManager.get(`mesh-${tile.structure.model}`);
+      const original = this.game.assetManager.get(`mesh-${tile.structure.model}`);
       const bounds = original.getBoundingInfo().boundingBox;
       let mesh = original.createInstance(`tile-${tile.hexagon.toString()}-${tile.structure.id}`);
       mesh.scaling = new Vector3(0.9, 0.9, 0.9);
@@ -238,7 +233,7 @@ export default class GameRenderer {
 
   private renderUnit(tile: Tile): void {
     if (tile.unit) {
-      const original = this.game.assetsManager.get(`mesh-${tile.unit.model}`);
+      const original = this.game.assetManager.get(`mesh-${tile.unit.model}`);
       const bounds = original.getBoundingInfo().boundingBox;
       let mesh = original.createInstance(`tile-${tile.hexagon.toString()}-${tile.unit.id}`);
       mesh.scaling = new Vector3(0.9, 0.9, 0.9);

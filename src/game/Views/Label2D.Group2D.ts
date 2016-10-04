@@ -1,13 +1,13 @@
 import {
   Vector2, Color4, Size,
   ScreenSpaceCanvas2D,
-  Text2D,
+  Prim2DBase, Group2D, Text2D,
   PrimitivePointerInfo, EventState,
 } from 'babylonjs';
 
 import View from './View';
 
-export default class Label extends View {
+export default class Label2D extends Group2D {
 
   static ICON = {
     /* Interface */
@@ -29,81 +29,58 @@ export default class Label extends View {
     NIGHT: '\uE209',
   };
 
-  private icon2d: Text2D;
-  private text2d: Text2D;
-
-  public size: Size;
+  public icon2d: Text2D;
+  public text2d: Text2D;
 
   constructor(
-    public id: string,
-    public canvas: ScreenSpaceCanvas2D,
     public options: {
-      position?: Vector2,
+      id?: string,
+      parent?: Prim2DBase,
       icon?: string,
       text?: string,
       textSize?: number,
       color?: Color4,
       click?: (eventData: PrimitivePointerInfo, eventState: EventState) => void,
+
+      // Avoid settings these
+      children?: Prim2DBase[],
+      layoutEngine?: string,
     }
   ) {
-    super(id, canvas);
-
-    this.options = Object.assign({
-      position: new Vector2(0, 0),
+    super(options = Object.assign({
       icon: '',
       text: '',
       textSize: 32,
       color: new Color4(1, 1, 1, 1),
       click: null,
-    }, this.options);
+      children: [],
+      layoutEngine: 'StackPanel',
+    }, options));
 
     if (this.options.icon) {
       this.icon2d = new Text2D(this.options.icon, {
         id: `${this.id}-icon`,
-        parent: this.canvas,
         fontName: `${this.options.textSize}px icons`,
         defaultFontColor: this.options.color,
       });
 
       if (this.options.click)
         this.icon2d.pointerEventObservable.add(this.options.click, PrimitivePointerInfo.PointerUp);
+
+      this.children.push(this.icon2d);
     }
 
     if (this.options.text) {
       this.text2d = new Text2D(this.options.text, {
         id: this.id,
-        parent: this.canvas,
         fontName: `${this.options.textSize}px outage`,
         defaultFontColor: this.options.color,
       });
 
       if (this.options.click)
         this.text2d.pointerEventObservable.add(this.options.click, PrimitivePointerInfo.PointerUp);
-    }
-    
-    this.layout();
-  }
 
-  public layout () {
-    let offset = this.options.position.x;
-    this.size = new Size(0, 0);
-
-    if (this.icon2d) {
-      this.icon2d.position = new Vector2(offset, this.options.position.y);
-      this.size.width = this.icon2d.size.width;
-      this.size.height = this.icon2d.size.height;
-    }
-
-    if (this.icon2d && this.text2d) {
-      this.size.width += this.options.textSize / 2;
-    }
-    
-    offset += this.size.width;
-
-    if (this.text2d) {
-      this.text2d.position = new Vector2(offset, this.options.position.y);
-      this.size.width += this.text2d.width;
-      this.size.height = Math.max(this.size.height, this.text2d.size.height);
+      this.children.push(this.text2d);
     }
   }
 

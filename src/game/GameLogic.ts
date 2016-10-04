@@ -17,11 +17,10 @@ export default class GameLogic {
 
   constructor(
     private game: Game,
-    private world: GameWorld,
-    private scene: Scene
+    private world: GameWorld
   ) {
     /* Scene */
-    this.scene.collisionsEnabled = false;
+    this.game.scene.collisionsEnabled = false;
   }
 
   onCreate() {

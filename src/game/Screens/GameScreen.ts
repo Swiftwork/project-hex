@@ -5,44 +5,60 @@ import {
   ArcRotateCamera,
 } from 'babylonjs';
 
-import Game from './Game';
-import Resource from './Logic/Resource';
-import Label from './GUI/Label';
+import Game from '../Game';
+import Settings from '../Logic/Settings';
+import Resource from '../Logic/Resource';
+import Screen from './Screen';
 
-/* VIEWS */
-import ResourceView from './GUI/ResourceView';
-import CompassView from './GUI/CompassView';
+/* GAME */
+import GameWorld from '../GameWorld';
+import GameLogic from '../GameLogic';
+import GameRenderer from '../GameRenderer';
 
-export default class GameInterface {
+/* INTERFACE */
+import Label2D from '../Views/Label2D';
+import Label from '../Views/LabelView';
+import ResourceView from '../Views/ResourceView';
+import CompassView from '../Views/CompassView';
+
+export default class GameScreen extends Screen {
 
   /* GENERAL */
-  private mainCamera: ArcRotateCamera;
   private GUIWidth: number;
   private GUIHeight: number;
+  private mainCamera: ArcRotateCamera;
 
-  /* VIEWS */
+  /* WORLD */
+  public world: GameWorld;
+  public logic: GameLogic;
+  public renderer: GameRenderer;
+
+  /* INTERFACE */
   private menu: Label;
   private clock: Label;
   private fps: Label;
   private compass: CompassView;
   private resources: ResourceView;
 
-  constructor(
-    private game: Game,
-    private scene: Scene
-  ) {
+  constructor(public game: Game) {
+    super(game);
     this.mainCamera = <ArcRotateCamera> this.game.cameraManager.get('main');
     this.onResize();
   }
 
   onCreate() {
+    /* World Creation */
+    this.world = new GameWorld(this.game);
+    this.logic = new GameLogic(this.game, this.world);
+    this.renderer = new GameRenderer(this.game, this.world);
+
+    this.logic.onCreate();
+    this.renderer.onCreate();
+
+    /* Interface Creation */
     this.createCompass();
     this.createTopBar();
-    this.game.engine.runRenderLoop(this.onUpdate.bind(this));
-  }
-
-  onResume() {
-    this.game.engine.runRenderLoop(this.onUpdate.bind(this));
+    super.onCreate();
   }
 
   onUpdate() {
@@ -52,35 +68,42 @@ export default class GameInterface {
   }
 
   onResize() {
-    this.GUIWidth = this.game.engine.getRenderWidth();
-    this.GUIHeight = this.game.engine.getRenderHeight();
   }
 
-  onPause () {
+  onResume() {
+    this.logic.onResume();
+    this.renderer.onResume();
   }
 
-  onDestroy () {
+  onPause() {
+    this.logic.onPause();
+    this.renderer.onPause();
+  }
+
+  onDestroy() {
+    this.logic.onDestroy();
+    this.renderer.onDestroy();
   }
 
   //------------------------------------------------------------------------------------
-  // INTERFACE GROUPS
+  // INTERFACE CREATORS
   //------------------------------------------------------------------------------------
 
   private createCompass() {
-    this.compass = <CompassView> this.game.guiManager.add('compass',
-      new CompassView('compass', this.game.gui, this.game.assetsManager.get('interface-compass')));
+    this.compass = <CompassView>this.game.viewManager.add('compass',
+      new CompassView('compass', this.game.scene2d, this.game.assetManager.get('interface-compass')));
   }
 
   private createTopBar() {
-
-    const bar = new Rectangle2D({id: 'top-bar', parent: this.game.gui,
+    const bar = new Rectangle2D({
+      id: 'top-bar', parent: this.game.scene2d,
       y: this.GUIHeight - 80,
       width: this.GUIWidth,
       height: 80,
       fill: '#000000ff',
     });
 
-    this.resources = new ResourceView('resource-view', this.game.gui, {
+    this.resources = new ResourceView('resource-view', this.game.scene2d, {
       position: new Vector2(40, this.GUIHeight - (80 + 32) / 2),
       textSize: 32,
     });
@@ -90,7 +113,7 @@ export default class GameInterface {
     this.resources.addResource(new Resource('food'), Label.ICON.STEAK, new Color4(0.95, 0.24, 0.32, 1));
     this.resources.addResource(new Resource('units'), Label.ICON.MAN, new Color4(0.22, 1, 0.26, 1));
 
-    this.menu = new Label('menu', this.game.gui, {
+    this.menu = new Label('menu', this.game.scene2d, {
       position: new Vector2(this.GUIWidth - 80, this.GUIHeight - (80 + 48) / 2),
       textSize: 48,
       icon: Label.ICON.MENU,
@@ -99,20 +122,16 @@ export default class GameInterface {
       },
     });
 
-    this.clock = new Label('clock', this.game.gui, {
+    this.clock = new Label('clock', this.game.scene2d, {
       position: new Vector2(this.GUIWidth - 300, this.GUIHeight - (80 + 32) / 2),
       text: new Date().toLocaleTimeString('sv-SV'),
       textSize: 32,
     });
 
-    this.fps = new Label('fps', this.game.gui, {
+    this.fps = new Label('fps', this.game.scene2d, {
       position: new Vector2(this.GUIWidth - 480, this.GUIHeight - (80 + 32) / 2),
       text: `${Math.floor(this.game.engine.getFps()).toString()} fps`,
       textSize: 32,
     });
   }
-
-  //------------------------------------------------------------------------------------
-  // HELPERS
-  //------------------------------------------------------------------------------------
 }

@@ -2,13 +2,14 @@ import {
   Vector3,
   Scene,
   Effect,
+  TextureAssetTask, MeshAssetTask, TextFileAssetTask, BinaryFileAssetTask,
 } from 'babylonjs';
 
 import AssetsLoader, {
-  TextureAssetTask, MeshAssetTask, TextFileAssetTask, BinaryFileAssetTask, FontFileAssetTask,
+   FontFileAssetTask,
 } from '../Lib/AssetsLoader';
 
-export default class AssetsManager {
+export default class AssetManager {
 
   private assets: Map<string, any>;
 

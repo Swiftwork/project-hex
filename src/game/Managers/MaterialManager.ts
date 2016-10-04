@@ -3,13 +3,13 @@ import {
   Color3, Vector3,
   Texture, Material, StandardMaterial, ShaderMaterial,
 } from 'babylonjs';
-import AssetsManager from './AssetsManager';
+import AssetManager from './AssetManager';
 
 export default class MaterialManager {
 
   private materials: Map<string, Material>;
 
-  constructor(private scene: Scene, private assetsManager: AssetsManager) {
+  constructor(private scene: Scene, private assetManager: AssetManager) {
     this.materials = new Map<string, Material>();
 
     /* TABLE */
@@ -52,7 +52,7 @@ export default class MaterialManager {
   public add(id: string, texture: string, uv?: number[], uvOffset?: number[]): StandardMaterial {
     const material = new StandardMaterial(id, this.scene);
 
-    material.diffuseTexture = this.assetsManager.get(`texture-${texture}-diffuse`);
+    material.diffuseTexture = this.assetManager.get(`texture-${texture}-diffuse`);
     if (material.diffuseTexture) {
       if (typeof uv !== 'undefined') {
         (<Texture> material.diffuseTexture).uScale = uv[0];
@@ -64,7 +64,7 @@ export default class MaterialManager {
       }
     }
 
-    material.bumpTexture = this.assetsManager.get(`texture-${texture}-bump`);
+    material.bumpTexture = this.assetManager.get(`texture-${texture}-bump`);
     if (material.bumpTexture) {
       if (typeof uv !== 'undefined') {
         (<Texture> material.bumpTexture).uScale = uv[0];
@@ -94,7 +94,7 @@ export default class MaterialManager {
       uniforms: ["worldViewProjection"]
     });
 
-    const diffuseTexture = this.assetsManager.get(`texture-${texture}-diffuse`);
+    const diffuseTexture = this.assetManager.get(`texture-${texture}-diffuse`);
     if (diffuseTexture) {
       material.setTexture("textureSampler", diffuseTexture);
     }

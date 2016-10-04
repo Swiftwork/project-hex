@@ -1,5 +1,24 @@
 /// <reference path="node_modules/babylonjs/babylon.d.ts" />
 
+//------------------------------------------------------------------------------------
+// EXPORT MODULES
+//------------------------------------------------------------------------------------
+
+/* Export of the BabylonJS declarations to allow the components to be imported into project */
+declare module 'babylonjs' {
+  export = BABYLON;
+}
+
+/* Export of a dummy module declaration for socket.io-p2p */
+declare module 'socket.io-p2p' {
+  var P2P: any;
+  export = P2P;
+}
+
+//------------------------------------------------------------------------------------
+// EXTEND BASICS
+//------------------------------------------------------------------------------------
+
 interface Math {
   /*
     * Returns a random value between a given maximum and minimum.
@@ -24,13 +43,14 @@ interface String {
   capitalize(): string;
 }
 
-/* Export of the BabylonJS declarations to allow the components to be imported into project */
-declare module 'babylonjs' {
-  export = BABYLON;
-}
+//------------------------------------------------------------------------------------
+// POTENTIAL TEMP FIXES
+//------------------------------------------------------------------------------------
 
-/* Export of a dummy module declaration for socket.io-p2p */
-declare module 'socket.io-p2p' {
-  var P2P: any;
-  export = P2P;
+/* HTMLCanvasElement definition mismatch */
+interface HTMLCanvasElement extends HTMLElement {
+    requestPointerLock(): void;
+    msRequestPointerLock(): void;
+    mozRequestPointerLock(): void;
+    webkitRequestPointerLock(): void;
 }
