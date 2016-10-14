@@ -32,7 +32,7 @@ export default class GameRenderer {
     this.game.scene.fogEnd = 15;
 
     /* Cameras */
-    this.mainCamera = <ArcRotateCamera> this.game.cameraManager.get('main');
+    this.mainCamera = <ArcRotateCamera>this.game.cameraManager.get('main');
     this.mainCamera.setTarget(Vector3.Zero());
     this.mainCamera.attachControl(this.game.canvas, false, false);
 
@@ -64,13 +64,13 @@ export default class GameRenderer {
     this.game.scene.createOrUpdateSelectionOctree();
 
     /* Shadows */
-    let shadowGenerator = new ShadowGenerator(8192, this.sunLight);
-    shadowGenerator.bias = 0.0000005;
+    let shadowGenerator = new ShadowGenerator(4096, this.sunLight);
+    shadowGenerator.bias = 0.0000009;
     shadowGenerator.usePoissonSampling = true;
+    //shadowGenerator.useBlurVarianceShadowMap = true;
     shadowGenerator.getShadowMap().refreshRate = 0;
-    shadowGenerator.getShadowMap().renderList = 
+    shadowGenerator.getShadowMap().renderList =
       shadowGenerator.getShadowMap().renderList.concat(this.meshes);
-
   }
 
   onResume() {
@@ -80,10 +80,10 @@ export default class GameRenderer {
     this.mainCamera.panningSensibility = this.mainCamera.upperRadiusLimit * (this.mainCamera.upperRadiusLimit / this.mainCamera.radius);
   }
 
-  onPause () {
+  onPause() {
   }
 
-  onDestroy () {
+  onDestroy() {
 
   }
 
@@ -92,13 +92,13 @@ export default class GameRenderer {
   //------------------------------------------------------------------------------------
 
   private renderTable(): void {
-    let base = Mesh.CreateGround('table', this.game.settings.world.size * 2, this.game.settings.world.size * 2, 2, this.game.scene);
+    let base = Mesh.CreateGround('table', this.world.settings.size * 2, this.world.settings.size * 2, 2, this.game.scene);
     base.material = this.game.materialManager.get('felt');
     base.receiveShadows = true;
 
     const edge = CustomMeshes.CreateFrame('table-frame', {
-      length: this.game.settings.world.size * 2,
-      depth: this.game.settings.world.size * 2,
+      length: this.world.settings.size * 2,
+      depth: this.world.settings.size * 2,
       height: 0.6,
       thickness: 2,
       alignment: CustomMeshes.ALIGNMENT.OUTSIDE,
@@ -122,7 +122,7 @@ export default class GameRenderer {
     cache['unexplored'].base.material = cache['unexplored'].surface.material = this.game.materialManager.get('unexplored');
 
     /* Loop through world tiles and generate meshes */
-    this.world.tiles.forEach( (tile: Tile) => {
+    this.world.tiles.forEach((tile: Tile) => {
       const id = `tile-${tile.hexagon.toString()}`;
       let base: Mesh, surface: Mesh;
 
@@ -149,7 +149,7 @@ export default class GameRenderer {
         this.renderEnvironment(tile);
 
         if (tile.isVisible) {
-          
+
           base.material = surface.material = this.game.materialManager.get(tile.type);
 
           /* Render buildings on tile */
@@ -160,9 +160,9 @@ export default class GameRenderer {
 
           /* Darken hidden tiles */
           base.material = surface.material = this.game.materialManager.get(`${tile.type}-hidden`);
-          (<ShaderMaterial> base.material).setVector3("cameraPosition", this.game.cameraManager.get('main').position);
+          (<ShaderMaterial>base.material).setVector3("cameraPosition", this.game.cameraManager.get('main').position);
         }
-        
+
         /* Tile actions */
         surface.overlayColor = new Color3(0, 0, 1);
         surface.overlayAlpha = 0.3;
@@ -173,7 +173,7 @@ export default class GameRenderer {
           'renderOverlay'
         ));
 
-        base.position = this.game.settings.world.layout.hexagonToPixel(tile.hexagon, 0)
+        base.position = this.world.settings.layout.hexagonToPixel(tile.hexagon, 0)
         surface.position = base.position.clone();
         surface.position.y = 0.093;
         base.rotation = surface.rotation = new Vector3(0, Math.PI / 2, 0);
@@ -198,7 +198,7 @@ export default class GameRenderer {
     for (var i = 0; i < tile.environment.length; ++i) {
       const environment = tile.environment[i];
       const id = `tile-${tile.hexagon.toString()}-${environment.id}-${i}`;
-      
+
       if (!firstInstance[environment.model]) {
         original = this.game.assetManager.get(`mesh-${environment.model}`);
         mesh = original.clone(id);
@@ -217,14 +217,14 @@ export default class GameRenderer {
       this.meshes.push(mesh);
     }
   }
-  
+
   private renderStructure(tile: Tile): void {
     if (tile.structure) {
       const original = this.game.assetManager.get(`mesh-${tile.structure.model}`);
       const bounds = original.getBoundingInfo().boundingBox;
       let mesh = original.createInstance(`tile-${tile.hexagon.toString()}-${tile.structure.id}`);
       mesh.scaling = new Vector3(0.9, 0.9, 0.9);
-      mesh.rotation = new Vector3(0, CameraManager.toRadians(125), 0);
+      mesh.rotation = new Vector3(0, this.game.graphics.toRadians(125), 0);
       mesh.position = tile.structure.position;
       mesh.position.y = 0.1;
       this.meshes.push(mesh);
@@ -237,7 +237,7 @@ export default class GameRenderer {
       const bounds = original.getBoundingInfo().boundingBox;
       let mesh = original.createInstance(`tile-${tile.hexagon.toString()}-${tile.unit.id}`);
       mesh.scaling = new Vector3(0.9, 0.9, 0.9);
-      mesh.rotation = new Vector3(0, CameraManager.toRadians(125), 0);
+      mesh.rotation = new Vector3(0, this.game.graphics.toRadians(125), 0);
       mesh.position = tile.unit.position;
       mesh.position.y = 0.1;
       this.meshes.push(mesh);

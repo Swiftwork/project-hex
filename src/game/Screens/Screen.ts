@@ -1,21 +1,33 @@
 import {
-  Engine, Scene, ScreenSpaceCanvas2D,
+  Engine, Scene, Size,
 } from 'babylonjs';
 
+import {
+  ScreenSpaceCanvas2D, Rectangle2D, Canvas2D,
+} from 'babylonjs/babylon.canvas2d';
+
 import Game, { IGameFlow } from '../Game';
-import Settings from '../Logic/Settings';
+import Settings from '../Utils/Settings';
 
 export default class Screen implements IGameFlow {
 
-  constructor(public game: Game) {
+  public screen: Rectangle2D;
+  public created: boolean;
+
+  constructor(public game: Game, public id: string) {
+    this.screen = new Rectangle2D({
+      id: this.id,
+      parent: this.game.scene2d,
+      marginAlignment: 'v: stretch, h: stretch',
+    });
   }
 
   onCreate() {
-    this.game.engine.runRenderLoop(this.onUpdate.bind(this));
+    this.screen.levelVisible = true;
+    this.created = true;
   }
 
   onResume() {
-    this.game.engine.runRenderLoop(this.onUpdate.bind(this));
   }
 
   onUpdate() {
@@ -28,5 +40,6 @@ export default class Screen implements IGameFlow {
   }
 
   onDestroy() {
+    this.screen.dispose();
   }
 }

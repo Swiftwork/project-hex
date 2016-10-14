@@ -6,14 +6,14 @@ import {
 } from 'babylonjs';
 
 import AssetsLoader, {
-   FontFileAssetTask,
+  FontFileAssetTask,
 } from '../Lib/AssetsLoader';
 
 export default class AssetManager {
 
   private assets: Map<string, any>;
 
-  constructor() {
+  constructor(private assetsLoader: AssetsLoader) {
     this.assets = new Map<string, any>();
   }
 
@@ -26,15 +26,15 @@ export default class AssetManager {
     return this.assets.get(id);
   }
 
-  public loadAllAssets(assetsLoader: AssetsLoader, callback: (tasks: any) => void): void {
+  public loadAllAssets(callback: (tasks: any) => void): void {
 
     /* Register fonts to be loaded */
     for (let id in assetsManifest.fonts) {
       let fonts = assetsManifest.fonts[id];
       for (let fontType in fonts) {
-        let task = assetsLoader.addFontAssetTask(`texture-${id}-${fontType}`, id);
+        let task = this.assetsLoader.addFontAssetTask(`font-${id}-${fontType}`, id);
         task.onSuccess = (task: FontFileAssetTask) => {
-          this.add(`texture-${id}-${fontType}`, id);
+          this.add(`font-${id}-${fontType}`, id);
         }
       }
     }
@@ -42,7 +42,7 @@ export default class AssetManager {
     /* Register interface textures to be loaded */
     for (let id in assetsManifest.interfaces) {
       let ui = assetsManifest.interfaces[id];
-      let task = assetsLoader.addTextureTask(`interace-${id}`, ui);
+      let task = this.assetsLoader.addTextureTask(`interace-${id}`, ui);
       task.onSuccess = (task: TextureAssetTask) => {
         this.add(`interface-${id}`, task.texture);
       }
@@ -53,7 +53,7 @@ export default class AssetManager {
       let textures = assetsManifest.textures[id];
       for (let textureType in textures) {
         let texture = textures[textureType];
-        let task = assetsLoader.addTextureTask(`texture-${id}-${textureType}`, texture);
+        let task = this.assetsLoader.addTextureTask(`texture-${id}-${textureType}`, texture);
         task.onSuccess = (task: TextureAssetTask) => {
           this.add(`texture-${id}-${textureType}`, task.texture);
         }
@@ -63,7 +63,7 @@ export default class AssetManager {
     /* Register models to be loaded */
     for (let id in assetsManifest.models) {
       let models = assetsManifest.models[id].mesh;
-      let task = assetsLoader.addMeshTask(`mesh-${id}`, '', '', models);
+      let task = this.assetsLoader.addMeshTask(`mesh-${id}`, '', '', models);
       task.onSuccess = (task: MeshAssetTask) => {
         for (var i = 0; i < task.loadedMeshes.length; ++i) {
           let mesh = task.loadedMeshes[i];
@@ -77,8 +77,8 @@ export default class AssetManager {
     for (let id in assetsManifest.shaders) {
       let vertex = assetsManifest.shaders[id].vertex;
       let fragment = assetsManifest.shaders[id].fragment;
-      let taskVertex = assetsLoader.addTextFileTask(`shader-${id}-vertex`, vertex);
-      let taskFragment = assetsLoader.addTextFileTask(`shader-${id}-fragment`, fragment);
+      let taskVertex = this.assetsLoader.addTextFileTask(`shader-${id}-vertex`, vertex);
+      let taskFragment = this.assetsLoader.addTextFileTask(`shader-${id}-fragment`, fragment);
       taskVertex.onSuccess = (task: TextFileAssetTask) => {
         this.add(`shader-${id}-vertex`, task.text);
         Effect.ShadersStore[`${id}VertexShader`] = task.text;
@@ -89,8 +89,8 @@ export default class AssetManager {
       }
     }
 
-    assetsLoader.onFinish = callback;
-    assetsLoader.load();
+    this.assetsLoader.onFinish = callback;
+    this.assetsLoader.load();
   }
 }
 
@@ -104,18 +104,20 @@ const assetsManifest = {
       woff: require('../Assets/fonts/icons/icons.woff'),
     },
 
-    'outage':  {
+    'outage': {
       woff: require('../Assets/fonts/outage/outage.woff'),
       woff2: require('../Assets/fonts/outage/outage.woff2'),
     },
 
-    'cubic':  {
+    'cubic': {
       woff: require('../Assets/fonts/cubic/cubic.woff'),
       woff2: require('../Assets/fonts/cubic/cubic.woff2'),
     },
   },
 
   interfaces: {
+
+    'hexagon-pattern': require('../Assets/interfaces/hexagon-pattern.svg'),
 
     /* COMPASS */
     'compass': require('../Assets/interfaces/compass.svg'),

@@ -5,8 +5,10 @@ import {
   Light, PointLight, DirectionalLight, SpotLight, HemisphericLight,
 } from 'babylonjs';
 
+import Game from '../Game';
+
 export default class LightManager {
-  
+
   private lights: Map<string, Light>;
 
   public static LIGHT = {
@@ -16,7 +18,7 @@ export default class LightManager {
     HEMISPHERIC: 4,
   }
 
-  constructor(private scene: Scene) {
+  constructor(private game: Game) {
     this.lights = new Map<string, Light>();
 
     /* Sun Light */
@@ -36,25 +38,25 @@ export default class LightManager {
       null,
       {
         intensity: 0.6,
-    });
+      });
   }
 
   public add(id: string, type: number, direction: Vector3, position: Vector3, options?: any): any {
     let light;
     switch (type) {
       case LightManager.LIGHT.DIRECTIONAL:
-        light = new DirectionalLight(id, direction, this.scene);
+        light = new DirectionalLight(id, direction, this.game.scene);
         break;
 
       case LightManager.LIGHT.SPOT:
-        light = new SpotLight(id, direction, position, 0.8, 2, this.scene);
+        light = new SpotLight(id, direction, position, 0.8, 2, this.game.scene);
         break;
 
       case LightManager.LIGHT.HEMISPHERIC:
-        light = new HemisphericLight(id, direction, this.scene);
+        light = new HemisphericLight(id, direction, this.game.scene);
         break;
     }
-    
+
     if (position)
       light.position = position;
 

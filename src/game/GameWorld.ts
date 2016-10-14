@@ -2,31 +2,37 @@ import {
   Vector3,
   Scene,
 } from 'babylonjs';
+
 import Game from './Game';
+import Settings from './Utils/Settings';
+
 import Hexagon from './Math/Hexagon';
 import Tile from './Logic/Tile';
-import Settings from './Logic/Settings';
 import Entity from './Entities/Entity';
 import Environment from './Entities/Environment';
 import Structure from './Entities/Structure';
 
 export default class GameWorld {
 
-  public static TREES = ['oak-1','oak-2','oak-3','oak-4', 'cacti-1','cacti-2', 'pine-1','pine-2','pine-3','pine-4','pine-5', 'snow-pine-1','snow-pine-2','snow-pine-3','snow-pine-4','snow-pine-5',];
+  public static TREES = ['oak-1', 'oak-2', 'oak-3', 'oak-4', 'cacti-1', 'cacti-2', 'pine-1', 'pine-2', 'pine-3', 'pine-4', 'pine-5', 'snow-pine-1', 'snow-pine-2', 'snow-pine-3', 'snow-pine-4', 'snow-pine-5',];
 
   public tiles: Map<number, Tile>;
+
+  public settings: Settings;
 
   constructor(
     public game: Game
   ) {
+    this.settings = new Settings(this.game);
+
     this.tiles = new Map<number, Tile>();
-    if (this.game.settings.seed)
+    if (this.settings.seed)
       this.generate();
   }
 
   public generate(): GameWorld {
     this.tiles.clear();
-    this.createTiles(this.game.settings.world.size);
+    this.createTiles(this.settings.size);
     return this;
   }
 
@@ -39,7 +45,7 @@ export default class GameWorld {
       const r1 = Math.max(-mapRadius, -q - mapRadius);
       const r2 = Math.min(mapRadius, -q + mapRadius);
       for (let r = r1; r <= r2; r++) {
-        const hex = new Hexagon(q, r, -q-r);
+        const hex = new Hexagon(q, r, -q - r);
         const hash = hex.hash();
         const tile = new Tile(hex, this.generateTileType(hash, [
           this.tiles.get(hex.neighbor(3).hash()),
@@ -77,7 +83,7 @@ export default class GameWorld {
 
   private generateTileType(hash: number, neighbors: Tile[]): string {
     const probability = {};
-    for(let key in Tile.TYPE) probability[Tile.TYPE[key]] = 1;
+    for (let key in Tile.TYPE) probability[Tile.TYPE[key]] = 1;
 
     /* Affect probability of tile type based on neighboring tiles */
     for (var i = 0; i < neighbors.length; i++) {
@@ -115,10 +121,10 @@ export default class GameWorld {
     }
 
     let sum = 0;
-    for(let key in probability) sum += probability[key];
-    let selection = Math.abs(this.game.settings.seed.random() * hash * 100 % sum) << 0;
+    for (let key in probability) sum += probability[key];
+    let selection = Math.abs(this.settings.seed.random() * hash * 100 % sum) << 0;
 
-    for(let key in probability) {
+    for (let key in probability) {
       selection -= probability[key];
       if (selection < 0)
         return key;
@@ -132,13 +138,13 @@ export default class GameWorld {
   private createForest(tile: Tile) {
     tile.biomeData.density = 0.2;
     tile.biomeData.treeType = GameWorld.TREES.random(
-      this.game.settings.seed.random() * tile.hexagon.hash() * 100
+      this.settings.seed.random() * tile.hexagon.hash() * 100
     );
 
-    const tilePosition = this.game.settings.world.layout.hexagonToPixel(tile.hexagon, 0);
+    const tilePosition = this.settings.layout.hexagonToPixel(tile.hexagon, 0);
     const forest = [];
     for (let i = 0; i < 500; ++i) {
-      let position = tilePosition.add(this.game.settings.world.layout.randomInside(tile.hexagon, 0));
+      let position = tilePosition.add(this.settings.layout.randomInside(tile.hexagon, 0));
       let reject = false;
       for (let ii = 0; ii < forest.length; ++ii) {
         if (Vector3.Distance(forest[ii].position, position) < 0.2 * (1 - tile.biomeData.density)) {

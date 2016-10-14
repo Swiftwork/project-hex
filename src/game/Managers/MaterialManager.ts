@@ -3,13 +3,15 @@ import {
   Color3, Vector3,
   Texture, Material, StandardMaterial, ShaderMaterial,
 } from 'babylonjs';
+
+import Game from '../Game';
 import AssetManager from './AssetManager';
 
 export default class MaterialManager {
 
   private materials: Map<string, Material>;
 
-  constructor(private scene: Scene, private assetManager: AssetManager) {
+  constructor(private game: Game) {
     this.materials = new Map<string, Material>();
 
     /* TABLE */
@@ -23,7 +25,7 @@ export default class MaterialManager {
     /* UNEXPLORED */
     const unexplored = this.add('unexplored', '');
     unexplored.diffuseColor = new Color3(1, 1, 1);
-    
+
     /* TERRAIN TYPES */
     const actic = this.add('arctic', 'snow', [-1, -1]);
 
@@ -50,29 +52,29 @@ export default class MaterialManager {
   }
 
   public add(id: string, texture: string, uv?: number[], uvOffset?: number[]): StandardMaterial {
-    const material = new StandardMaterial(id, this.scene);
+    const material = new StandardMaterial(id, this.game.scene);
 
-    material.diffuseTexture = this.assetManager.get(`texture-${texture}-diffuse`);
+    material.diffuseTexture = this.game.assetManager.get(`texture-${texture}-diffuse`);
     if (material.diffuseTexture) {
       if (typeof uv !== 'undefined') {
-        (<Texture> material.diffuseTexture).uScale = uv[0];
-        (<Texture> material.diffuseTexture).vScale = uv[1];
+        (<Texture>material.diffuseTexture).uScale = uv[0];
+        (<Texture>material.diffuseTexture).vScale = uv[1];
       }
       if (typeof uvOffset !== 'undefined') {
-        (<Texture> material.diffuseTexture).uOffset = uvOffset[0];
-        (<Texture> material.diffuseTexture).vOffset = uvOffset[1];
+        (<Texture>material.diffuseTexture).uOffset = uvOffset[0];
+        (<Texture>material.diffuseTexture).vOffset = uvOffset[1];
       }
     }
 
-    material.bumpTexture = this.assetManager.get(`texture-${texture}-bump`);
+    material.bumpTexture = this.game.assetManager.get(`texture-${texture}-bump`);
     if (material.bumpTexture) {
       if (typeof uv !== 'undefined') {
-        (<Texture> material.bumpTexture).uScale = uv[0];
-        (<Texture> material.bumpTexture).vScale = uv[1];
+        (<Texture>material.bumpTexture).uScale = uv[0];
+        (<Texture>material.bumpTexture).vScale = uv[1];
       }
       if (typeof uvOffset !== 'undefined') {
-        (<Texture> material.bumpTexture).uOffset = uvOffset[0];
-        (<Texture> material.bumpTexture).vOffset = uvOffset[1];
+        (<Texture>material.bumpTexture).uOffset = uvOffset[0];
+        (<Texture>material.bumpTexture).vOffset = uvOffset[1];
       }
     }
 
@@ -85,20 +87,20 @@ export default class MaterialManager {
   }
 
   public addHidden(id: string, texture: string, uv?: number[], uvOffset?: number[]): ShaderMaterial {
-    const material = new ShaderMaterial(`${id}-hidden`, this.scene, {
+    const material = new ShaderMaterial(`${id}-hidden`, this.game.scene, {
       vertex: "hidden",
       fragment: "hidden",
     },
-    {
-      attributes: ["position", "uv"],
-      uniforms: ["worldViewProjection"]
-    });
+      {
+        attributes: ["position", "uv"],
+        uniforms: ["worldViewProjection"]
+      });
 
-    const diffuseTexture = this.assetManager.get(`texture-${texture}-diffuse`);
+    const diffuseTexture = this.game.assetManager.get(`texture-${texture}-diffuse`);
     if (diffuseTexture) {
       material.setTexture("textureSampler", diffuseTexture);
     }
-    
+
     this.materials.set(`${id}-hidden`, material);
     return material;
   }

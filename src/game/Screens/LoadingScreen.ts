@@ -34,29 +34,21 @@ export default class LoadingScreen implements ILoadingScreen {
 
     window.addEventListener("resize", this.resizeToCanvas);
     document.body.appendChild(this.loadingScreen);
-    setTimeout( () => {
-      this.loadingScreen.style.opacity = '1';
-    }, 0);
   }
 
   public hideLoadingUI(): void {
     if (!this.loadingScreen) {
       return;
     }
-
-    var onTransitionEnd = () => {
-      if (!this.loadingScreen) {
-        return;
-      }
-
+    
+    let onTransitionEnd = () => {
       document.body.removeChild(this.loadingScreen);
       window.removeEventListener("resize", this.resizeToCanvas);
-
       this.loadingScreen = null;
     }
 
     this.loadingScreen.style.opacity = '0';
-    this.loadingScreen.addEventListener("transitionend", onTransitionEnd);
+    this.loadingScreen.addEventListener('transitionend', onTransitionEnd);
   }
 
   public set loadingUIText(text: string) {

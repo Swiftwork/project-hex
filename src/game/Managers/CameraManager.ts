@@ -5,8 +5,10 @@ import {
   ArcRotateCamera,
 } from 'babylonjs';
 
+import Game from '../Game';
+
 export default class CameraManager {
-  
+
   private cameras: Map<string, Camera>;
 
   public static CAMERA = {
@@ -23,14 +25,14 @@ export default class CameraManager {
     WEB_VR_FREE: 11,
   }
 
-  constructor(private scene: Scene) {
+  constructor(private game: Game) {
 
     this.cameras = new Map<string, Camera>();
 
     /* MAIN CAMERA */
     this.add('main', CameraManager.CAMERA.ARC_ROTATE, {
-      alpha: CameraManager.toRadians(360),
-      beta: CameraManager.toRadians(40),
+      alpha: this.game.graphics.toRadians(360),
+      beta: this.game.graphics.toRadians(40),
       radius: 5,
       position: Vector3.Zero(),
       settings: {
@@ -38,8 +40,8 @@ export default class CameraManager {
         upperRadiusLimit: 50,
         //lowerAlphaLimit: CameraManager.toRadians(360),
         //upperAlphaLimit: CameraManager.toRadians(360),
-        lowerBetaLimit: CameraManager.toRadians(30),
-        upperBetaLimit: CameraManager.toRadians(75),
+        lowerBetaLimit: this.game.graphics.toRadians(30),
+        upperBetaLimit: this.game.graphics.toRadians(75),
         panningAxis: new Vector3(1, 0, 1),
         inertia: 0.7,
       }
@@ -50,7 +52,7 @@ export default class CameraManager {
     let camera;
     switch (type) {
       case CameraManager.CAMERA.ARC_ROTATE:
-        camera = new ArcRotateCamera(id, options.alpha, options.beta, options.radius, options.position, this.scene);
+        camera = new ArcRotateCamera(id, options.alpha, options.beta, options.radius, options.position, this.game.scene);
         break;
 
       case CameraManager.CAMERA.UNIVERSAL:
@@ -68,13 +70,5 @@ export default class CameraManager {
 
   public get(id: string): Camera {
     return this.cameras.get(id);
-  }
-
-  public static toRadians(degrees: number) {
-    return degrees * Math.PI / 180;
-  }
- 
-  public static toDegrees(radians: number) {
-    return radians * 180 / Math.PI;
   }
 }

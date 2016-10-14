@@ -62,6 +62,9 @@ var config = {
   },
 
   plugins: [
+    new webpack.ProvidePlugin({
+      BABYLON: 'babylonjs',
+    }),
     new webpack.optimize.CommonsChunkPlugin({
       name: ['index', 'vendor', 'polyfills'],
     }),
@@ -108,7 +111,6 @@ if (PROD) {
   //------------------------------------------------------------------------------------
 
   config = extend(true, config, {
-
 
     plugins: [
       new webpack.DefinePlugin({

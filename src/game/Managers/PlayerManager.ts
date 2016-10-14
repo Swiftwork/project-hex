@@ -2,15 +2,17 @@ import {
   Scene,
   Vector3,
 } from 'babylonjs';
+
+import Game from '../Game';
 import Player from '../Actors/Player';
 
 export default class PlayerManager {
-  
+
   private players: Map<string, Player>;
   private teams: Map<string, Player[]>;
   private localPlayer: Player;
 
-  constructor(private scene: Scene) {
+  constructor(private game: Game) {
     this.players = new Map<string, Player>();
     this.teams = new Map<string, Player[]>();
   }

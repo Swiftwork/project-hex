@@ -1,30 +1,30 @@
 import {
   Vector2, Vector3, Size,
   Color3,
-  Engine, Scene, ScreenSpaceCanvas2D,
+  Engine, Scene, ScreenSpaceCanvas2D, Canvas2D,
 } from 'babylonjs';
 
-import Seed from './Math/Seed';
-import HexagonLayout from './Math/HexagonLayout';
-import Settings from './Logic/Settings';
+import Graphics from './Utils/Graphics';
 
 import AssetsLoader from './Lib/AssetsLoader';
 import LoadingScreen from './Screens/LoadingScreen';
 
 import AssetManager from './Managers/AssetManager';
-import ScreenManager from './Managers/ScreenManager';
-import MaterialManager from './Managers/MaterialManager';
-import LightManager from './Managers/LightManager';
 import CameraManager from './Managers/CameraManager';
+import LightManager from './Managers/LightManager';
+import MaterialManager from './Managers/MaterialManager';
+import ScreenManager from './Managers/ScreenManager';
 import PlayerManager from './Managers/PlayerManager';
-import ViewManager from './Managers/ViewManager';
+import Canvas2DManager from './Managers/Canvas2DManager';
 
 //------------------------------------------------------------------------------------
 // GAME FLOW INTERFACE
 //------------------------------------------------------------------------------------
 
 export interface IGameFlow {
-  
+
+  created: boolean;
+
   onCreate(): void;
 
   onResume(): void;
@@ -36,7 +36,7 @@ export interface IGameFlow {
   onPause(): void;
 
   onDestroy(): void;
-  
+
 }
 
 //------------------------------------------------------------------------------------
@@ -45,41 +45,31 @@ export interface IGameFlow {
 
 export default class Game implements IGameFlow {
 
+  /* SINGLETON */
   private static game: Game;
 
+  /* STATE */
+  public paused: boolean;
+  public created: boolean;
+
   /* GAME ENGINE */
-  public settings: Settings;
+  public graphics: Graphics;
   public engine: Engine;
   public scene: Scene;
   public scene2d: ScreenSpaceCanvas2D;
 
   /* MANAGERS */
   public assetManager: AssetManager;
-  public screenManager: ScreenManager;
-  public materialManager: MaterialManager;
-  public lightManager: LightManager;
   public cameraManager: CameraManager;
+  public lightManager: LightManager;
+  public materialManager: MaterialManager;
+  public screenManager: ScreenManager;
   public playerManager: PlayerManager;
-  public viewManager: ViewManager;
-  
+  public canvas2DManager: Canvas2DManager;
+
   constructor(public canvas: HTMLCanvasElement) {
     if (!Game.game)
       Game.game = this;
-
-    /* Settings */
-    this.settings = {
-      seed: new Seed(1),
-      difficulty: 1,
-      paused: false,
-      graphics: {
-        dpr: window.devicePixelRatio || 1,
-        quality: 5,
-      },
-      world: {
-        layout: new HexagonLayout(HexagonLayout.LAYOUT_HORIZONTAL, new Size(0.5, 0.5), Vector3.Zero()),
-        size: 16,
-      }
-    }
 
     /* Engine */
     this.engine = new Engine(this.canvas, true);
@@ -88,17 +78,31 @@ export default class Game implements IGameFlow {
 
     /* Scene & Assets */
     this.scene = new Scene(this.engine);
-    this.scene2d = new ScreenSpaceCanvas2D(this.scene, { id: 'gui' });
-    this.assetManager = new AssetManager();
-    this.assetManager.loadAllAssets(new AssetsLoader(this.scene), (tasks) => {
+    this.scene2d = new ScreenSpaceCanvas2D(this.scene, {
+      id: 'gui',
+    });
+
+    /* Graphics */
+    this.graphics = new Graphics(this);
+
+    window.addEventListener('keydown', (event) => {
+      switch (event.keyCode) {
+        case 70:
+          this.graphics.switchFullscreen();
+          break;
+      }
+    });
+
+    this.assetManager = new AssetManager(new AssetsLoader(this.scene));
+    this.assetManager.loadAllAssets((tasks) => {
 
       /* Managers */
+      this.cameraManager = new CameraManager(this);
+      this.lightManager = new LightManager(this);
+      this.materialManager = new MaterialManager(this);
       this.screenManager = new ScreenManager(this);
-      this.materialManager = new MaterialManager(this.scene, this.assetManager);
-      this.lightManager = new LightManager(this.scene);
-      this.cameraManager = new CameraManager(this.scene);
-      this.playerManager = new PlayerManager(this.scene);
-      //this.viewManager = new ViewManager(this.scene2d);
+      this.playerManager = new PlayerManager(this);
+      this.canvas2DManager = new Canvas2DManager(this);
 
       this.onCreate();
     });
@@ -106,31 +110,62 @@ export default class Game implements IGameFlow {
     return Game.game;
   }
 
+  //------------------------------------------------------------------------------------
+  // GAME FLOW
+  //------------------------------------------------------------------------------------
+
   onCreate() {
-    const mainMenu = this.screenManager.setCurrent('main-menu');
-    mainMenu.onCreate();
+    this.screenManager.show('main-menu');
+    this.created = true;
     this.engine.runRenderLoop(this.onUpdate.bind(this));
   }
 
   onResume() {
-    this.settings.paused = false;
+    this.paused = false;
+
+    if (!this.created)
+      return;
+
+    if (this.screenManager.activeScreen.created)
+      this.screenManager.activeScreen.onResume();
+
     this.engine.runRenderLoop(this.onUpdate.bind(this));
   }
 
   onUpdate() {
+    if (!this.created)
+      return;
+
+    if (this.screenManager.activeScreen.created)
+      this.screenManager.activeScreen.onUpdate();
+
     this.scene.render();
   }
 
   onResize() {
     this.engine.resize();
+
+    if (!this.created)
+      return;
+
+    if (this.screenManager.activeScreen.created)
+      this.screenManager.activeScreen.onResize();
   }
 
   onPause() {
-    this.settings.paused = true;
+    this.paused = true;
+
+    if (!this.created)
+      return;
+
+    if (this.screenManager.activeScreen.created)
+      this.screenManager.activeScreen.onPause();
+
     this.engine.stopRenderLoop();
   }
 
   onDestroy() {
+    this.screenManager.activeScreen.onDestroy();
     this.engine.stopRenderLoop();
   }
 }
