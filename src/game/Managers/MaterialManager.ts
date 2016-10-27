@@ -14,6 +14,16 @@ export default class MaterialManager {
   constructor(private game: Game) {
     this.materials = new Map<string, Material>();
 
+    /* SKY */
+    const sky = new StandardMaterial('sky', this.game.scene);
+    sky.backFaceCulling = false;
+    sky.disableLighting = true;
+    sky.diffuseColor = new BABYLON.Color3(0, 0, 0);
+    sky.specularColor = new BABYLON.Color3(0, 0, 0);
+    sky.reflectionTexture = this.game.assetManager.get('texture-sky');
+    sky.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+    this.materials.set('sky', sky);
+
     /* TABLE */
     const base = this.add('felt', 'felt', [-10, -10]);
     base.diffuseColor = new Color3(0.05, 0.32, 0.50);

@@ -15,7 +15,7 @@ export default class Compass2D extends Sprite2D {
   ) {
     super(texture, settings = Object.assign({
       /* Defaults */
-      size: new Size(512, 512),
+      size: new Size(256, 256),
     }, settings, {
         /* Overrides */
       }));

@@ -72,15 +72,13 @@ export default class Game implements IGameFlow {
       Game.game = this;
 
     /* Engine */
-    this.engine = new Engine(this.canvas, true);
+    this.engine = new Engine(this.canvas, true, { stencil: true });
     this.engine.loadingScreen = new LoadingScreen(this.canvas, new Color3(0.4, 0.2, 0.3));
     this.engine.displayLoadingUI();
 
     /* Scene & Assets */
     this.scene = new Scene(this.engine);
-    this.scene2d = new ScreenSpaceCanvas2D(this.scene, {
-      id: 'gui',
-    });
+    this.scene2d = new ScreenSpaceCanvas2D(this.scene, { id: 'gui', });
 
     /* Graphics */
     this.graphics = new Graphics(this);
@@ -115,7 +113,7 @@ export default class Game implements IGameFlow {
   //------------------------------------------------------------------------------------
 
   onCreate() {
-    this.screenManager.show('main-menu');
+    this.screenManager.show('game');
     this.created = true;
     this.engine.runRenderLoop(this.onUpdate.bind(this));
   }

@@ -1,7 +1,7 @@
 import {
   Vector2, Vector3, Color3, Color4, Size,
   Scene, ScreenSpaceCanvas2D, PrimitiveAlignment,
-  Text2D, Rectangle2D, Group2D,
+  Text2D, Rectangle2D, Group2D, Canvas2D,
   Texture,
   ArcRotateCamera,
 } from 'babylonjs';
@@ -107,7 +107,7 @@ export default class GameScreen extends Screen {
         id: 'compass',
         parent: this.screen,
         marginAlignment: 'v: top, h: right',
-        marginTop: 100,
+        marginTop: this.game.graphics.dpToPx(40),
       }));
   }
 
@@ -116,16 +116,16 @@ export default class GameScreen extends Screen {
       id: 'top-bar',
       parent: this.screen,
       marginAlignment: 'v: top, h: stretch',
-      height: 80,
-      fill: '#00000090',
+      height: this.game.graphics.dpToPx(40),
+      fill: Canvas2D.GetGradientColorBrush(new Color4(0, 0, 0, 0.5), new Color4(0, 0, 0, 0.7)),
     });
 
     this.resources = new Resources2D({
       id: 'resources',
       parent: this.screen,
       marginAlignment: 'v: top, h: left',
-      marginTop: 20,
-      fontName: `${this.game.graphics.dpToPx(24)}px outage`,
+      marginTop: this.game.graphics.dpToPx(10),
+      fontName: `${this.game.graphics.dpToPx(20)}px outage`,
     });
     this.resources.addResource(new Resource('wood'), Label2D.ICON.LOG, new Color4(0.50, 0.38, 0.30, 1));
     this.resources.addResource(new Resource('stone'), Label2D.ICON.STONE, new Color4(0.70, 0.70, 0.70, 1));
@@ -136,29 +136,30 @@ export default class GameScreen extends Screen {
     this.statuses = new Group2D({
       id: 'statuses',
       parent: this.screen,
-      marginAlignment: 'v: bottom, h: right',
+      //size: new Size(this.game.graphics.dpToPx(310), this.game.graphics.dpToPx(20)),
+      marginAlignment: 'v: top, h: right',
+      marginTop: this.game.graphics.dpToPx(10),
       layoutEngine: 'Stackpanel',
-      marginTop: 20,
     });
 
     this.fps = new Label2D(`${Math.floor(this.game.engine.getFps()).toString()} fps`, null, {
       id: 'fps',
       parent: this.statuses,
-      fontName: `${this.game.graphics.dpToPx(24)}px outage`,
+      fontName: `${this.game.graphics.dpToPx(20)}px outage`,
       marginLeft: this.game.graphics.dpToPx(32),
     });
 
     this.clock = new Label2D(new Date().toLocaleTimeString('sv-SV'), null, {
       id: 'clock',
       parent: this.statuses,
-      fontName: `${this.game.graphics.dpToPx(24)}px outage`,
+      fontName: `${this.game.graphics.dpToPx(20)}px outage`,
       marginLeft: this.game.graphics.dpToPx(32),
     });
 
     this.menu = new Label2D('', Label2D.ICON.MENU, {
       id: 'menu',
       parent: this.statuses,
-      fontName: `${this.game.graphics.dpToPx(24)}px outage`,
+      fontName: `${this.game.graphics.dpToPx(20)}px outage`,
       marginLeft: this.game.graphics.dpToPx(32),
     });
   }

@@ -3,7 +3,7 @@ import {
   AbstractMesh, ParticleSystem, Skeleton,
   Texture,
   IAssetTask, Tools,
-  AssetsManager,
+  AssetsManager, CubeTextureAssetTask,
 } from 'babylonjs';
 
 const FontFaceObserver = require('fontfaceobserver');
@@ -47,7 +47,12 @@ export default class AssetsLoader extends AssetsManager {
   public addFontAssetTask(taskName: string, url: string): IAssetTask {
     var task = new FontFileAssetTask(taskName, url);
     this.tasks.push(task);
+    return task;
+  }
 
+  public addCubeTextureTask(taskName: string, url: string, extensions?: string[], noMipmap?: boolean, files?: string[]): IAssetTask {
+    var task = new CubeTextureAssetTask(taskName, url, extensions, noMipmap, files);
+    this.tasks.push(task);
     return task;
   }
 }

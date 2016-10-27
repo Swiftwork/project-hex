@@ -38,7 +38,7 @@ export default class Resources2D extends Group2D {
       parent: this,
       fontName: this.settings.fontName,
       defaultFontColor: color,
-      marginLeft: 50,
+      marginLeft: 32,
     }));
   }
 }

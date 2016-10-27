@@ -29,12 +29,12 @@ export default class GameLogic {
     const base1 = player.createBase(this.world.tiles.get(new Hexagon(0, 0, 0).hash()));
     const base2 = player.createBase(this.world.tiles.get(new Hexagon(5, 3, -8).hash()));
     const base3 = player.createBase(this.world.tiles.get(new Hexagon(-5, -6, 11).hash()));
-    base1.tile.structure.position = this.world.settings.layout.hexagonToPixel(base1.tile.hexagon, 0);
-    base2.tile.structure.position = this.world.settings.layout.hexagonToPixel(base2.tile.hexagon, 0);
-    base3.tile.structure.position = this.world.settings.layout.hexagonToPixel(base3.tile.hexagon, 0);
+    base1.tile.structure.position = Vector3.Zero();
+    base2.tile.structure.position = Vector3.Zero();
+    base3.tile.structure.position = Vector3.Zero();
 
     const scout1 = player.createScout(this.world.tiles.get(new Hexagon(-3, 5, -2).hash()));
-    scout1.tile.unit.position = this.world.settings.layout.hexagonToPixel(scout1.tile.hexagon, 0);
+    scout1.tile.unit.position = Vector3.Zero();
 
     this.onUpdate();
   }

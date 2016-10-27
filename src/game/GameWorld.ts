@@ -141,10 +141,9 @@ export default class GameWorld {
       this.settings.seed.random() * tile.hexagon.hash() * 100
     );
 
-    const tilePosition = this.settings.layout.hexagonToPixel(tile.hexagon, 0);
     const forest = [];
     for (let i = 0; i < 500; ++i) {
-      let position = tilePosition.add(this.settings.layout.randomInside(tile.hexagon, 0));
+      let position = this.settings.layout.randomInside(tile.hexagon, 0);
       let reject = false;
       for (let ii = 0; ii < forest.length; ++ii) {
         if (Vector3.Distance(forest[ii].position, position) < 0.2 * (1 - tile.biomeData.density)) {

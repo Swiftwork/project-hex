@@ -25,18 +25,18 @@ export default class MainMenuScreen extends Screen {
 
   constructor(public game: Game, public id: string) {
     super(game, id);
-    this.screen.fill = Canvas2D.GetSolidColorBrushFromHex("#202020FF");
+    //this.screen.fill = Canvas2D.GetSolidColorBrushFromHex("#202020FF");
 
-    const background = <Texture>this.game.assetManager.get('interface-hexagon-pattern');
-    background.hasAlpha = true;
+    const hexagons = <Texture>this.game.assetManager.get('interface-hexagon-pattern');
+    hexagons.hasAlpha = true;
 
-    new Sprite2D(background, {
+    let background = new Sprite2D(hexagons, {
       id: 'background',
       parent: this.screen,
       marginAlignment: 'v: stretch, h: stretch',
       opacity: 0.01,
-      spriteScaleFactor: new Vector2(0.8, 0.8),
     });
+    background.texture.wrapU = background.texture.wrapV = 1;
 
     this.menuItems = [
 
@@ -84,8 +84,7 @@ export default class MainMenuScreen extends Screen {
   }
 
   private createFullscreen() {
-    console.log(this.game.engine.getHardwareScalingLevel().toString());
-    this.fullscreen = new Label2D(this.game.engine.getHardwareScalingLevel().toString(), Label2D.ICON.EXPAND, {
+    this.fullscreen = new Label2D('', Label2D.ICON.EXPAND, {
       id: 'fullscreen',
       parent: this.screen,
       marginAlignment: 'v: top, h: right',

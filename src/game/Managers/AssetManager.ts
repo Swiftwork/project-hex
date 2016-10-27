@@ -49,6 +49,17 @@ export default class AssetManager {
     }
 
     /* Register textures to be loaded */
+    for (let id in assetsManifest.cubeTextures) {
+      let cubeTexture = assetsManifest.cubeTextures[id];
+      let task = this.assetsLoader.addCubeTextureTask(`texture-${id}`, '', null, false, [
+        cubeTexture.front, cubeTexture.top, cubeTexture.right, cubeTexture.back, cubeTexture.bottom, cubeTexture.left,
+      ]);
+      task.onSuccess = (task: TextureAssetTask) => {
+        this.add(`texture-${id}`, task.texture);
+      }
+    }
+
+    /* Register cube textures to be loaded */
     for (let id in assetsManifest.textures) {
       let textures = assetsManifest.textures[id];
       for (let textureType in textures) {
@@ -68,6 +79,7 @@ export default class AssetManager {
         for (var i = 0; i < task.loadedMeshes.length; ++i) {
           let mesh = task.loadedMeshes[i];
           mesh.setEnabled(false);
+          mesh.renderingGroupId = 1;
           this.add(`mesh-${mesh.name}`, mesh);
         }
       }
@@ -117,10 +129,24 @@ const assetsManifest = {
 
   interfaces: {
 
+    /* HEXAGON PATTERN */
     'hexagon-pattern': require('../Assets/interfaces/hexagon-pattern.svg'),
 
     /* COMPASS */
     'compass': require('../Assets/interfaces/compass.svg'),
+  },
+
+  cubeTextures: {
+
+    /* SKY */
+    'sky': {
+      front: require('../Assets/textures/stormydays/stormydays_ft.jpg'),
+      back: require('../Assets/textures/stormydays/stormydays_bk.jpg'),
+      right: require('../Assets/textures/stormydays/stormydays_rt.jpg'),
+      left: require('../Assets/textures/stormydays/stormydays_lf.jpg'),
+      top: require('../Assets/textures/stormydays/stormydays_up.jpg'),
+      bottom: require('../Assets/textures/stormydays/stormydays_dn.jpg'),
+    },
   },
 
   textures: {
