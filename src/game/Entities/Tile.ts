@@ -3,7 +3,21 @@ import Environment from '../Entities/Environment';
 import Structure from '../Entities/Structure';
 import Unit from '../Entities/Unit';
 
-export default class Tile {
+export interface ITile {
+  hexagon: Hexagon;
+  type?: string;
+  biomeData: any;
+  surface: string;
+
+  isExplored: boolean;
+  isVisible: boolean;
+
+  environment: Environment[];
+  structure: Structure;
+  unit: Unit;
+}
+
+export default class Tile implements ITile {
 
   /* Tile biome types */
   public static TYPE = {
@@ -28,7 +42,7 @@ export default class Tile {
 
   /* Tile biome data e.g. forest density */
   public biomeData: any = {}
-  public surface: string = Tile.SURFACE.PLAIN;
+  public surface = Tile.SURFACE.PLAIN;
 
   /* Tile states */
   public isExplored = false;
@@ -65,5 +79,24 @@ export default class Tile {
   public setUnit(unit: Unit): Unit {
     this.unit = unit;
     return unit;
+  }
+
+  //------------------------------------------------------------------------------------
+  // SERIALIZE
+  //------------------------------------------------------------------------------------
+
+  static fromJSON(json: ITile | string): Tile {
+    if (typeof json === 'string') {
+      return JSON.parse(json, (key: string, value: any) => {
+        return !key ? Tile.fromJSON(value) : value;
+      });
+    } else if (json) {
+      return Object.assign(Object.create(Tile.prototype), json, {
+        hexagon: Hexagon.fromJSON(json.hexagon),
+        environment: json.environment.map((environment: Environment) => { return Environment.fromJSON(environment); }),
+        structure: Structure.fromJSON(json.structure),
+        unit: Unit.fromJSON(json.unit),
+      });
+    }
   }
 }

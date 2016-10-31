@@ -11,7 +11,7 @@ import Game from './Game';
 import GameWorld from './GameWorld';
 import Hexagon from './Math/Hexagon';
 import CustomMeshes from './Math/CustomMeshes';
-import Tile from './Logic/Tile';
+import Tile from './Entities/Tile';
 import CameraManager from './Managers/CameraManager';
 
 export default class GameRenderer {

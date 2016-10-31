@@ -1,13 +1,31 @@
-import Unit from '../Unit';
-import Tile from '../../Logic/Tile'
+import Unit, { IUnit } from '../Unit';
 
-export default class Scout extends Unit {
+export interface IScout extends IUnit {
+
+}
+
+export default class Scout extends Unit implements IScout {
 
   constructor(
     public id: string,
-    public tile: Tile,
     public model?: string
   ) {
-    super(id, tile, model);
+    super(id, model);
+  }
+
+  //------------------------------------------------------------------------------------
+  // SERIALIZE
+  //------------------------------------------------------------------------------------
+
+  static fromJSON(json: IScout | string): Scout {
+    if (typeof json === 'string') {
+      return JSON.parse(json, (key: string, value: any) => {
+        return !key ? Scout.fromJSON(value) : value;
+      });
+    } else if (json) {
+      return Object.assign(Object.create(Scout.prototype), super.fromJSON(json), {
+        // Special Cases Object.fromJSON(json.object);
+      });
+    }
   }
 }

@@ -7,26 +7,21 @@ import Game from './Game';
 import Settings from './Utils/Settings';
 
 import Hexagon from './Math/Hexagon';
-import Tile from './Logic/Tile';
-import Entity from './Entities/Entity';
+import Tile from './Entities/Tile';
 import Environment from './Entities/Environment';
-import Structure from './Entities/Structure';
 
 export default class GameWorld {
 
   public static TREES = ['oak-1', 'oak-2', 'oak-3', 'oak-4', 'cacti-1', 'cacti-2', 'pine-1', 'pine-2', 'pine-3', 'pine-4', 'pine-5', 'snow-pine-1', 'snow-pine-2', 'snow-pine-3', 'snow-pine-4', 'snow-pine-5',];
 
-  public tiles: Map<number, Tile>;
-
-  public settings: Settings;
-
   constructor(
-    public game: Game
+    public game: Game,
+    public settings?: Settings,
+    public tiles?: Map<number, Tile>,
   ) {
-    this.settings = new Settings(this.game);
-
-    this.tiles = new Map<number, Tile>();
-    if (this.settings.seed)
+    this.settings = settings || new Settings();
+    this.tiles = tiles || new Map<number, Tile>();
+    if (!tiles)
       this.generate();
   }
 
@@ -34,6 +29,33 @@ export default class GameWorld {
     this.tiles.clear();
     this.createTiles(this.settings.size);
     return this;
+  }
+
+  //------------------------------------------------------------------------------------
+  // LOCAL STORAGE
+  //------------------------------------------------------------------------------------
+
+  public load() {
+    const json = JSON.parse(localStorage.getItem('world') || 'null');
+    if (!json) return false;
+
+    this.settings = Settings.fromJSON(json.settings);
+    this.tiles.clear();
+    json.tiles.map((entry: { hash: number, tile: Tile }) => {
+      this.tiles.set(entry.hash, Tile.fromJSON(entry.tile));
+    });
+    return true;
+  }
+
+  public store() {
+    let tiles = [];
+    this.tiles.forEach((tile: Tile, hash: number) => {
+      tiles.push({ hash: hash, tile: tile });
+    });
+    localStorage.setItem('world', JSON.stringify({
+      settings: this.settings,
+      tiles: tiles,
+    }));
   }
 
   //------------------------------------------------------------------------------------
@@ -155,7 +177,7 @@ export default class GameWorld {
       if (reject)
         continue;
 
-      const tree = new Environment('tree', tile, `${tile.biomeData.treeType}`);
+      const tree = new Environment('tree', `${tile.biomeData.treeType}`);
       tree.position = position;
       forest.push(tree);
     }

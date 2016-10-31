@@ -9,6 +9,8 @@ import Graphics from './Utils/Graphics';
 import AssetsLoader from './Lib/AssetsLoader';
 import LoadingScreen from './Screens/LoadingScreen';
 
+import NetworkClient from './Network/NetworkClient';
+
 import AssetManager from './Managers/AssetManager';
 import CameraManager from './Managers/CameraManager';
 import LightManager from './Managers/LightManager';
@@ -58,6 +60,9 @@ export default class Game implements IGameFlow {
   public scene: Scene;
   public scene2d: ScreenSpaceCanvas2D;
 
+  /* NETWORK */
+  public network: NetworkClient;
+
   /* MANAGERS */
   public assetManager: AssetManager;
   public cameraManager: CameraManager;
@@ -82,6 +87,7 @@ export default class Game implements IGameFlow {
 
     /* Graphics */
     this.graphics = new Graphics(this);
+    this.graphics.load();
 
     window.addEventListener('keydown', (event) => {
       switch (event.keyCode) {
@@ -93,6 +99,10 @@ export default class Game implements IGameFlow {
 
     this.assetManager = new AssetManager(new AssetsLoader(this.scene));
     this.assetManager.loadAllAssets((tasks) => {
+
+      /* Network */
+      this.network = new NetworkClient(this);
+      this.network.connect(NetworkClient.TYPE.HOST);
 
       /* Managers */
       this.cameraManager = new CameraManager(this);

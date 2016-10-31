@@ -1,4 +1,8 @@
-import Tile from '../Logic/Tile';
+import {
+
+} from 'babylonjs';
+
+import Tile from '../Entities/Tile';
 import Structure from '../Entities/Structure';
 import Unit from '../Entities/Unit';
 
@@ -8,7 +12,14 @@ import Base from '../Entities/Structures/Base';
 /* Units */
 import Scout from '../Entities/Units/Scout';
 
-export default class Player {
+export interface IPlayer {
+  structures: Structure[];
+  units: Unit[];
+  name: string,
+  type: number,
+}
+
+export default class Player implements IPlayer {
 
   public static TYPES = {
     LOCAL: 0,
@@ -27,16 +38,33 @@ export default class Player {
   }
 
   createBase(tile: Tile): Base {
-    const base = new Base(`base-${this.structures.length}`, tile, 'viking-village-1')
+    const base = new Base(`base-${this.structures.length}`, 'viking-village-1')
     tile.setStructure(base);
     this.structures.push(base);
     return base;
   }
 
   createScout(tile: Tile): Scout {
-    const scout = new Scout(`scout-${this.units.length}`, tile, 'scout');
+    const scout = new Scout(`scout-${this.units.length}`, 'scout');
     tile.setUnit(scout);
     this.units.push(scout);
     return scout;
+  }
+
+  //------------------------------------------------------------------------------------
+  // SERIALIZE
+  //------------------------------------------------------------------------------------
+
+  static fromJSON(json: IPlayer | string): Player {
+    if (typeof json === 'string') {
+      return JSON.parse(json, (key: string, value: any) => {
+        return !key ? Structure.fromJSON(value) : value;
+      });
+    } else if (json) {
+      return Object.assign(Object.create(Player.prototype), json, {
+        structures: json.structures.map((structure: Structure) => { return Structure.fromJSON(structure); }),
+        units: json.units.map((unit: Unit) => { return Unit.fromJSON(unit); }),
+      });
+    }
   }
 }

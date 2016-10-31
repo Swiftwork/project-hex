@@ -1,4 +1,19 @@
-export default class Hexagon {
+export interface IHexagon {
+  q: number,
+  r: number,
+  s: number,
+}
+
+export default class Hexagon implements IHexagon {
+
+  static DIRECTIONS = [
+    new Hexagon(0, 1, -1),
+    new Hexagon(1, 0, -1),
+    new Hexagon(1, -1, 0),
+    new Hexagon(0, -1, 1),
+    new Hexagon(-1, 0, 1),
+    new Hexagon(-1, 1, 0),
+  ];
 
   constructor(
     public q: number,
@@ -36,17 +51,17 @@ export default class Hexagon {
 
   /* Subtract another Hexagon from this Hexagon, returning a new Hexagon */
   subtract(hex: Hexagon): Hexagon {
-      return new Hexagon(this.q - hex.q, this.r - hex.r, this.s - hex.s);
+    return new Hexagon(this.q - hex.q, this.r - hex.r, this.s - hex.s);
   }
 
   /* Multiply another Hexagon with this Hexagon, returning a new Hexagon */
   multiply(hex: Hexagon): Hexagon {
-      return new Hexagon(this.q * hex.q, this.r * hex.r, this.s * hex.s);
+    return new Hexagon(this.q * hex.q, this.r * hex.r, this.s * hex.s);
   }
 
   /* Scale each coordinate of this Hexagon by a constant, returning a new Hexagon */
   scale(k: number): Hexagon {
-      return new Hexagon(this.q * k, this.r * k, this.s * k);
+    return new Hexagon(this.q * k, this.r * k, this.s * k);
   }
 
   /* Calculate distance to another Hexagon from this Hexagon, returning a number */
@@ -57,15 +72,22 @@ export default class Hexagon {
 
   /* Caclulate neighbor based on directional number [0-5] first being east, returning a new Hexagon */
   neighbor(direction: number): Hexagon {
-    return this.add(hexagonDirections[(6 + (direction % 6)) % 6]);
+    return this.add(Hexagon.DIRECTIONS[(6 + (direction % 6)) % 6]);
+  }
+
+  //------------------------------------------------------------------------------------
+  // SERIALIZE
+  //------------------------------------------------------------------------------------
+
+  static fromJSON(json: IHexagon | string): Hexagon {
+    if (typeof json === 'string') {
+      return JSON.parse(json, (key: string, value: any) => {
+        return !key ? Hexagon.fromJSON(value) : value;
+      });
+    } else if (json) {
+      return Object.assign(Object.create(Hexagon.prototype), json, {
+        // Special Cases
+      });
+    }
   }
 }
-
-export const hexagonDirections = [
-  new Hexagon(0, 1, -1),
-  new Hexagon(1, 0, -1),
-  new Hexagon(1, -1, 0),
-  new Hexagon(0, -1, 1),
-  new Hexagon(-1, 0, 1),
-  new Hexagon(-1, 1, 0),
-];

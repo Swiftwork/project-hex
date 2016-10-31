@@ -2,11 +2,19 @@ import {
   Vector2, Vector3, Size,
 } from 'babylonjs';
 
-import Game from '../Game';
 import Seed from '../Math/Seed';
 import HexagonLayout from '../Math/HexagonLayout';
 
-export default class Settings {
+export interface ISettings {
+  difficulty: number;
+  paused: boolean;
+
+  seed: Seed
+  layout: HexagonLayout;
+  size: number;
+}
+
+export default class Settings implements ISettings {
 
   public static DIFFICULTY = {
     EASY: 1,
@@ -14,6 +22,7 @@ export default class Settings {
     HARD: 3,
   }
 
+  /* SETTINGS */
   private _difficulty: number;
   private _paused: boolean;
 
@@ -21,13 +30,41 @@ export default class Settings {
   private _layout: HexagonLayout;
   private _size: number;
 
-  constructor(private game: Game) {
-    this.paused = false;
+  constructor() {
     this.difficulty = Settings.DIFFICULTY.NORMAL;
+    this.paused = false;
 
-    this.seed = new Seed(1);
+    this.seed = new Seed(Math.random());
     this.layout = new HexagonLayout(HexagonLayout.LAYOUT_HORIZONTAL, new Size(0.5, 0.5), Vector3.Zero());
     this.size = 16;
+  }
+
+  //------------------------------------------------------------------------------------
+  // SERIALIZE
+  //------------------------------------------------------------------------------------
+
+  public toJSON(): ISettings {
+    return {
+      difficulty: this.difficulty,
+      paused: this.paused,
+
+      seed: this.seed,
+      layout: this.layout,
+      size: this.size,
+    };
+  }
+
+  static fromJSON(json: ISettings | string): Settings {
+    if (typeof json === 'string') {
+      return JSON.parse(json, (key: string, value: any) => {
+        return !key ? Settings.fromJSON(value) : value;
+      });
+    } else if (json) {
+      return Object.assign(Object.create(Settings.prototype), json, {
+        seed: Seed.fromJSON(json.seed),
+        layout: HexagonLayout.fromJSON(json.layout),
+      });
+    }
   }
 
   //------------------------------------------------------------------------------------

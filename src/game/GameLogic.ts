@@ -6,10 +6,7 @@ import Game from './Game';
 import GameWorld from './GameWorld';
 import Hexagon from './Math/Hexagon';
 import HexagonLayout from './Math/HexagonLayout';
-import Tile from './Logic/Tile';
-import Entity from './Entities/Entity';
-import Environment from './Entities/Environment';
-import Structure from './Entities/Structure';
+import Tile from './Entities/Tile';
 import Player from './Actors/Player';
 import PlayerManager from './Managers/PlayerManager';
 
@@ -29,12 +26,12 @@ export default class GameLogic {
     const base1 = player.createBase(this.world.tiles.get(new Hexagon(0, 0, 0).hash()));
     const base2 = player.createBase(this.world.tiles.get(new Hexagon(5, 3, -8).hash()));
     const base3 = player.createBase(this.world.tiles.get(new Hexagon(-5, -6, 11).hash()));
-    base1.tile.structure.position = Vector3.Zero();
-    base2.tile.structure.position = Vector3.Zero();
-    base3.tile.structure.position = Vector3.Zero();
+    base1.position = Vector3.Zero();
+    base2.position = Vector3.Zero();
+    base3.position = Vector3.Zero();
 
     const scout1 = player.createScout(this.world.tiles.get(new Hexagon(-3, 5, -2).hash()));
-    scout1.tile.unit.position = Vector3.Zero();
+    scout1.position = Vector3.Zero();
 
     this.onUpdate();
   }
@@ -67,7 +64,8 @@ export default class GameLogic {
 
       for (let i = 0; i < structuresUnts.length; i++) {
         const entity = structuresUnts[i];
-        const distance = tile.hexagon.distance(entity.tile.hexagon);
+        //const distance = tile.hexagon.distance(entity.tile.hexagon);
+        const distance = 0;
 
         if (distance <= 3) {
           tile.isExplored = true;

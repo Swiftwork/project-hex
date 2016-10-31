@@ -5,8 +5,8 @@ import Game from './game/Game';
 require('./index.css');
 
 /* Check For WebGL Support */
-const canvas = <HTMLCanvasElement> document.getElementById('game');
-let support = <HTMLElement> document.getElementById('support');
+const canvas = <HTMLCanvasElement>document.getElementById('game');
+let support = <HTMLElement>document.getElementById('support');
 
 if (!Engine.isSupported()) {
   support.style.display = 'block';

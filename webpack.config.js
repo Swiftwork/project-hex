@@ -4,128 +4,133 @@ var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-var PROD = process.argv.indexOf('--production') != -1 || process.env.NODE_ENV == 'production';
+module.exports = function (env) {
 
-//------------------------------------------------------------------------------------
-// COMMON CONFIG FOR DEV AND PROD
-//------------------------------------------------------------------------------------
+  //var PROD = process.argv.indexOf('--production') != -1 || process.env.NODE_ENV == 'production';
+  var PROD = env && env.production ? true : false;
 
-var config = {
-  context: path.resolve(process.cwd(), 'src'),
+  //------------------------------------------------------------------------------------
+  // COMMON CONFIG FOR DEV AND PROD
+  //------------------------------------------------------------------------------------
 
-  entry: {
-    'polyfills': './polyfills',
-    'vendor': './vendor',
-    'index': './index',
-  },
+  var config = {
+    context: path.resolve(process.cwd(), 'src'),
 
-  output: {
-    filename: '[name].js',
-    path: path.resolve(process.cwd(), 'build'),
-  },
+    entry: {
+      'polyfills': './polyfills',
+      'vendor': './vendor',
+      'index': './index',
+    },
 
-  resolve: {
-    root: path.resolve(process.cwd(), 'src'),
-    modulesDirectories: ['node_modules'],
-    extensions: ['', '.js', '.ts'],
-  },
+    output: {
+      filename: '[name].js',
+      path: path.resolve(process.cwd(), 'build'),
+    },
 
-  module: {
-    loaders: [
-      {
-        test: /\.ts$/,
-        loader: 'ts',
-      },
-      {
-        test: /\.pug$/,
-        loader: 'pug',
-      },
-      {
-        test: /\.css$/,
-        loader: ExtractTextPlugin.extract('css'),
-      },
-      {
-        test: /\.(png|jpe?g|svg|fx|woff2?)$/,
-        loader: 'file',
-        query: {
-          name: PROD ? 'assets/[hash].[ext]' : 'assets/[name].[ext]',
+    resolve: {
+      modules: [path.resolve(process.cwd(), 'src'), 'node_modules'],
+      extensions: ['.js', '.ts'],
+    },
+
+    module: {
+      rules: [
+        {
+          test: /\.ts$/,
+          loader: 'awesome-typescript',
         },
-      },
-      {
-        test: /\.babylon$/,
-        loader: 'babylon-file',
-        query: {
-          name: PROD ? 'assets/[hash].[ext]' : 'assets/[name].[ext]',
+        {
+          test: /\.pug$/,
+          loader: 'pug',
         },
-      },
+        {
+          test: /\.css$/,
+          loader: ExtractTextPlugin.extract({ loader: 'css' }),
+        },
+        {
+          test: /\.(png|jpe?g|svg|fx|woff2?)$/,
+          loader: 'file',
+          options: {
+            name: PROD ? 'assets/[hash].[ext]' : 'assets/[name].[ext]',
+          },
+        },
+        {
+          test: /\.babylon$/,
+          loader: 'babylon-file',
+          options: {
+            name: PROD ? 'assets/[hash].[ext]' : 'assets/[name].[ext]',
+          },
+        },
+      ],
+    },
+
+    plugins: [
+      new webpack.ProvidePlugin({
+        BABYLON: 'babylonjs',
+      }),
+      new webpack.optimize.CommonsChunkPlugin({
+        name: ['index', 'vendor', 'polyfills'],
+      }),
+      new HtmlWebpackPlugin({
+        inject: false,
+        template: './index.pug',
+      }),
+      new ExtractTextPlugin('./index.css'),
     ],
-  },
+  };
 
-  plugins: [
-    new webpack.ProvidePlugin({
-      BABYLON: 'babylonjs',
-    }),
-    new webpack.optimize.CommonsChunkPlugin({
-      name: ['index', 'vendor', 'polyfills'],
-    }),
-    new HtmlWebpackPlugin({
-      inject: false,
-      template: './index.pug',
-    }),
-    new ExtractTextPlugin('./index.css'),
-  ],
+  if (PROD) {
+
+    //------------------------------------------------------------------------------------
+    // PRODUCTION SPECIFIC CONFIG
+    //------------------------------------------------------------------------------------
+
+    config = extend(true, config, {
+
+      plugins: [
+        new webpack.NoErrorsPlugin(),
+        new webpack.optimize.DedupePlugin(),
+        new webpack.LoaderOptionsPlugin({
+          minimize: true
+        }),
+        new webpack.optimize.UglifyJsPlugin({
+          output: {
+            comments: false,
+          },
+          compressor: {
+            warnings: false,
+          },
+        }),
+        new webpack.DefinePlugin({
+          'process.env': {
+            'ENV': '"production"',
+          },
+        }),
+      ],
+
+    });
+
+  } else {
+
+    //------------------------------------------------------------------------------------
+    // DEVELOPMENT SPECIFIC CONFIG
+    //------------------------------------------------------------------------------------
+
+    config = extend(true, config, {
+
+      plugins: [
+        new webpack.LoaderOptionsPlugin({
+          debug: true
+        }),
+        new webpack.DefinePlugin({
+          'process.env': {
+            'ENV': '"development"',
+          },
+        }),
+      ],
+
+      devtool: 'source-map',
+    });
+  }
+
+  return config;
 };
-
-if (PROD) {
-
-  //------------------------------------------------------------------------------------
-  // PRODUCTION SPECIFIC CONFIG
-  //------------------------------------------------------------------------------------
-
-  config = extend(true, config, {
-
-    plugins: [
-      new webpack.NoErrorsPlugin(),
-      new webpack.optimize.DedupePlugin(),
-      new webpack.optimize.UglifyJsPlugin({
-        output: {
-          comments: false,
-        },
-        compressor: {
-          warnings: false,
-        },
-      }),
-      new webpack.DefinePlugin({
-        'process.env': {
-          'ENV': '"production"',
-        },
-      }),
-    ],
-
-  });
-
-} else {
-
-  //------------------------------------------------------------------------------------
-  // DEVELOPMENT SPECIFIC CONFIG
-  //------------------------------------------------------------------------------------
-
-  config = extend(true, config, {
-
-    plugins: [
-      new webpack.DefinePlugin({
-        'process.env': {
-          'ENV': '"development"',
-        },
-      }),
-    ],
-
-    devtool: 'source-map',
-  });
-}
-
-//------------------------------------------------------------------------------------
-// EXPORT
-//------------------------------------------------------------------------------------
-
-module.exports = config;

@@ -50,6 +50,7 @@ export default class GameScreen extends Screen {
   onCreate() {
     /* World Creation */
     this.world = new GameWorld(this.game);
+    this.world.load();
     this.logic = new GameLogic(this.game, this.world);
     this.renderer = new GameRenderer(this.game, this.world);
 

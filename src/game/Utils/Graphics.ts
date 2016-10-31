@@ -4,14 +4,42 @@ import {
 
 import Game from '../Game';
 
-export default class Graphics {
+export interface IGraphics {
+  dpr: number;
+  resolution: number;
+  fullscreen: boolean;
+}
 
+export default class Graphics implements IGraphics {
+
+  /* SETTINGS */
   private _dpr: number;
   private _resolution: number;
+  private _fullscreen: boolean;
 
-  constructor(private game: Game) {
+  constructor(public game: Game) {
     this.dpr = window.devicePixelRatio || 1;
     this.resolution = 1200;
+  }
+
+  //------------------------------------------------------------------------------------
+  // LOCAL STORAGE
+  //------------------------------------------------------------------------------------
+
+  public load(): boolean {
+    const json = JSON.parse(localStorage.getItem('graphics') || 'null');
+    if (!json) return false;
+
+    this.dpr = json.dpr;
+    this.resolution = json.resolution;
+    return true;
+  }
+
+  public store() {
+    localStorage.setItem('graphics', JSON.stringify({
+      dpr: this.dpr,
+      resolution: this.resolution,
+    }));
   }
 
   //------------------------------------------------------------------------------------
@@ -47,6 +75,7 @@ export default class Graphics {
 
   public set dpr(dpr: number) {
     this._dpr = dpr;
+    this.store();
   }
 
   public get resolution(): number {
@@ -56,6 +85,7 @@ export default class Graphics {
   public set resolution(resolution: number) {
     this._resolution = resolution;
     this.game.engine.setHardwareScalingLevel(1 / (this.resolution / window.screen.height));
+    this.store();
   }
 
   public get fullscreen(): boolean {
@@ -64,5 +94,6 @@ export default class Graphics {
 
   public switchFullscreen() {
     this.game.engine.switchFullscreen(false);
+    this.store();
   }
 };
