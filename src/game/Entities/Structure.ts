@@ -4,7 +4,8 @@ import {
 import Entity, { IEntity } from './Entity';
 
 export interface IStructure extends IEntity {
-  visibility: number;
+  ownerId: string;
+  sight: number;
 }
 
 export default class Structure extends Entity implements IStructure {
@@ -15,13 +16,15 @@ export default class Structure extends Entity implements IStructure {
     3: 5,
   }
 
-  public visibility = 2;
+  public ownerId = 'none';
+  public sight = 3;
 
   constructor(
     public id: string,
+    public tileId: number,
     public model?: string
   ) {
-    super(id, model);
+    super(id, tileId, model);
   }
 
   //------------------------------------------------------------------------------------

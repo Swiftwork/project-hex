@@ -205,8 +205,8 @@ const assetsManifest = {
 
     /* HIDDEN */
     'hidden': {
-      vertex: require('../Assets/shaders/hidden.vertex.fx'),
-      fragment: require('../Assets/shaders/hidden.fragment.fx'),
+      vertex: require('../Assets/shaders/hidden.vertex.test.fx'),
+      fragment: require('../Assets/shaders/hidden.fragment.test.fx'),
     },
   },
 }

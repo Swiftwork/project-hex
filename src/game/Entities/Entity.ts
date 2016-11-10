@@ -5,6 +5,7 @@ import {
 export interface IEntity {
   position: Vector3;
   id: string;
+  tileId: number;
   model?: string;
 }
 
@@ -14,6 +15,7 @@ export default class Entity implements IEntity {
 
   constructor(
     public id: string,
+    public tileId: number,
     public model?: string
   ) {
     this.position = new Vector3(0, 0, 0);

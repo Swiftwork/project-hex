@@ -24,7 +24,7 @@ export default class LightManager {
     /* Sun Light */
     this.add('sunLight',
       LightManager.LIGHT.DIRECTIONAL,
-      new Vector3(-2, -4, 4),
+      new Vector3(-2, -4, 6),
       null,
       {
         intensity: 0.7,
@@ -37,7 +37,7 @@ export default class LightManager {
       new Vector3(0, 1, 0),
       null,
       {
-        intensity: 0.6,
+        intensity: 0.7,
       });
   }
 

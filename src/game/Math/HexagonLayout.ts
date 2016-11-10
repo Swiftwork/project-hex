@@ -77,10 +77,12 @@ export default class HexagonLayout implements IHexagonLayout {
 
   }
 
-  public hexagonToPixel(hex: Hexagon, y: number): Vector3 {
+  public hexagonToPixel(hex: Hexagon, y?: number): Vector3 | Vector2 {
     const x = (this.orientation.f0 * hex.q + this.orientation.f1 * hex.r) * this.size.width;
     const z = (this.orientation.f2 * hex.q + this.orientation.f3 * hex.r) * this.size.height;
-    return new Vector3(x + this.origin.x, y, z + this.origin.z);
+    return typeof y !== 'undefined' ?
+      new Vector3(x + this.origin.x, y, z + this.origin.z) :
+      new Vector2(x + this.origin.x, z + this.origin.z);
   }
 
   public pixelToHexagon(p: Vector3): Hexagon {
@@ -90,17 +92,19 @@ export default class HexagonLayout implements IHexagonLayout {
     return new Hexagon(q, r, -q - r);
   }
 
-  public cornerOffset(corner: number, z: number): Vector3 {
+  public cornerOffset(corner: number, y?: number): Vector3 | Vector2 {
     const angle = 2.0 * Math.PI * (this.orientation.startAngle + corner) / 6;
-    return new Vector3(this.size.width * Math.cos(angle), this.size.height * Math.sin(angle), z);
+    return typeof y !== 'undefined' ?
+      new Vector3(this.size.width * Math.cos(angle), y, this.size.height * Math.sin(angle)) :
+      new Vector2(this.size.width * Math.cos(angle), this.size.height * Math.sin(angle));
   }
 
-  public polygonCorners(hex: Hexagon): Vector3[] {
+  public polygonCorners(hex: Hexagon): Vector2[] {
     let corners = [];
-    const center = this.hexagonToPixel(hex, 0);
+    const center = this.hexagonToPixel(hex);
     for (let i = 0; i < 7; i++) {
-      const offset = this.cornerOffset(i, 0);
-      corners.push(new Vector3(center.x + offset.x, center.y + offset.y, 0));
+      const offset = this.cornerOffset(i);
+      corners.push(new Vector2(center.x + offset.x, center.y + offset.y));
     }
     return corners;
   }

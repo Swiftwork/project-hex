@@ -12,9 +12,10 @@ export default class Environment extends Entity implements IEnvironment {
 
   constructor(
     public id: string,
+    public tileId: number,
     public model?: string
   ) {
-    super(id, model);
+    super(id, tileId, model);
   }
 
   //------------------------------------------------------------------------------------

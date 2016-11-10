@@ -1,14 +1,15 @@
 import {
   Vector2, Vector3, Vector4,
   Color3, Color4, StandardMaterial, ShaderMaterial,
-  Mesh, MeshBuilder, InstancedMesh, AbstractMesh,
-  Scene, ArcRotateCamera,
+  Mesh, MeshBuilder, AbstractMesh,
+  Scene, ArcRotateCamera, Animation,
   DirectionalLight, ShadowGenerator,
   ActionManager, InterpolateValueAction, ExecuteCodeAction, SwitchBooleanAction, ActionEvent,
-  HighlightLayer,
 } from 'babylonjs';
 import Game from './Game';
 import GameWorld from './GameWorld';
+import GameInput from './GameInput';
+import Graphics from './Utils/Graphics';
 import Hexagon from './Math/Hexagon';
 import CustomMeshes from './Math/CustomMeshes';
 import Tile from './Entities/Tile';
@@ -21,13 +22,13 @@ export default class GameRenderer {
   private sunLight: DirectionalLight;
   private meshes: Mesh[];
 
-  /* SHADOWS & HIGHLIGHTS */
-  private highlights: HighlightLayer;
+  /* SHADOWS */
   private shadowGenerator: ShadowGenerator;
 
   constructor(
     private game: Game,
-    private world: GameWorld
+    private world: GameWorld,
+    private input: GameInput,
   ) {
     /* Scene Defaults */
     this.game.scene.clearColor = new Color3(0.9, 0.87, 0.85);
@@ -46,27 +47,9 @@ export default class GameRenderer {
 
     /* Tile Storage */
     this.meshes = [];
-
-    /* Scene Actions */
-    this.game.scene.actionManager = new ActionManager(this.game.scene);
-    this.game.scene.actionManager.registerAction(new ExecuteCodeAction(
-      ActionManager.OnKeyDownTrigger,
-      (event) => {
-        /* Debug */
-        if (event.sourceEvent.keyCode === 192) {
-          if (!this.game.scene.debugLayer.isVisible())
-            this.game.scene.debugLayer.show();
-          else
-            this.game.scene.debugLayer.hide();
-        }
-      }
-    ));
   }
 
   onCreate() {
-    /* Highlights */
-    this.highlights = new HighlightLayer('highlights', this.game.scene, {});
-
     /* Shadows */
     this.shadowGenerator = new ShadowGenerator(4096, this.sunLight);
     this.shadowGenerator.bias = 0.0000009;
@@ -116,12 +99,11 @@ export default class GameRenderer {
     base.material = this.game.materialManager.get('felt');
     base.receiveShadows = true;
 
-
     const edge = CustomMeshes.CreateFrame('table-frame', {
       length: this.world.settings.size * 2,
       depth: this.world.settings.size * 2,
       height: 0.6,
-      thickness: 2,
+      thickness: 0.5,
       alignment: CustomMeshes.ALIGNMENT.OUTSIDE,
     }, this.game.scene);
     edge.material = this.game.materialManager.get('wood');
@@ -180,28 +162,33 @@ export default class GameRenderer {
 
           /* Darken hidden tiles */
           base.material = surface.material = this.game.materialManager.get(`${tile.type}-hidden`);
-          (<ShaderMaterial>base.material).setVector3('cameraPosition', this.game.cameraManager.get('main').position);
+          var hiddenAnimation = new Animation('hiddenAnimation', 'material.diffuseColor', 30,
+            Animation.ANIMATIONTYPE_COLOR3, Animation.ANIMATIONLOOPMODE_CONSTANT);
+          hiddenAnimation.setKeys([
+            { frame: 0, value: (<StandardMaterial>base.material).diffuseColor },
+            { frame: 30, value: (<StandardMaterial>base.material).diffuseColor.scale(0.3) },
+          ]);
+
+          base.animations.push(hiddenAnimation);
+          this.game.scene.beginAnimation(base, 0, 30, true);
+          //(<ShaderMaterial>base.material).setVector3('cameraPosition', this.game.cameraManager.get('main').position);
         }
 
         /* Tile actions */
-        base.isPickable = true;
-        base.actionManager = new ActionManager(this.game.scene);
-        base.actionManager.registerAction(new ExecuteCodeAction(
+        surface.isPickable = true;
+        surface.actionManager = new ActionManager(this.game.scene);
+
+        surface.actionManager.registerAction(new ExecuteCodeAction(
           ActionManager.OnPickTrigger,
-          (event: ActionEvent) => {
-            base.getChildMeshes().concat(base).forEach((mesh: Mesh, index: number) => {
-              if (mesh instanceof InstancedMesh)
-                return;
-              if (base.state === 'selected')
-                this.highlights.removeMesh(mesh);
-              else
-                this.highlights.addMesh(mesh, new Color3(0.9, 0.2, 0.8));
-            }, this);
-            base.state = base.state === 'selected' ? '' : 'selected';
-          },
+          this.input.onSelection.bind(this.input, tile, base)
         ));
 
-        base.position = this.world.settings.layout.hexagonToPixel(tile.hexagon, 0)
+        surface.actionManager.registerAction(new ExecuteCodeAction(
+          ActionManager.OnPointerOverTrigger,
+          this.input.onHover.bind(this.input, tile, base)
+        ));
+
+        base.position = <Vector3>this.world.settings.layout.hexagonToPixel(tile.hexagon, 0)
         surface.position = new Vector3(0, 0.1, 0);
         base.rotation = new Vector3(0, Math.PI / 2, 0);
         base.scaling = new Vector3(0.93, 0.93, 0.93);
@@ -252,7 +239,7 @@ export default class GameRenderer {
       let mesh = original.clone(`tile-${tile.hexagon.toString()}-${tile.structure.id}`);
       mesh.parent = parent;
       mesh.scaling = new Vector3(0.9, 0.9, 0.9);
-      mesh.rotation = new Vector3(0, this.game.graphics.toRadians(90), 0);
+      mesh.rotation = new Vector3(0, Graphics.toRadians(90), 0);
       mesh.position = tile.structure.position;
       this.meshes.push(mesh);
     }
@@ -265,7 +252,7 @@ export default class GameRenderer {
       let mesh = original.clone(`tile-${tile.hexagon.toString()}-${tile.unit.id}`);
       mesh.parent = parent;
       mesh.scaling = new Vector3(0.9, 0.9, 0.9);
-      mesh.rotation = new Vector3(0, this.game.graphics.toRadians(90), 0);
+      mesh.rotation = new Vector3(0, Graphics.toRadians(90), 0);
       mesh.position = tile.unit.position;
       this.meshes.push(mesh);
     }

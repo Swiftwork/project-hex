@@ -50,11 +50,11 @@ export default class Graphics implements IGraphics {
     return dp / (1 / (this.resolution / window.screen.height));
   }
 
-  public toRadians(degrees: number) {
+  static toRadians(degrees: number) {
     return degrees * Math.PI / 180;
   }
 
-  public toDegrees(radians: number) {
+  static toDegrees(radians: number) {
     return radians * 180 / Math.PI;
   }
 

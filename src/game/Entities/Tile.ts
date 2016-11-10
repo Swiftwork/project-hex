@@ -3,10 +3,17 @@ import Environment from '../Entities/Environment';
 import Structure from '../Entities/Structure';
 import Unit from '../Entities/Unit';
 
+export interface IBiomeData {
+  natureType?: string,
+  density?: number,
+  occultation?: number,
+  mobility?: number,
+}
+
 export interface ITile {
   hexagon: Hexagon;
   type?: string;
-  biomeData: any;
+  biomeData: IBiomeData;
   surface: string;
 
   isExplored: boolean;
@@ -41,7 +48,7 @@ export default class Tile implements ITile {
   };
 
   /* Tile biome data e.g. forest density */
-  public biomeData: any = {}
+  public biomeData: IBiomeData = {}
   public surface = Tile.SURFACE.PLAIN;
 
   /* Tile states */
@@ -62,6 +69,14 @@ export default class Tile implements ITile {
       this.type = Tile.TYPE[types[types.length * Math.random() << 0]];
     }
   }
+
+  get id(): number {
+    return this.hexagon.hash();
+  }
+
+  //------------------------------------------------------------------------------------
+  // ENTITIES
+  //------------------------------------------------------------------------------------
 
   /* Add entities belonging to this tile */
   public addEnvironment(environment: Environment[]): Environment[] {

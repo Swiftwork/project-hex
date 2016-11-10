@@ -27,7 +27,7 @@ vec3 sepia(vec3 color, float amount) {
 
 void main(void) {
   vec3 color = texture2D(textureSampler, vUV).rgb;
-  //color = sepia(color, 1.);
+  color = sepia(color, 1.);
   //color = desaturate(color, 0.5);
   color = darken(color, 0.7);
   //color = contrast(color, 1.5);

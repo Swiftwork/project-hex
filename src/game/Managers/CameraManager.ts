@@ -6,6 +6,7 @@ import {
 } from 'babylonjs';
 
 import Game from '../Game';
+import Graphics from '../Utils/Graphics';
 
 export default class CameraManager {
 
@@ -31,8 +32,8 @@ export default class CameraManager {
 
     /* MAIN CAMERA */
     this.add('main', CameraManager.CAMERA.ARC_ROTATE, {
-      alpha: this.game.graphics.toRadians(360),
-      beta: this.game.graphics.toRadians(40),
+      alpha: Graphics.toRadians(360),
+      beta: Graphics.toRadians(40),
       radius: 5,
       position: Vector3.Zero(),
       settings: {
@@ -40,8 +41,8 @@ export default class CameraManager {
         upperRadiusLimit: 50,
         //lowerAlphaLimit: CameraManager.toRadians(360),
         //upperAlphaLimit: CameraManager.toRadians(360),
-        lowerBetaLimit: this.game.graphics.toRadians(30),
-        upperBetaLimit: this.game.graphics.toRadians(75),
+        lowerBetaLimit: Graphics.toRadians(30),
+        upperBetaLimit: Graphics.toRadians(75),
         panningAxis: new Vector3(1, 0, 1),
         inertia: 0.7,
       }

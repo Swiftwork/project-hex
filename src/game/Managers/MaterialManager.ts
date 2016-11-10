@@ -91,8 +91,8 @@ export default class MaterialManager {
     material.specularColor = new Color3(0, 0, 0);
     material.specularPower = 0;
     this.materials.set(id, material);
-
-    this.addHidden(id, texture, uv, uvOffset);
+    this.materials.set(`${id}-hidden`, material.clone(`${id}-hidden`));
+    //this.addHidden(id, texture, uv, uvOffset);
     return material;
   }
 
@@ -102,8 +102,8 @@ export default class MaterialManager {
       fragment: "hidden",
     },
       {
-        attributes: ["position", "uv"],
-        uniforms: ["worldViewProjection"]
+        attributes: ["position", "normal", "uv"],
+        uniforms: ["world", "worldViewProjection"]
       });
 
     const diffuseTexture = this.game.assetManager.get(`texture-${texture}-diffuse`);

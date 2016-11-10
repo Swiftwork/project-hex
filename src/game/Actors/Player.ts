@@ -38,14 +38,14 @@ export default class Player implements IPlayer {
   }
 
   createBase(tile: Tile): Base {
-    const base = new Base(`base-${this.structures.length}`, 'viking-village-1')
+    const base = new Base(`base-${this.structures.length}`, tile.id, 'viking-village-1')
     tile.setStructure(base);
     this.structures.push(base);
     return base;
   }
 
   createScout(tile: Tile): Scout {
-    const scout = new Scout(`scout-${this.units.length}`, 'scout');
+    const scout = new Scout(`scout-${this.units.length}`, tile.id, 'scout');
     tile.setUnit(scout);
     this.units.push(scout);
     return scout;

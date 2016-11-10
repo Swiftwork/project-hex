@@ -8,9 +8,10 @@ export default class Scout extends Unit implements IScout {
 
   constructor(
     public id: string,
+    public tileId: number,
     public model?: string
   ) {
-    super(id, model);
+    super(id, tileId, model);
   }
 
   //------------------------------------------------------------------------------------

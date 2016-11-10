@@ -12,7 +12,11 @@ import Environment from './Entities/Environment';
 
 export default class GameWorld {
 
-  public static TREES = ['oak-1', 'oak-2', 'oak-3', 'oak-4', 'cacti-1', 'cacti-2', 'pine-1', 'pine-2', 'pine-3', 'pine-4', 'pine-5', 'snow-pine-1', 'snow-pine-2', 'snow-pine-3', 'snow-pine-4', 'snow-pine-5',];
+  static NATURE = {
+    arctic: ['snow-pine-1', 'snow-pine-2', 'snow-pine-3', 'snow-pine-4', 'snow-pine-5', 'snow-pine-6',],
+    desert: ['cacti-1', 'cacti-2',],
+    forest: ['oak-1', 'oak-2', 'oak-3', 'oak-4', 'pine-1', 'pine-2', 'pine-3', 'pine-4', 'pine-5',],
+  }
 
   constructor(
     public game: Game,
@@ -77,24 +81,41 @@ export default class GameWorld {
 
         /* Environment */
         switch (tile.type) {
+          case 'arctic':
+            tile.biomeData.occultation = 2;
+            if (Math.abs(this.settings.seed.random() * hash * 100 % 2) << 0) {
+              tile.surface = Tile.SURFACE.DUNES;
+            } else {
+              this.createNature(tile);
+            }
+            break;
+
           case 'mountain':
             tile.surface = Tile.SURFACE.MOUNTAIN;
+            tile.biomeData.occultation = 3;
             break;
 
           case 'plain':
             tile.surface = Tile.SURFACE.GRASS;
+            //tile.biomeData.occultation = -0.05;
             break;
 
           case 'desert':
-            tile.surface = Tile.SURFACE.DUNES;
+            tile.biomeData.occultation = 2;
+            if (Math.abs(this.settings.seed.random() * hash * 100 % 2) << 0) {
+              tile.surface = Tile.SURFACE.DUNES;
+            } else {
+              this.createNature(tile);
+            }
             break;
 
           case 'ocean':
             tile.surface = Tile.SURFACE.OCEAN;
+            //tile.biomeData.occultation = -0.05;
             break;
 
           case 'forest':
-            this.createForest(tile);
+            this.createNature(tile);
             break;
         }
 
@@ -116,7 +137,7 @@ export default class GameWorld {
       switch (neighbor.type) {
         case 'mountain':
           if (probability[Tile.TYPE.MOUNTAIN] < 4)
-            probability[Tile.TYPE.MOUNTAIN] = 10;
+            probability[Tile.TYPE.MOUNTAIN] = 1;
           else
             probability[Tile.TYPE.MOUNTAIN] -= 6;
           break;
@@ -157,18 +178,19 @@ export default class GameWorld {
   // TILE ENVIRONMENT GENERATION
   //------------------------------------------------------------------------------------
 
-  private createForest(tile: Tile) {
+  private createNature(tile: Tile) {
     tile.biomeData.density = 0.2;
-    tile.biomeData.treeType = GameWorld.TREES.random(
+    tile.biomeData.occultation = 10 * tile.biomeData.density << 0;
+    tile.biomeData.natureType = GameWorld.NATURE[tile.type].random(
       this.settings.seed.random() * tile.hexagon.hash() * 100
     );
 
-    const forest = [];
+    const nature = [];
     for (let i = 0; i < 500; ++i) {
       let position = this.settings.layout.randomInside(tile.hexagon, 0);
       let reject = false;
-      for (let ii = 0; ii < forest.length; ++ii) {
-        if (Vector3.Distance(forest[ii].position, position) < 0.2 * (1 - tile.biomeData.density)) {
+      for (let ii = 0; ii < nature.length; ++ii) {
+        if (Vector3.Distance(nature[ii].position, position) < 0.2 * (1 - tile.biomeData.density)) {
           reject = true;
           break;
         }
@@ -177,10 +199,10 @@ export default class GameWorld {
       if (reject)
         continue;
 
-      const tree = new Environment('tree', `${tile.biomeData.treeType}`);
-      tree.position = position;
-      forest.push(tree);
+      const plant = new Environment('plant', tile.id, `${tile.biomeData.natureType}`);
+      plant.position = position;
+      nature.push(plant);
     }
-    tile.addEnvironment(forest);
+    tile.addEnvironment(nature);
   }
 }

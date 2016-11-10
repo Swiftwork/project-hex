@@ -16,7 +16,7 @@ export default class Canvas2DManager {
   }
 
   public add(id: string, view: Prim2DBase): Prim2DBase {
-    this.views.set('id', view);
+    this.views.set(id, view);
     return view;
   }
 

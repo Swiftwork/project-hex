@@ -21,6 +21,7 @@ const game = new Game(canvas);
 
 /* EVENTS */
 
-window.onfocus = game.onResume.bind(game);
-window.onresize = game.onResize.bind(game);
-window.onblur = game.onPause.bind(game);
+window.addEventListener('focus', game.onResume.bind(game));
+window.addEventListener('resize', game.onResize.bind(game));
+window.addEventListener('blur', game.onPause.bind(game));
+window.addEventListener('unload', game.onDestroy.bind(game));

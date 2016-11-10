@@ -1,7 +1,7 @@
 import {
-  Vector2, Vector3, Size,
-  Color3,
-  Engine, Scene, ScreenSpaceCanvas2D, Canvas2D,
+  Vector2, Vector3, Color3, Size, Quaternion,
+  Engine, Scene, ScreenSpaceCanvas2D, WorldSpaceCanvas2D, Canvas2D,
+  AbstractMesh,
 } from 'babylonjs';
 
 import Graphics from './Utils/Graphics';
@@ -59,6 +59,7 @@ export default class Game implements IGameFlow {
   public engine: Engine;
   public scene: Scene;
   public scene2d: ScreenSpaceCanvas2D;
+  public world2d: ScreenSpaceCanvas2D;
 
   /* NETWORK */
   public network: NetworkClient;
@@ -81,28 +82,30 @@ export default class Game implements IGameFlow {
     this.engine.loadingScreen = new LoadingScreen(this.canvas, new Color3(0.4, 0.2, 0.3));
     this.engine.displayLoadingUI();
 
-    /* Scene & Assets */
-    this.scene = new Scene(this.engine);
-    this.scene2d = new ScreenSpaceCanvas2D(this.scene, { id: 'gui', });
-
     /* Graphics */
     this.graphics = new Graphics(this);
     this.graphics.load();
 
-    window.addEventListener('keydown', (event) => {
-      switch (event.keyCode) {
-        case 70:
-          this.graphics.switchFullscreen();
-          break;
-      }
+    /* Scene */
+    this.scene = new Scene(this.engine);
+    this.scene2d = new ScreenSpaceCanvas2D(this.scene, { id: 'scene2d', });
+    this.world2d = new WorldSpaceCanvas2D(this.scene, new Size(32, 32), {
+      id: 'world2d',
+      worldPosition: new Vector3(0, 0.15, 0),
+      worldRotation: Quaternion.RotationYawPitchRoll(0, Graphics.toRadians(90), 0),
+      enableInteraction: false,
+      //backgroundFill: Canvas2D.GetSolidColorBrushFromHex("#202020FF"),
     });
+    (<AbstractMesh>this.world2d.worldSpaceCanvasNode).renderingGroupId = 1;
+    (<AbstractMesh>this.world2d.worldSpaceCanvasNode).isPickable = false;
+    console.log(<AbstractMesh>this.world2d.worldSpaceCanvasNode);
 
     this.assetManager = new AssetManager(new AssetsLoader(this.scene));
     this.assetManager.loadAllAssets((tasks) => {
 
       /* Network */
       this.network = new NetworkClient(this);
-      this.network.connect(NetworkClient.TYPE.HOST);
+      this.network.connect(Math.round(Math.random()));
 
       /* Managers */
       this.cameraManager = new CameraManager(this);

@@ -1,7 +1,7 @@
 export interface IHexagon {
   q: number,
   r: number,
-  s: number,
+  s?: number,
 }
 
 export default class Hexagon implements IHexagon {
@@ -18,11 +18,11 @@ export default class Hexagon implements IHexagon {
   constructor(
     public q: number,
     public r: number,
-    public s: number
+    public s?: number
   ) {
     if (typeof s === 'undefined')
       this.s = s = -q - r;
-    if (q + r + s !== 0)
+    if (q + r + s % 1 === 0 && q + r + s !== 0)
       console.error('Coordinates (Q, R, S) must amount to 0');
   }
 
@@ -70,9 +70,43 @@ export default class Hexagon implements IHexagon {
     return (Math.abs(distance.q) + Math.abs(distance.r) + Math.abs(distance.s)) / 2;
   }
 
-  /* Caclulate neighbor based on directional number [0-5] first being east, returning a new Hexagon */
+  /* Caclulate neighbor based on directional number [0-5] first being east then counter-clockwise, returning a new Hexagon */
   neighbor(direction: number): Hexagon {
     return this.add(Hexagon.DIRECTIONS[(6 + (direction % 6)) % 6]);
+  }
+
+  /* Using linear interpolation to find an intersecting Hexagon based on alpha, returning a new Hexagon */
+  lerp(hex: Hexagon, alpha: number): Hexagon {
+    return new Hexagon(
+      Math.lerp(this.q, hex.q, alpha),
+      Math.lerp(this.r, hex.r, alpha),
+      Math.lerp(this.s, hex.s, alpha)
+    ).round();
+  }
+
+  /* Round a float based Hexagon to the nearest whole number based Hexagon, returning a new Hexagon */
+  round(): Hexagon {
+    var qRounded = Math.round(this.q);
+    var rRounded = Math.round(this.r);
+    var sRounded = Math.round(this.s);
+
+    var qDelta = Math.abs(qRounded - this.q);
+    var rDelta = Math.abs(rRounded - this.r);
+    var sDelta = Math.abs(sRounded - this.s);
+
+    if (qDelta > rDelta && qDelta > sDelta) {
+      qRounded = -rRounded - sRounded
+    } else if (rDelta > sDelta) {
+      rRounded = -qRounded - sRounded
+    } else {
+      sRounded = -qRounded - rRounded
+    }
+
+    return new Hexagon(qRounded, rRounded, sRounded);
+  }
+
+  static Zero(): Hexagon {
+    return new Hexagon(0, 0, 0);
   }
 
   //------------------------------------------------------------------------------------

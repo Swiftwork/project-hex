@@ -4,24 +4,32 @@ import {
 import Entity, { IEntity } from './Entity';
 
 export interface IUnit extends IEntity {
-  visibility: number;
+  ownerId: string;
+  type: number;
+  sight: number;
+  movement: number;
 }
 
 export default class Unit extends Entity implements IUnit {
 
-  static STAGES = {
-    1: 3,
-    2: 4,
-    3: 5,
+  static TYPE = {
+    TERRESTRIAL: 0,
+    AQUATIC: 1,
+    AERIAL: 2,
   }
 
-  public visibility = 1;
+  public ownerId = 'none';
+  public type = Unit.TYPE.TERRESTRIAL;
+  public sight = 2;
+  public movement = 3;
 
   constructor(
     public id: string,
+    public tileId: number,
     public model?: string
   ) {
-    super(id, model);
+    super(id, tileId, model);
+
   }
 
   //------------------------------------------------------------------------------------
