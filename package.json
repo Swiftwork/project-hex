@@ -15,7 +15,7 @@
     "typescript"
   ],
   "author": "Erik Hughes",
-  "license": "ISC",
+  "license": "CC-BY-NC-ND-4.0",
   "devDependencies": {
     "@types/core-js": "^0.9.34",
     "@types/node": "^6.0.46",
