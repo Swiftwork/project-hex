@@ -98,7 +98,6 @@ export default class Game implements IGameFlow {
     });
     (<AbstractMesh>this.world2d.worldSpaceCanvasNode).renderingGroupId = 1;
     (<AbstractMesh>this.world2d.worldSpaceCanvasNode).isPickable = false;
-    console.log(<AbstractMesh>this.world2d.worldSpaceCanvasNode);
 
     this.assetManager = new AssetManager(new AssetsLoader(this.scene));
     this.assetManager.loadAllAssets((tasks) => {

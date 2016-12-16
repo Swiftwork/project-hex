@@ -113,18 +113,6 @@ export default class GameRenderer {
   }
 
   private renderTiles() {
-    /* Cached meshes */
-    const cache = {}
-
-    /* Unexplored mesh */
-    cache['unexplored'] = {
-      base: this.game.assetManager.get(`mesh-hex-bottom`).clone(`tile-unexplored-base`),
-      surface: this.game.assetManager.get(`mesh-hex-plain`).clone(`tile-unexplored-surface`),
-    };
-    cache['unexplored'].base.setEnabled(false);
-    cache['unexplored'].surface.setEnabled(false);
-    cache['unexplored'].base.visibility = cache['unexplored'].surface.visibility = 0.4;
-    cache['unexplored'].base.material = cache['unexplored'].surface.material = this.game.materialManager.get('unexplored');
 
     /* Loop through world tiles and generate meshes */
     this.world.tiles.forEach((tile: Tile) => {
@@ -133,20 +121,8 @@ export default class GameRenderer {
 
       /* Explored tile */
       if (tile.isExplored) {
-        if (!cache[tile.type]) {
-          base = this.game.assetManager.get(`mesh-hex-bottom`).clone(`${id}-base`);
-          surface = this.game.assetManager.get(`mesh-${tile.surface}`).clone(`${id}-surface`, base);
-
-          /* Add to cache */
-          cache[tile.type] = {
-            base: base,
-            surface: surface,
-          };
-        } else {
-          /* Render new clone of cached tile */
-          base = cache[tile.type].base.clone(`${id}-base`, null, true);
-          surface = cache[tile.type].surface.clone(`${id}-surface`, base, true);
-        }
+        base = this.game.assetManager.get(`mesh-hex-bottom`).clone(`${id}-base`);
+        surface = this.game.assetManager.get(`mesh-${tile.surface}`).clone(`${id}-surface`, base);
 
         /* Render nature on tile */
         this.renderEnvironment(tile, surface);

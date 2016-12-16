@@ -66,6 +66,7 @@ module.exports = function (env) {
     plugins: [
       new webpack.ProvidePlugin({
         BABYLON: 'babylonjs',
+        Earcut: '../../lib/earcut',
       }),
       new webpack.optimize.CommonsChunkPlugin({
         name: ['index', 'vendor', 'polyfills'],

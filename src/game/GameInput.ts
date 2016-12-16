@@ -92,7 +92,6 @@ export default class GameInput {
     let path = this.logic.getPath(this.selection.tile, tile).map((tile: Tile) => {
       return <Vector2>this.world.settings.layout.hexagonToPixel(tile.hexagon);
     });
-    console.log(path);
     var straightLine = new BABYLON.Lines2D(path, {
       parent: this.game.world2d, id: "StraightLine", x: 750, y: 50, fillThickness: 10, fill: "#8040C0FF", border: "#40FFFFFF",
       startCap: BABYLON.Lines2D.RoundAnchorCap, endCap: BABYLON.Lines2D.DiamondAnchorCap,
