@@ -1,5 +1,5 @@
 /// <reference path="node_modules/babylonjs/babylon.d.ts"/>
-/// <reference path="node_modules/babylonjs/babylon.canvas2d.d.ts"/>
+/// <reference path="node_modules/babylonjs/canvas2D/babylon.canvas2d.d.ts"/>
 
 //------------------------------------------------------------------------------------
 // EXPORT MODULES

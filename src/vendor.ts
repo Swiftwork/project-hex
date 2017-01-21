@@ -1,3 +1,3 @@
 import 'handjs';
 import 'babylonjs';
-import 'babylonjs/babylon.canvas2d';
+import 'babylonjs/canvas2D/babylon.canvas2d';

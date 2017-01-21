@@ -82,6 +82,12 @@ export default class Game implements IGameFlow {
     this.engine.loadingScreen = new LoadingScreen(this.canvas, new Color3(0.4, 0.2, 0.3));
     this.engine.displayLoadingUI();
 
+    /* Mac CubeTexture Fix */
+    if (window.navigator.platform === 'MacIntel')
+      this.engine['_badOS'] = true;
+
+    console.log(this.engine);
+
     /* Graphics */
     this.graphics = new Graphics(this);
     this.graphics.load();

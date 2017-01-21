@@ -31,8 +31,8 @@ export default class GameRenderer {
     private input: GameInput,
   ) {
     /* Scene Defaults */
-    this.game.scene.clearColor = new Color3(0.9, 0.87, 0.85);
-    this.game.scene.fogColor = this.game.scene.clearColor;
+    this.game.scene.fogColor = new Color3(0.9, 0.87, 0.85);
+    this.game.scene.clearColor = this.game.scene.fogColor.toColor4(1);
     //this.game.scene.fogMode = Scene.FOGMODE_LINEAR;
     this.game.scene.fogStart = 10;
     this.game.scene.fogEnd = 15;
