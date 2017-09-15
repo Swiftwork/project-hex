@@ -30,7 +30,7 @@ export default class Entity implements IEntity {
       return JSON.parse(json, (key: string, value: any) => {
         return !key ? Entity.fromJSON(value) : value;
       });
-    } else if (json) {
+    } else {
       return Object.assign(Object.create(Entity.prototype), json, {
         position: new Vector3(json.position.x, json.position.y, json.position.z),
       });

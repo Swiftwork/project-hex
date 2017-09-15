@@ -1,4 +1,5 @@
 import 'core-js/es6';
+import 'core-js/shim';
 
 Math.randomBetween = function (min: number, max: number): number {
   return Math.random() * (max - min + 1) + min;

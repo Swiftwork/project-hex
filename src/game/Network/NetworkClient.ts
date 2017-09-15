@@ -73,7 +73,7 @@ export default class NetworkClient {
     console.log(JSON.parse(data));
   }
 
-  public send(layer, data) {
+  public send(layer: string, data: any) {
     this.p2p.emit(layer, JSON.stringify(data));
   }
 }

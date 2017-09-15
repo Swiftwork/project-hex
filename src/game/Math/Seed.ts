@@ -54,7 +54,7 @@ export default class Seed implements ISeed {
       return JSON.parse(json, (key: string, value: any) => {
         return !key ? Seed.fromJSON(value) : value;
       });
-    } else if (json) {
+    } else {
       return Object.assign(Object.create(Seed.prototype), json, {
         // Special Cases
       });

@@ -31,7 +31,7 @@ export class HexagonOrientation implements IHexagonOrientation {
       return JSON.parse(json, (key: string, value: any) => {
         return !key ? HexagonOrientation.fromJSON(value) : value;
       });
-    } else if (json) {
+    } else {
       return Object.assign(Object.create(HexagonOrientation.prototype), json, {
         // Special Cases
       });
@@ -129,7 +129,7 @@ export default class HexagonLayout implements IHexagonLayout {
       return JSON.parse(json, (key: string, value: any) => {
         return !key ? HexagonLayout.fromJSON(value) : value;
       });
-    } else if (json) {
+    } else {
       return Object.assign(Object.create(HexagonLayout.prototype), json, {
         orientation: HexagonOrientation.fromJSON(json.orientation),
         size: new Size(json.size.width, json.size.height),

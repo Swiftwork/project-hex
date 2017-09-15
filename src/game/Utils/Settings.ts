@@ -59,7 +59,7 @@ export default class Settings implements ISettings {
       return JSON.parse(json, (key: string, value: any) => {
         return !key ? Settings.fromJSON(value) : value;
       });
-    } else if (json) {
+    } else {
       return Object.assign(Object.create(Settings.prototype), json, {
         seed: Seed.fromJSON(json.seed),
         layout: HexagonLayout.fromJSON(json.layout),

@@ -23,7 +23,7 @@ export default class Scout extends Unit implements IScout {
       return JSON.parse(json, (key: string, value: any) => {
         return !key ? Scout.fromJSON(value) : value;
       });
-    } else if (json) {
+    } else {
       return Object.assign(Object.create(Scout.prototype), super.fromJSON(json), {
         // Special Cases Object.fromJSON(json.object);
       });

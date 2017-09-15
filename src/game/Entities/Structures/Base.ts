@@ -25,7 +25,7 @@ export default class Base extends Structure implements IBase {
       return JSON.parse(json, (key: string, value: any) => {
         return !key ? Base.fromJSON(value) : value;
       });
-    } else if (json) {
+    } else {
       return Object.assign(Object.create(Base.prototype), super.fromJSON(json), {
         // Special Cases Object.fromJSON(json.object);
       });
