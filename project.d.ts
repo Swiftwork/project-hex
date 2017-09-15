@@ -1,20 +1,6 @@
-/// <reference path="node_modules/babylonjs/dist/preview release/babylon.d.ts"/>
-/// <reference path="./lib/canvas2d/babylon.canvas2d.d.ts"/>
-
 //------------------------------------------------------------------------------------
 // EXPORT MODULES
 //------------------------------------------------------------------------------------
-
-/* Export of the BabylonJS declarations to allow the components to be imported into project */
-declare module 'babylonjs' {
-  export = BABYLON;
-}
-
-/* Export of the BabylonJS Canvas2D declarations to allow the components to be imported into project
-declare module 'babylonjs/babylon.canvas2d' {
-  export = BABYLON;
-}
-*/
 
 /* Export of a dummy module declaration for socket.io-p2p */
 declare module 'socket.io-p2p' {
