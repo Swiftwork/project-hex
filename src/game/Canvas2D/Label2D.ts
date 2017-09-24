@@ -28,7 +28,7 @@ export default class Label2D extends Text2D {
     NIGHT: '\uE209',
   };
 
-  private _icon;
+  private _icon: string;
 
   constructor(
     text: string,

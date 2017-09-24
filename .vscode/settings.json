@@ -1,4 +1,15 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "files.insertFinalNewline": true,
+  "tslint.enable": true,
+  "tslint.configFile": "./client/.config/tslint.config.js",
+  "tslint.autoFixOnSave": true,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
+  "docthis.includeMemberOfOnInterfaceMembers": false,
+  "docthis.includeMemberOfOnClassMembers": false,
+  "search.exclude": {
+    "**/node_modules": true,
+    "dist": true
+  }
 }

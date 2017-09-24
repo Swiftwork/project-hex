@@ -118,7 +118,7 @@ export default class Hexagon implements IHexagon {
       return JSON.parse(json, (key: string, value: any) => {
         return !key ? Hexagon.fromJSON(value) : value;
       });
-    } else if (json) {
+    } else {
       return Object.assign(Object.create(Hexagon.prototype), json, {
         // Special Cases
       });

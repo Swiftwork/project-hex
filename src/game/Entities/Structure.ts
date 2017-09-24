@@ -36,7 +36,7 @@ export default class Structure extends Entity implements IStructure {
       return JSON.parse(json, (key: string, value: any) => {
         return !key ? Structure.fromJSON(value) : value;
       });
-    } else if (json) {
+    } else {
       return Object.assign(Object.create(Structure.prototype), super.fromJSON(json), {
         // Special Cases Object.fromJSON(json.object);
       });

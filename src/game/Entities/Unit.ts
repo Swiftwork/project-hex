@@ -41,7 +41,7 @@ export default class Unit extends Entity implements IUnit {
       return JSON.parse(json, (key: string, value: any) => {
         return !key ? Unit.fromJSON(value) : value;
       });
-    } else if (json) {
+    } else {
       return Object.assign(Object.create(Unit.prototype), super.fromJSON(json), {
         // Special Cases Object.fromJSON(json.object);
       });

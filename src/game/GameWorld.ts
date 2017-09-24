@@ -52,7 +52,7 @@ export default class GameWorld {
   }
 
   public store() {
-    let tiles = [];
+    let tiles = [] as { hash: number, tile: Tile }[];
     this.tiles.forEach((tile: Tile, hash: number) => {
       tiles.push({ hash: hash, tile: tile });
     });
@@ -172,6 +172,7 @@ export default class GameWorld {
       if (selection < 0)
         return key;
     }
+    return null;
   }
 
   //------------------------------------------------------------------------------------

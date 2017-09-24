@@ -105,7 +105,7 @@ export default class Tile implements ITile {
       return JSON.parse(json, (key: string, value: any) => {
         return !key ? Tile.fromJSON(value) : value;
       });
-    } else if (json) {
+    } else {
       return Object.assign(Object.create(Tile.prototype), json, {
         hexagon: Hexagon.fromJSON(json.hexagon),
         environment: json.environment.map((environment: Environment) => { return Environment.fromJSON(environment); }),

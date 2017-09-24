@@ -60,7 +60,7 @@ export default class Player implements IPlayer {
       return JSON.parse(json, (key: string, value: any) => {
         return !key ? Structure.fromJSON(value) : value;
       });
-    } else if (json) {
+    } else {
       return Object.assign(Object.create(Player.prototype), json, {
         structures: json.structures.map((structure: Structure) => { return Structure.fromJSON(structure); }),
         units: json.units.map((unit: Unit) => { return Unit.fromJSON(unit); }),

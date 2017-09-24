@@ -2,3 +2,5 @@
 node_modules
 typings
 build
+package-lock.json
+yarn.lock

@@ -27,7 +27,7 @@ export default class Environment extends Entity implements IEnvironment {
       return JSON.parse(json, (key: string, value: any) => {
         return !key ? Environment.fromJSON(value) : value;
       });
-    } else if (json) {
+    } else {
       return Object.assign(Object.create(Environment.prototype), super.fromJSON(json), {
         // Special Cases Object.fromJSON(json.object);
       });

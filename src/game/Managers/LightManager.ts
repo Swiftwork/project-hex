@@ -46,19 +46,20 @@ export default class LightManager {
     switch (type) {
       case LightManager.LIGHT.DIRECTIONAL:
         light = new DirectionalLight(id, direction, this.game.scene);
+        if (position)
+          light.position = position;
         break;
 
       case LightManager.LIGHT.SPOT:
         light = new SpotLight(id, direction, position, 0.8, 2, this.game.scene);
+        if (position)
+          light.position = position;
         break;
 
       case LightManager.LIGHT.HEMISPHERIC:
         light = new HemisphericLight(id, direction, this.game.scene);
         break;
     }
-
-    if (position)
-      light.position = position;
 
     for (var option in options) {
       if (options.hasOwnProperty(option)) {
