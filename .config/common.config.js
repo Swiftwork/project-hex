@@ -72,7 +72,7 @@ module.exports = {
     new ExtractTextPlugin('index.css?[hash]'),
     new webpack.ProvidePlugin({
       BABYLON: 'babylonjs',
-      Earcut: path.resolve(process.cwd(), 'lib/earcut'),
+      //Earcut: path.resolve(process.cwd(), 'lib/earcut'),
     }),
     new webpack.optimize.CommonsChunkPlugin({
       names: ['main', 'vendor', 'polyfill'],

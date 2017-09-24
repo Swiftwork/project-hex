@@ -1,22 +1,15 @@
-import {
-  Scene,
-  Vector2, Vector3, Color3,
-  Mesh, InstancedMesh, ActionEvent,
-  PrimitivePointerInfo, EventState,
-  HighlightLayer,
-} from 'babylonjs';
+import { HighlightLayer, Mesh, Vector2 } from 'babylonjs';
 
+import Tile from './Entities/Tile';
 import Game from './Game';
 import GameLogic from './GameLogic';
 import GameWorld from './GameWorld';
-import Tile from './Entities/Tile';
-import Hexagon from './Math/Hexagon';
-import Chat2D from './Canvas2D/Chat2D';
+import Chat from './Gui/Chat';
 
 export default class GameInput {
 
   public highlights: HighlightLayer;
-  public chat: Chat2D;
+  public chat: Chat;
 
   /* STATES */
   public selection: { tile: Tile, mesh: Mesh, movement: Tile[] };
@@ -39,7 +32,7 @@ export default class GameInput {
     this.highlights = new HighlightLayer('highlights', this.game.scene, {});
     this.highlights.addExcludedMesh(<Mesh>this.game.world2d.worldSpaceCanvasNode);
 
-    this.chat = <Chat2D>this.game.canvas2DManager.get('chat');
+    this.chat = <Chat>this.game.guiManager.get('chat');
     this.chat.pointerEventObservable.add(this.onChatClick, PrimitivePointerInfo.PointerDown);
 
     window.addEventListener('keydown', this.onKeyDown);

@@ -1,16 +1,11 @@
-import {
-  Vector2,
-  ScreenSpaceCanvas2D,
-  Animation,
-} from 'babylonjs';
+import { Animation } from 'babylonjs';
 
 import Game from '../Game';
+import GameScreen from '../Screens/GameScreen';
+import MainMenuScreen from '../Screens/MainMenuScreen';
 import Screen from '../Screens/Screen';
 
 /* SCREENS */
-import MainMenuScreen from '../Screens/MainMenuScreen';
-import GameScreen from '../Screens/GameScreen';
-
 export default class ScreenManager {
 
   private screens: Map<string, Screen>;

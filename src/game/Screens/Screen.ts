@@ -1,10 +1,4 @@
-import {
-  Engine, Scene, Size,
-  ScreenSpaceCanvas2D, Rectangle2D, Canvas2D, Group2D,
-} from 'babylonjs';
-
-import Game, { IGameFlow } from '../Game';
-import Settings from '../Utils/Settings';
+import { IGameFlow } from '../Game';
 
 export default class Screen implements IGameFlow {
 

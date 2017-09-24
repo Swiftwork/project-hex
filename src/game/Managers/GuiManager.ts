@@ -1,13 +1,8 @@
-import {
-  Vector2,
-  ScreenSpaceCanvas2D, Prim2DBase,
-} from 'babylonjs';
-
 import Game from '../Game';
 
 /* VIEWS */
 
-export default class Canvas2DManager {
+export default class GuiManager {
 
   private views: Map<string, Prim2DBase>;
 

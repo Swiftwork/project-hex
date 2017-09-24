@@ -1,16 +1,10 @@
-import {
-  Vector2, Size,
-  Engine, Scene, ScreenSpaceCanvas2D, Texture,
-  Group2D, StackPanelLayoutEngine, Canvas2D, Text2D, Rectangle2D, Sprite2D,
-} from 'babylonjs';
+import { Texture } from 'babylonjs';
 
 import Game from '../Game';
-import Settings from '../Utils/Settings';
+import Label from '../Gui/Label';
 import Screen from './Screen';
 
 /* Views */
-import Label2D from '../Canvas2D/Label2D';
-
 export class MenuItem {
   title: string;
   icon?: string;
@@ -21,7 +15,7 @@ export default class MainMenuScreen extends Screen {
 
   private menuItems: MenuItem[];
 
-  private fullscreen: Label2D;
+  private fullscreen: Label;
 
   constructor(public game: Game, public id: string) {
     super(game, id);
@@ -40,15 +34,15 @@ export default class MainMenuScreen extends Screen {
 
     this.menuItems = [
 
-      { title: 'Continue', icon: Label2D.ICON.BRAIN },
+      { title: 'Continue', icon: Label.ICON.BRAIN },
       {
-        title: 'New Battle', icon: Label2D.ICON.MAN, onClick: () => {
+        title: 'New Battle', icon: Label.ICON.MAN, onClick: () => {
           this.game.screenManager.show('game');
         }
       },
-      { title: 'Multi Player', icon: Label2D.ICON.BRAIN },
-      { title: 'Settings', icon: Label2D.ICON.GOLD },
-      { title: 'Quit', icon: Label2D.ICON.MENU },
+      { title: 'Multi Player', icon: Label.ICON.BRAIN },
+      { title: 'Settings', icon: Label.ICON.GOLD },
+      { title: 'Quit', icon: Label.ICON.MENU },
     ]
   }
 
@@ -73,8 +67,8 @@ export default class MainMenuScreen extends Screen {
     return list;
   }
 
-  private createMenuItem(item: MenuItem, index: number): Label2D {
-    const label = new Label2D(item.title, item.icon, {
+  private createMenuItem(item: MenuItem, index: number): Label {
+    const label = new Label(item.title, item.icon, {
       id: index.toString(),
       marginBottom: this.game.graphics.dpToPx(50),
       fontName: `${this.game.graphics.dpToPx(32)}px outage`,
@@ -84,7 +78,7 @@ export default class MainMenuScreen extends Screen {
   }
 
   private createFullscreen() {
-    this.fullscreen = new Label2D('', Label2D.ICON.EXPAND, {
+    this.fullscreen = new Label('', Label.ICON.EXPAND, {
       id: 'fullscreen',
       parent: this.screen,
       marginAlignment: 'v: top, h: right',

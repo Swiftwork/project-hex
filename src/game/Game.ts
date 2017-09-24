@@ -1,23 +1,15 @@
-import {
-  Vector2, Vector3, Color3, Size, Quaternion,
-  Engine, Scene, ScreenSpaceCanvas2D, WorldSpaceCanvas2D, Canvas2D,
-  AbstractMesh,
-} from 'babylonjs';
-
-import Graphics from './Utils/Graphics';
-
-import AssetsLoader from './Lib/AssetsLoader';
-import LoadingScreen from './Screens/LoadingScreen';
-
-import NetworkClient from './Network/NetworkClient';
+import { AbstractMesh, Color3, Engine, Quaternion, Scene, Size, Vector3 } from 'babylonjs';
 
 import AssetManager from './Managers/AssetManager';
 import CameraManager from './Managers/CameraManager';
+import GuiManager from './Managers/GuiManager';
 import LightManager from './Managers/LightManager';
 import MaterialManager from './Managers/MaterialManager';
-import ScreenManager from './Managers/ScreenManager';
 import PlayerManager from './Managers/PlayerManager';
-import Canvas2DManager from './Managers/Canvas2DManager';
+import ScreenManager from './Managers/ScreenManager';
+import NetworkClient from './Network/NetworkClient';
+import LoadingScreen from './Screens/LoadingScreen';
+import Graphics from './Utils/Graphics';
 
 //------------------------------------------------------------------------------------
 // GAME FLOW INTERFACE
@@ -71,7 +63,7 @@ export default class Game implements IGameFlow {
   public materialManager: MaterialManager;
   public screenManager: ScreenManager;
   public playerManager: PlayerManager;
-  public canvas2DManager: Canvas2DManager;
+  public guiManager: GuiManager;
 
   constructor(public canvas: HTMLCanvasElement) {
     if (!Game.game)
@@ -118,7 +110,7 @@ export default class Game implements IGameFlow {
       this.materialManager = new MaterialManager(this);
       this.screenManager = new ScreenManager(this);
       this.playerManager = new PlayerManager(this);
-      this.canvas2DManager = new Canvas2DManager(this);
+      this.guiManager = new GuiManager(this);
 
       this.onCreate();
     });
