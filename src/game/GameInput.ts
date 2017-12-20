@@ -1,10 +1,11 @@
-import { HighlightLayer, Mesh, Vector2 } from 'babylonjs';
+import { HighlightLayer, Mesh, Vector2, ActionEvent, InstancedMesh, Color3, EventState } from 'babylonjs';
 
 import Tile from './Entities/Tile';
 import Game from './Game';
 import GameLogic from './GameLogic';
 import GameWorld from './GameWorld';
 import Chat from './Gui/Chat';
+import { Line, Vector2WithInfo } from 'babylonjs-gui';
 
 export default class GameInput {
 
@@ -29,11 +30,11 @@ export default class GameInput {
 
   onCreate() {
     /* Highlights */
-    this.highlights = new HighlightLayer('highlights', this.game.scene, {});
-    this.highlights.addExcludedMesh(<Mesh>this.game.world2d.worldSpaceCanvasNode);
+    this.highlights = new HighlightLayer('highlights', this.game.scene);
+    this.highlights.addExcludedMesh(<Mesh>this.game.sceneOverlay);
 
     this.chat = <Chat>this.game.guiManager.get('chat');
-    this.chat.pointerEventObservable.add(this.onChatClick, PrimitivePointerInfo.PointerDown);
+    this.chat.onPointerDownObservable.add(this.onChatClick);
 
     window.addEventListener('keydown', this.onKeyDown);
     window.addEventListener('keypress', this.onKeyPress);
@@ -85,19 +86,31 @@ export default class GameInput {
     let path = this.logic.getPath(this.selection.tile, tile).map((tile: Tile) => {
       return <Vector2>this.world.settings.layout.hexagonToPixel(tile.hexagon);
     });
+
+    const straightLine = new Line('StraightLine');
+    straightLine.x1 = 10;
+    straightLine.y1 = 10;
+    straightLine.x2 = 1000;
+    straightLine.y2 = 500;
+    straightLine.lineWidth = 5;
+    straightLine.dash = [5, 10];
+    straightLine.color = "white";
+    this.game.textureOverlay.addControl(straightLine);
+
+    /*
     var straightLine = new BABYLON.Lines2D(path, {
       parent: this.game.world2d, id: "StraightLine", x: 750, y: 50, fillThickness: 10, fill: "#8040C0FF", border: "#40FFFFFF",
       startCap: BABYLON.Lines2D.RoundAnchorCap, endCap: BABYLON.Lines2D.DiamondAnchorCap,
       borderThickness: 5, closed: false, origin: BABYLON.Vector2.Zero()
     });
+    */
   }
 
   //------------------------------------------------------------------------------------
   // GENERAL INPUT EVENTS
   //------------------------------------------------------------------------------------
 
-  private onChatClick(eventData: PrimitivePointerInfo, eventState: EventState) {
-    eventData.cancelBubble = true;
+  private onChatClick(eventData: Vector2WithInfo, eventState: EventState) {
     this.chat.isFocused = true;
   }
 

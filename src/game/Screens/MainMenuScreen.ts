@@ -3,6 +3,7 @@ import { Texture } from 'babylonjs';
 import Game from '../Game';
 import Label from '../Gui/Label';
 import Screen from './Screen';
+import { StackPanel } from 'babylonjs-gui';
 
 /* Views */
 export class MenuItem {
@@ -23,7 +24,7 @@ export default class MainMenuScreen extends Screen {
 
     const hexagons = <Texture>this.game.assetManager.get('interface-hexagon-pattern');
     hexagons.hasAlpha = true;
-
+    /*
     let background = new Sprite2D(hexagons, {
       id: 'background',
       parent: this.screen,
@@ -31,6 +32,7 @@ export default class MainMenuScreen extends Screen {
       opacity: 0.01,
     });
     background.texture.wrapU = background.texture.wrapV = 1;
+    */
 
     this.menuItems = [
 
@@ -56,29 +58,45 @@ export default class MainMenuScreen extends Screen {
   // INTERFACE CREATORS
   //------------------------------------------------------------------------------------
 
-  private createMenu(menuItems: MenuItem[]): Group2D {
-    const list = new Group2D({
+  private createMenu(menuItems: MenuItem[]): StackPanel {
+    const list = new StackPanel('menu')
+    menuItems.reverse().forEach((item, index) => {
+      list.addControl(this.createMenuItem(item, index));
+    });
+    /*
+    {
       id: 'menu',
       parent: this.screen,
       marginAlignment: 'v: center, h: center',
       layoutEngine: StackPanelLayoutEngine.Vertical,
       children: menuItems.reverse().map(this.createMenuItem, this),
     });
+    */
     return list;
   }
 
   private createMenuItem(item: MenuItem, index: number): Label {
-    const label = new Label(item.title, item.icon, {
+    const label = new Label(`menu-item-${index.toString()}`, item.title, item.icon)
+    label.onPointerDownObservable.add(item.onClick)
+    /*
+    {
       id: index.toString(),
       marginBottom: this.game.graphics.dpToPx(50),
       fontName: `${this.game.graphics.dpToPx(32)}px outage`,
       onClick: item.onClick,
     });
+    */
     return label;
   }
 
   private createFullscreen() {
-    this.fullscreen = new Label('', Label.ICON.EXPAND, {
+    this.fullscreen = new Label('fullscreen', '', Label.ICON.EXPAND);
+    this.fullscreen.onPointerDownObservable.add(() => {
+      this.game.graphics.switchFullscreen();
+    });
+
+    /*
+    , {
       id: 'fullscreen',
       parent: this.screen,
       marginAlignment: 'v: top, h: right',
@@ -89,5 +107,6 @@ export default class MainMenuScreen extends Screen {
         this.game.graphics.switchFullscreen();
       }
     });
+    */
   }
 }

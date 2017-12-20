@@ -3,6 +3,7 @@ import * as P2P from 'socket.io-p2p';
 
 import Game from '../Game';
 import Chat from '../Gui/Chat';
+import Message from '../Logic/Message';
 
 export default class NetworkClient {
 

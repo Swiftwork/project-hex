@@ -10,6 +10,7 @@ import Compass from '../Gui/Compass';
 import Label from '../Gui/Label';
 import Resources from '../Gui/Resources';
 import Screen from './Screen';
+import { StackPanel } from 'babylonjs-gui';
 
 /* GAME */
 /* INTERFACE */
@@ -32,7 +33,7 @@ export default class GameScreen extends Screen {
   private fps: Label;
   private compass: Compass;
   private resources: Resources;
-  private statuses: Group2D;
+  private statuses: StackPanel;
   private chat: Chat;
 
   constructor(public game: Game, public id: string) {
@@ -101,6 +102,7 @@ export default class GameScreen extends Screen {
   //------------------------------------------------------------------------------------
 
   private createCompass() {
+    /*
     const texture = <Texture>this.game.assetManager.get('interface-compass');
     texture.hasAlpha = true;
 
@@ -111,9 +113,11 @@ export default class GameScreen extends Screen {
         marginAlignment: 'v: top, h: right',
         marginTop: this.game.graphics.dpToPx(40),
       }));
+    */
   }
 
   private createTopBar() {
+    /*
     const bar = new Rectangle2D({
       id: 'top-bar',
       parent: this.screen,
@@ -134,8 +138,12 @@ export default class GameScreen extends Screen {
     this.resources.addResource(new Resource('metal'), Label.ICON.GOLD, new Color4(0.95, 0.87, 0, 1));
     this.resources.addResource(new Resource('food'), Label.ICON.STEAK, new Color4(0.95, 0.24, 0.32, 1));
     this.resources.addResource(new Resource('units'), Label.ICON.MAN, new Color4(0.22, 1, 0.26, 1));
+    */
 
-    this.statuses = new Group2D({
+    this.statuses = new StackPanel('statuses');
+
+    /*
+    {
       id: 'statuses',
       parent: this.screen,
       //size: new Size(this.game.graphics.dpToPx(310), this.game.graphics.dpToPx(20)),
@@ -143,41 +151,42 @@ export default class GameScreen extends Screen {
       marginTop: this.game.graphics.dpToPx(10),
       layoutEngine: 'Stackpanel',
     });
+    */
 
-    this.fps = new Label(`${Math.floor(this.game.engine.getFps()).toString()} fps`, null, {
+    this.fps = new Label('fps', `${Math.floor(this.game.engine.getFps()).toString()} fps`);
+    this.statuses.addControl(this.fps);
+
+    this.clock = new Label('clock', new Date().toLocaleTimeString('sv-SV'));
+    this.statuses.addControl(this.clock);
+
+    this.menu = new Label('menu', '', Label.ICON.MENU);
+    this.statuses.addControl(this.menu);
+    /*
+    {
       id: 'fps',
       parent: this.statuses,
       fontName: `${this.game.graphics.dpToPx(20)}px outage`,
       marginLeft: this.game.graphics.dpToPx(32),
     });
-
-    this.clock = new Label(new Date().toLocaleTimeString('sv-SV'), null, {
-      id: 'clock',
-      parent: this.statuses,
-      fontName: `${this.game.graphics.dpToPx(20)}px outage`,
-      marginLeft: this.game.graphics.dpToPx(32),
-    });
-
-    this.menu = new Label('', Label.ICON.MENU, {
-      id: 'menu',
-      parent: this.statuses,
-      fontName: `${this.game.graphics.dpToPx(20)}px outage`,
-      marginLeft: this.game.graphics.dpToPx(32),
-    });
+    */
   }
 
   private createChat() {
+    /*
     const background = new Rectangle2D({
       id: 'chat-background',
       parent: this.screen,
       size: new Size(this.game.graphics.dpToPx(480), this.game.graphics.dpToPx(240)),
       fill: Canvas2D.GetSolidColorBrush(new Color4(0, 0, 0, 0.5)),
     });
+    */
+    this.chat = <Chat>this.game.guiManager.add('chat', new Chat('chat', this.game))
 
-    this.chat = <Chat>this.game.guiManager.add('chat', new Chat(this.game, {
+    /*, {
       id: 'chat',
       parent: this.screen,
       size: new Size(this.game.graphics.dpToPx(480), this.game.graphics.dpToPx(240)),
     }));
+    */
   }
 }

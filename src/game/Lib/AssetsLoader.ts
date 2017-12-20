@@ -2,38 +2,28 @@ import {
   Scene, SceneLoader,
   AbstractMesh, ParticleSystem, Skeleton,
   Texture,
-  IAssetTask, Tools,
+  AbstractAssetTask, Tools,
   AssetsManager, CubeTextureAssetTask,
 } from 'babylonjs';
 
 const FontFaceObserver = require('fontfaceobserver');
 
-export class FontFileAssetTask implements IAssetTask {
-  public onSuccess: (task: IAssetTask) => void;
-  public onError: (task: IAssetTask) => void;
+export class FontFileAssetTask extends AbstractAssetTask {
 
-  public isCompleted = false;
+  onSuccess: (task: FontFileAssetTask) => void;
+  onError: (task: FontFileAssetTask, message?: string, exception?: any) => void;
 
   constructor(public name: string, public fontName: string) {
+    super(name);
   }
 
-  public run(scene: Scene, onSuccess: () => void, onError: () => void) {
+  public runTask(scene: Scene, onSuccess: () => void, onError: (message?: string, exception?: any) => void) {
     const font = new FontFaceObserver(this.fontName);
 
     font.load().then(() => {
-      this.isCompleted = true;
-
-      if (this.onSuccess) {
-        this.onSuccess(this);
-      }
-
       onSuccess();
     }, () => {
-      if (this.onError) {
-        this.onError(this);
-      }
-
-      onError();
+      onError('Error loading font');
     });
   }
 }
@@ -44,14 +34,8 @@ export default class AssetsLoader extends AssetsManager {
     super(scene);
   }
 
-  public addFontAssetTask(taskName: string, url: string): IAssetTask {
+  public addFontAssetTask(taskName: string, url: string): AbstractAssetTask {
     var task = new FontFileAssetTask(taskName, url);
-    this.tasks.push(task);
-    return task;
-  }
-
-  public addCubeTextureTask(taskName: string, url: string, extensions?: string[], noMipmap?: boolean, files?: string[]): IAssetTask {
-    var task = new CubeTextureAssetTask(taskName, url, extensions, noMipmap, files);
     this.tasks.push(task);
     return task;
   }

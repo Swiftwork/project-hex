@@ -1,5 +1,7 @@
-import { AbstractMesh, Color3, Engine, Quaternion, Scene, Size, Vector3 } from 'babylonjs';
+import { AbstractMesh, Color3, Engine, Quaternion, Scene, Size, Vector3, Plane, Mesh } from 'babylonjs';
+import { AdvancedDynamicTexture } from 'babylonjs-gui';
 
+import AssetsLoader from './Lib/AssetsLoader';
 import AssetManager from './Managers/AssetManager';
 import CameraManager from './Managers/CameraManager';
 import GuiManager from './Managers/GuiManager';
@@ -50,8 +52,9 @@ export default class Game implements IGameFlow {
   public graphics: Graphics;
   public engine: Engine;
   public scene: Scene;
-  public scene2d: ScreenSpaceCanvas2D;
-  public world2d: ScreenSpaceCanvas2D;
+  public sceneOverlay: Mesh;
+  public textureGUI: AdvancedDynamicTexture;
+  public textureOverlay: AdvancedDynamicTexture;
 
   /* NETWORK */
   public network: NetworkClient;
@@ -86,17 +89,23 @@ export default class Game implements IGameFlow {
 
     /* Scene */
     this.scene = new Scene(this.engine);
-    this.scene2d = new ScreenSpaceCanvas2D(this.scene, { id: 'scene2d', });
-    this.world2d = new WorldSpaceCanvas2D(this.scene, new Size(32, 32), {
+    this.sceneOverlay = Mesh.CreatePlane('sceneOverlay', 32, this.scene);
+    this.sceneOverlay.renderingGroupId = 1;
+    this.sceneOverlay.isPickable = false;
+
+    this.textureGUI = AdvancedDynamicTexture.CreateFullscreenUI('sceneGUI', true, this.scene);
+    this.textureOverlay = AdvancedDynamicTexture.CreateForMesh(this.sceneOverlay);
+    /*
+    this.sceneOverlay = new WorldSpaceCanvas2D(this.scene, new Size(32, 32), {
       id: 'world2d',
       worldPosition: new Vector3(0, 0.15, 0),
       worldRotation: Quaternion.RotationYawPitchRoll(0, Graphics.toRadians(90), 0),
       enableInteraction: false,
       //backgroundFill: Canvas2D.GetSolidColorBrushFromHex("#202020FF"),
     });
-    (<AbstractMesh>this.world2d.worldSpaceCanvasNode).renderingGroupId = 1;
-    (<AbstractMesh>this.world2d.worldSpaceCanvasNode).isPickable = false;
-
+    (<AbstractMesh>this.sceneOverlay.worldSpaceCanvasNode).renderingGroupId = 1;
+    (<AbstractMesh>this.sceneOverlay.worldSpaceCanvasNode).isPickable = false;
+    */
     this.assetManager = new AssetManager(new AssetsLoader(this.scene));
     this.assetManager.loadAllAssets((tasks) => {
 

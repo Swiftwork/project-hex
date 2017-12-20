@@ -35,7 +35,7 @@ export default class ScreenManager {
 
   public add(id: string, screen: Screen): Screen {
     this.screens.set(id, screen);
-    screen.screen.levelVisible = false;
+    //screen.screen.levelVisible = false;
     return screen;
   }
 
@@ -50,15 +50,15 @@ export default class ScreenManager {
 
     /* Fade Transition */
     if (previousScreen) {
-      previousScreen.screen.zOrder = 1;
-      this.activeScreen.screen.zOrder = 0;
+      //previousScreen.screen.zOrder = 1;
+      //this.activeScreen.screen.zOrder = 0;
       this.activeScreen.onCreate();
 
       const frames = this.fadeDuration / 1000 / 2 * 60;
-      previousScreen.screen.animations.push(this.fadeOut);
+      //previousScreen.screen.animations.push(this.fadeOut);
       this.game.scene.beginAnimation(previousScreen.screen, 0, frames, false, 1, () => {
         previousScreen.onPause();
-        previousScreen.screen.levelVisible = false;
+        //previousScreen.screen.levelVisible = false;
         // this.activeScreen.screen.animations.push(this.fadeIn);
         // this.game.scene.beginAnimation(this.activeScreen.screen, 0, frames, false, 1);
       })
