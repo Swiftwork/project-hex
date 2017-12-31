@@ -24,11 +24,11 @@ export default class Label extends TextBlock {
   };
 
   constructor(
-    public name: string,
-    public text: string,
-    public icon?: string,
+    name: string,
+    text: string,
+    icon?: string,
   ) {
     super(name, icon ? `${icon} ${text}` : text);
-    this.fontFamily = '16pt arial' + (icon ? ', icons' : '');
+    this.fontFamily = `'outage', 'icons'`;
   }
 }

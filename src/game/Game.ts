@@ -90,6 +90,7 @@ export default class Game implements IGameFlow {
     /* Scene */
     this.scene = new Scene(this.engine);
     this.sceneOverlay = Mesh.CreatePlane('sceneOverlay', 32, this.scene);
+    this.sceneOverlay.position = new Vector3(0, 2, 0);
     this.sceneOverlay.renderingGroupId = 1;
     this.sceneOverlay.isPickable = false;
 

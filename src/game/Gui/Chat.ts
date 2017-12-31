@@ -16,9 +16,14 @@ export default class Chat extends StackPanel {
 
   constructor(public name: string, public game: Game) {
     super(name);
-
+    this.background = 'rgba(0, 0, 0, 0.5)';
     this.messages = new Map<string, Message>();
+
     this.textfield = new InputText('new-message', 'Chat with your friends!');
+    this.textfield.color = 'white';
+    this.textfield.width = '480px';
+    this.textfield.height = '48px';
+    this.addControl(this.textfield);
   }
 
   public sendMessage() {
@@ -36,6 +41,10 @@ export default class Chat extends StackPanel {
     for (let i = 0; i < messages.length; i++) {
       let message = messages[i];
       let label = new Label(this.formatTime(message.date), `[${this.formatTime(message.date)}] ${message.text}`);
+      label.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+      label.color = 'white';
+      label.width = '100%';
+      label.height = '48px';
       this.messages.set(`message-${message.date.getTime()}`, message);
       this.addControl(label);
     }

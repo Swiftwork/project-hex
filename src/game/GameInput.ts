@@ -115,11 +115,9 @@ export default class GameInput {
   }
 
   private onKeyDown(event: KeyboardEvent) {
+    console.log('keydown');
     if (this.chat.isFocused) {
       switch (event.keyCode) {
-        case 8:
-          this.chat.textfield.text = this.chat.textfield.text.slice(0, -1);
-          return true;
         case 13:
           event.preventDefault();
           this.chat.sendMessage();
@@ -145,10 +143,5 @@ export default class GameInput {
   }
 
   private onKeyPress(event: KeyboardEvent) {
-    if (this.chat.isFocused) {
-      this.chat.textfield.text += event.key;
-      return true;
-    }
-    return false;
   }
 }
