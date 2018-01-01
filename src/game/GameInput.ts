@@ -1,4 +1,4 @@
-import { HighlightLayer, Mesh, Vector2, ActionEvent, InstancedMesh, Color3, EventState } from 'babylonjs';
+import { HighlightLayer, Mesh, Vector2, ActionEvent, InstancedMesh, Color3, EventState, Size, ISize } from 'babylonjs';
 
 import Tile from './Entities/Tile';
 import Game from './Game';
@@ -14,6 +14,7 @@ export default class GameInput {
 
   /* STATES */
   public selection: { tile: Tile, mesh: Mesh, movement: Tile[] };
+  public path: Line[] = [];
 
   constructor(
     private game: Game,
@@ -82,28 +83,40 @@ export default class GameInput {
   public onHover(tile: Tile, mesh: Mesh, event: ActionEvent) {
     if (!this.selection || !this.selection.movement || this.selection.movement.indexOf(tile) === -1) return;
 
+    this.path.forEach((line) => {
+      this.game.textureOverlay.removeControl(line);
+    });
+    this.path.length = 0;
+
+    const overlaySize = this.game.textureOverlay.getSize();
+    const tileSize = overlaySize.width / this.world.settings.size / 2;
+
+    // https://www.babylonjs-playground.com/#XCPP9Y#370
+
     /* Movement */
-    let path = this.logic.getPath(this.selection.tile, tile).map((tile: Tile) => {
-      return <Vector2>this.world.settings.layout.hexagonToPixel(tile.hexagon);
+    this.path = this.logic.getPath(this.selection.tile, tile).map((tile, index, tiles) => {
+      if (index == tiles.length - 1) return undefined;
+      let point = this.normalizePoint(this.world.settings.layout.hexagonToPixel(tile.hexagon) as Vector2, tileSize, overlaySize);
+      let nextPoint = this.normalizePoint(this.world.settings.layout.hexagonToPixel(tiles[index + 1].hexagon) as Vector2, tileSize, overlaySize);
+      let line = new Line(`line-${tile.id}`);
+      line.x1 = point.x;
+      line.y1 = point.y;
+      line.x2 = nextPoint.x;
+      line.y2 = nextPoint.y;
+      line.lineWidth = 2;
+      line.color = "cyan";
+      this.game.textureOverlay.addControl(line);
+      return line;
     });
+    this.path.length--;
+  }
 
-    const straightLine = new Line('StraightLine');
-    straightLine.x1 = 10;
-    straightLine.y1 = 10;
-    straightLine.x2 = 1000;
-    straightLine.y2 = 500;
-    straightLine.lineWidth = 5;
-    straightLine.dash = [5, 10];
-    straightLine.color = "white";
-    this.game.textureOverlay.addControl(straightLine);
-
-    /*
-    var straightLine = new BABYLON.Lines2D(path, {
-      parent: this.game.world2d, id: "StraightLine", x: 750, y: 50, fillThickness: 10, fill: "#8040C0FF", border: "#40FFFFFF",
-      startCap: BABYLON.Lines2D.RoundAnchorCap, endCap: BABYLON.Lines2D.DiamondAnchorCap,
-      borderThickness: 5, closed: false, origin: BABYLON.Vector2.Zero()
-    });
-    */
+  private normalizePoint(point: Vector2, tileSize: number, overlaySize: ISize) {
+    // Center to middle of overlay
+    let normalized = new Vector2(overlaySize.width / 2, overlaySize.height / 2);
+    // Flip x value
+    normalized = normalized.add(point.multiplyByFloats(-tileSize, tileSize));
+    return normalized;
   }
 
   //------------------------------------------------------------------------------------
@@ -115,7 +128,6 @@ export default class GameInput {
   }
 
   private onKeyDown(event: KeyboardEvent) {
-    console.log('keydown');
     if (this.chat.isFocused) {
       switch (event.keyCode) {
         case 13:
@@ -131,6 +143,7 @@ export default class GameInput {
           return true;
 
         case 192:
+        case 220:
           if (!this.game.scene.debugLayer.isVisible())
             this.game.scene.debugLayer.show();
           else
