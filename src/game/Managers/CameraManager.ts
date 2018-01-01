@@ -32,7 +32,8 @@ export default class CameraManager {
 
     /* MAIN CAMERA */
     this.add('main', CameraManager.CAMERA.ARC_ROTATE, {
-      alpha: Graphics.toRadians(360),
+      alpha: 0,
+      //alpha: -Math.PI / 2,
       beta: Graphics.toRadians(40),
       radius: 5,
       position: Vector3.Zero(),

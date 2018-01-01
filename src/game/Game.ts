@@ -1,5 +1,5 @@
-import { AbstractMesh, Color3, Engine, Quaternion, Scene, Size, Vector3, Plane, Mesh } from 'babylonjs';
-import { AdvancedDynamicTexture } from 'babylonjs-gui';
+import { AbstractMesh, Color3, Engine, Quaternion, Scene, Size, Vector3, Plane, Mesh, StandardMaterial, Vector2, Light } from 'babylonjs';
+import { AdvancedDynamicTexture, Line } from 'babylonjs-gui';
 
 import AssetsLoader from './Lib/AssetsLoader';
 import AssetManager from './Managers/AssetManager';
@@ -90,22 +90,24 @@ export default class Game implements IGameFlow {
     /* Scene */
     this.scene = new Scene(this.engine);
     this.sceneOverlay = Mesh.CreatePlane('sceneOverlay', 32, this.scene);
-    this.sceneOverlay.position = new Vector3(0, 2, 0);
+    this.sceneOverlay.position = new Vector3(0, 0.3, 0);
+    this.sceneOverlay.rotation = new Vector3(Graphics.toRadians(90), 0, Graphics.toRadians(180));
     this.sceneOverlay.renderingGroupId = 1;
     this.sceneOverlay.isPickable = false;
 
     this.textureGUI = AdvancedDynamicTexture.CreateFullscreenUI('sceneGUI', true, this.scene);
-    this.textureOverlay = AdvancedDynamicTexture.CreateForMesh(this.sceneOverlay);
+    this.textureOverlay = AdvancedDynamicTexture.CreateForMesh(this.sceneOverlay, 4090, 4090);
+
     /*
-    this.sceneOverlay = new WorldSpaceCanvas2D(this.scene, new Size(32, 32), {
-      id: 'world2d',
-      worldPosition: new Vector3(0, 0.15, 0),
-      worldRotation: Quaternion.RotationYawPitchRoll(0, Graphics.toRadians(90), 0),
-      enableInteraction: false,
-      //backgroundFill: Canvas2D.GetSolidColorBrushFromHex("#202020FF"),
-    });
-    (<AbstractMesh>this.sceneOverlay.worldSpaceCanvasNode).renderingGroupId = 1;
-    (<AbstractMesh>this.sceneOverlay.worldSpaceCanvasNode).isPickable = false;
+    this.textureOverlay.background = 'white';
+    let testLine = new Line();
+    testLine.x1 = 0;
+    testLine.y1 = 0;
+    testLine.x2 = 2048;
+    testLine.y2 = 2048;
+    testLine.color = 'green';
+    testLine.lineWidth = 5;
+    this.textureOverlay.addControl(testLine);
     */
     this.assetManager = new AssetManager(new AssetsLoader(this.scene));
     this.assetManager.loadAllAssets((tasks) => {
