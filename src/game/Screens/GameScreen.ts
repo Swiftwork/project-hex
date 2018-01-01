@@ -114,7 +114,7 @@ export default class GameScreen extends Screen {
   }
 
   private createTopBar() {
-    const background = new Rectangle();
+    const background = new Rectangle('topbar');
     background.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
     background.width = '100%';
     background.height = '48px';

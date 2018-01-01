@@ -126,11 +126,12 @@ export default class GameInput {
 
     } else {
       switch (event.keyCode) {
-        case 70:
+        case 70: // Keycode f
           this.game.graphics.switchFullscreen();
           return true;
 
-        case 192:
+        case 192: // Keycode §
+        case 220: // Keycode §
           if (!this.game.scene.debugLayer.isVisible())
             this.game.scene.debugLayer.show();
           else
