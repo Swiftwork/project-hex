@@ -142,13 +142,8 @@ export default class GameInput {
           this.game.graphics.switchFullscreen();
           return true;
 
-<<<<<<< HEAD
         case 192: // Keycode §
         case 220: // Keycode §
-=======
-        case 192:
-        case 220:
->>>>>>> 48f7b078b050924d74eb2b8b0e1a7111ca62a139
           if (!this.game.scene.debugLayer.isVisible())
             this.game.scene.debugLayer.show();
           else
