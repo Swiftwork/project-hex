@@ -2,14 +2,12 @@
 // EXPORT MODULES
 //------------------------------------------------------------------------------------
 
-/* Export of a dummy module declaration for socket.io-p2p */
-declare module 'socket.io-p2p' {
-  var P2P: any;
-  export = P2P;
+/* DEPRECATED: Export of the BabylonJS declarations to allow the components to be imported into project
+declare module 'babylonjs' {
+  export = BABYLON;
 }
+*/
 
-//------------------------------------------------------------------------------------
-// EXTEND BASICS
 //------------------------------------------------------------------------------------
 
 interface Math {
@@ -50,6 +48,15 @@ interface String {
    * Capitalizes the first letter of the string.
    */
   capitalize(): string;
+}
+
+//------------------------------------------------------------------------------------
+// CONTENT TYPES
+//------------------------------------------------------------------------------------
+
+declare module '*.svg' {
+  const content: any;
+  export default content;
 }
 
 //------------------------------------------------------------------------------------

@@ -1,12 +1,9 @@
-import {
-
-} from 'babylonjs';
-import * as P2P from 'socket.io-p2p';
 import * as io from 'socket.io-client';
+import * as P2P from 'socket.io-p2p';
 
 import Game from '../Game';
+import Chat from '../Gui/Chat';
 import Message from '../Logic/Message';
-import Chat2D from '../Canvas2D/Chat2D';
 
 export default class NetworkClient {
 
@@ -64,7 +61,7 @@ export default class NetworkClient {
   }
 
   public onMessage(data: string) {
-    const chat = <Chat2D>this.game.canvas2DManager.get('chat');
+    const chat = <Chat>this.game.guiManager.get('chat');
     chat.addMessage(Message.fromJSON(data));
     console.log(JSON.parse(data));
   }

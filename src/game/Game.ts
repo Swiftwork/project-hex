@@ -1,23 +1,17 @@
-import {
-  Vector2, Vector3, Color3, Size, Quaternion,
-  Engine, Scene, ScreenSpaceCanvas2D, WorldSpaceCanvas2D, Canvas2D,
-  AbstractMesh,
-} from 'babylonjs';
-
-import Graphics from './Utils/Graphics';
+import { AbstractMesh, Color3, Engine, Quaternion, Scene, Size, Vector3, Plane, Mesh, StandardMaterial, Vector2, Light } from 'babylonjs';
+import { AdvancedDynamicTexture, Line } from 'babylonjs-gui';
 
 import AssetsLoader from './Lib/AssetsLoader';
-import LoadingScreen from './Screens/LoadingScreen';
-
-import NetworkClient from './Network/NetworkClient';
-
 import AssetManager from './Managers/AssetManager';
 import CameraManager from './Managers/CameraManager';
+import GuiManager from './Managers/GuiManager';
 import LightManager from './Managers/LightManager';
 import MaterialManager from './Managers/MaterialManager';
-import ScreenManager from './Managers/ScreenManager';
 import PlayerManager from './Managers/PlayerManager';
-import Canvas2DManager from './Managers/Canvas2DManager';
+import ScreenManager from './Managers/ScreenManager';
+import NetworkClient from './Network/NetworkClient';
+import LoadingScreen from './Screens/LoadingScreen';
+import Graphics from './Utils/Graphics';
 
 //------------------------------------------------------------------------------------
 // GAME FLOW INTERFACE
@@ -58,8 +52,9 @@ export default class Game implements IGameFlow {
   public graphics: Graphics;
   public engine: Engine;
   public scene: Scene;
-  public scene2d: ScreenSpaceCanvas2D;
-  public world2d: ScreenSpaceCanvas2D;
+  public sceneOverlay: Mesh;
+  public textureGUI: AdvancedDynamicTexture;
+  public textureOverlay: AdvancedDynamicTexture;
 
   /* NETWORK */
   public network: NetworkClient;
@@ -71,7 +66,7 @@ export default class Game implements IGameFlow {
   public materialManager: MaterialManager;
   public screenManager: ScreenManager;
   public playerManager: PlayerManager;
-  public canvas2DManager: Canvas2DManager;
+  public guiManager: GuiManager;
 
   constructor(public canvas: HTMLCanvasElement) {
     if (!Game.game)
@@ -94,17 +89,26 @@ export default class Game implements IGameFlow {
 
     /* Scene */
     this.scene = new Scene(this.engine);
-    this.scene2d = new ScreenSpaceCanvas2D(this.scene, { id: 'scene2d', });
-    this.world2d = new WorldSpaceCanvas2D(this.scene, new Size(32, 32), {
-      id: 'world2d',
-      worldPosition: new Vector3(0, 0.15, 0),
-      worldRotation: Quaternion.RotationYawPitchRoll(0, Graphics.toRadians(90), 0),
-      enableInteraction: false,
-      //backgroundFill: Canvas2D.GetSolidColorBrushFromHex("#202020FF"),
-    });
-    (<AbstractMesh>this.world2d.worldSpaceCanvasNode).renderingGroupId = 1;
-    (<AbstractMesh>this.world2d.worldSpaceCanvasNode).isPickable = false;
+    this.sceneOverlay = Mesh.CreatePlane('sceneOverlay', 32, this.scene);
+    this.sceneOverlay.position = new Vector3(0, 0.3, 0);
+    this.sceneOverlay.rotation = new Vector3(Graphics.toRadians(90), 0, Graphics.toRadians(180));
+    this.sceneOverlay.renderingGroupId = 1;
+    this.sceneOverlay.isPickable = false;
 
+    this.textureGUI = AdvancedDynamicTexture.CreateFullscreenUI('sceneGUI', true, this.scene);
+    this.textureOverlay = AdvancedDynamicTexture.CreateForMesh(this.sceneOverlay, 4090, 4090);
+
+    /*
+    this.textureOverlay.background = 'white';
+    let testLine = new Line();
+    testLine.x1 = 0;
+    testLine.y1 = 0;
+    testLine.x2 = 2048;
+    testLine.y2 = 2048;
+    testLine.color = 'green';
+    testLine.lineWidth = 5;
+    this.textureOverlay.addControl(testLine);
+    */
     this.assetManager = new AssetManager(new AssetsLoader(this.scene));
     this.assetManager.loadAllAssets((tasks) => {
 
@@ -118,7 +122,7 @@ export default class Game implements IGameFlow {
       this.materialManager = new MaterialManager(this);
       this.screenManager = new ScreenManager(this);
       this.playerManager = new PlayerManager(this);
-      this.canvas2DManager = new Canvas2DManager(this);
+      this.guiManager = new GuiManager(this);
 
       this.onCreate();
     });

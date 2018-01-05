@@ -1,16 +1,11 @@
-import {
-  Vector2, Size,
-  Engine, Scene, ScreenSpaceCanvas2D, Texture,
-  Group2D, StackPanelLayoutEngine, Canvas2D, Text2D, Rectangle2D, Sprite2D,
-} from 'babylonjs';
+import { Texture } from 'babylonjs';
 
 import Game from '../Game';
-import Settings from '../Utils/Settings';
+import Label from '../Gui/Label';
 import Screen from './Screen';
+import { StackPanel } from 'babylonjs-gui';
 
 /* Views */
-import Label2D from '../Canvas2D/Label2D';
-
 export class MenuItem {
   title: string;
   icon?: string;
@@ -21,7 +16,7 @@ export default class MainMenuScreen extends Screen {
 
   private menuItems: MenuItem[];
 
-  private fullscreen: Label2D;
+  private fullscreen: Label;
 
   constructor(public game: Game, public id: string) {
     super(game, id);
@@ -29,7 +24,7 @@ export default class MainMenuScreen extends Screen {
 
     const hexagons = <Texture>this.game.assetManager.get('interface-hexagon-pattern');
     hexagons.hasAlpha = true;
-
+    /*
     let background = new Sprite2D(hexagons, {
       id: 'background',
       parent: this.screen,
@@ -37,18 +32,19 @@ export default class MainMenuScreen extends Screen {
       opacity: 0.01,
     });
     background.texture.wrapU = background.texture.wrapV = 1;
+    */
 
     this.menuItems = [
 
-      { title: 'Continue', icon: Label2D.ICON.BRAIN },
+      { title: 'Continue', icon: Label.ICON.BRAIN },
       {
-        title: 'New Battle', icon: Label2D.ICON.MAN, onClick: () => {
+        title: 'New Battle', icon: Label.ICON.MAN, onClick: () => {
           this.game.screenManager.show('game');
         }
       },
-      { title: 'Multi Player', icon: Label2D.ICON.BRAIN },
-      { title: 'Settings', icon: Label2D.ICON.GOLD },
-      { title: 'Quit', icon: Label2D.ICON.MENU },
+      { title: 'Multi Player', icon: Label.ICON.BRAIN },
+      { title: 'Settings', icon: Label.ICON.GOLD },
+      { title: 'Quit', icon: Label.ICON.MENU },
     ]
   }
 
@@ -62,29 +58,45 @@ export default class MainMenuScreen extends Screen {
   // INTERFACE CREATORS
   //------------------------------------------------------------------------------------
 
-  private createMenu(menuItems: MenuItem[]): Group2D {
-    const list = new Group2D({
+  private createMenu(menuItems: MenuItem[]): StackPanel {
+    const list = new StackPanel('menu')
+    menuItems.reverse().forEach((item, index) => {
+      list.addControl(this.createMenuItem(item, index));
+    });
+    /*
+    {
       id: 'menu',
       parent: this.screen,
       marginAlignment: 'v: center, h: center',
       layoutEngine: StackPanelLayoutEngine.Vertical,
       children: menuItems.reverse().map(this.createMenuItem, this),
     });
+    */
     return list;
   }
 
-  private createMenuItem(item: MenuItem, index: number): Label2D {
-    const label = new Label2D(item.title, item.icon, {
+  private createMenuItem(item: MenuItem, index: number): Label {
+    const label = new Label(`menu-item-${index.toString()}`, item.title, item.icon)
+    label.onPointerDownObservable.add(item.onClick)
+    /*
+    {
       id: index.toString(),
       marginBottom: this.game.graphics.dpToPx(50),
       fontName: `${this.game.graphics.dpToPx(32)}px outage`,
       onClick: item.onClick,
     });
+    */
     return label;
   }
 
   private createFullscreen() {
-    this.fullscreen = new Label2D('', Label2D.ICON.EXPAND, {
+    this.fullscreen = new Label('fullscreen', '', Label.ICON.EXPAND);
+    this.fullscreen.onPointerDownObservable.add(() => {
+      this.game.graphics.switchFullscreen();
+    });
+
+    /*
+    , {
       id: 'fullscreen',
       parent: this.screen,
       marginAlignment: 'v: top, h: right',
@@ -95,5 +107,6 @@ export default class MainMenuScreen extends Screen {
         this.game.graphics.switchFullscreen();
       }
     });
+    */
   }
 }

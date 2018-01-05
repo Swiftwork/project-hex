@@ -2,7 +2,7 @@ import {
   Vector3,
   Scene,
   Effect,
-  TextureAssetTask, MeshAssetTask, TextFileAssetTask, BinaryFileAssetTask,
+  TextureAssetTask, MeshAssetTask, TextFileAssetTask, BinaryFileAssetTask, CubeTextureAssetTask,
 } from 'babylonjs';
 
 import AssetsLoader, {
@@ -54,7 +54,7 @@ export default class AssetManager {
       let task = this.assetsLoader.addCubeTextureTask(`texture-${id}`, '', null, false, [
         cubeTexture.front, cubeTexture.top, cubeTexture.right, cubeTexture.back, cubeTexture.bottom, cubeTexture.left,
       ]);
-      task.onSuccess = (task: TextureAssetTask) => {
+      task.onSuccess = (task: CubeTextureAssetTask) => {
         this.add(`texture-${id}`, task.texture);
       }
     }
