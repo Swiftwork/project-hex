@@ -154,6 +154,7 @@ const assetsManifest = {
     /* TABLE */
     'felt': {
       diffuse: require('../Assets/textures/felt.jpg'),
+      bump: require('../Assets/textures/felt-bump.jpg'),
     },
     'wood': {
       diffuse: require('../Assets/textures/wood3.jpg'),

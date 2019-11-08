@@ -27,6 +27,10 @@ export default class MaterialManager {
     /* TABLE */
     const base = this.add('felt', 'felt', [-10, -10]);
     base.diffuseColor = new Color3(0.05, 0.32, 0.50);
+    //base.diffuseColor = new Color3(0.38, 0.24, 0.32); Purple
+    //base.diffuseColor = new Color3(0.25, 0.87, 0.83); Turquoise
+    //base.diffuseColor = new Color3(0.35, 0.6, 0.36); Golf Green
+    base.diffuseColor = new Color3(0.32, 0.47, 0.62);
 
     const edge = this.add('wood', 'wood', [-50, -50]);
     edge.specularColor = new Color3(0.5, 0.5, 0.5);
